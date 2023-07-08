@@ -40,7 +40,7 @@ var CanvasBtnService = /** @class */ (function () {
         context.font = '30pt Kremlin Pro Web';
         context.fillStyle = fontColour;
         context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 5 * rect.height / 8, rect.x + rect.width);
+        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
     };
     return CanvasBtnService;
 }());
@@ -293,11 +293,11 @@ var RecruitmentService = /** @class */ (function () {
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var btnService = new CanvasBtnService(this._canvas);
         var radius = 25;
-        btnService.createBtn(200, 250, 475, 100, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
         this.drawCamel(-3, 4, '#cc807a');
-        btnService.createBtn(800, 250, 475, 100, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
         this.drawCamel(3, -2, '#debb49');
-        btnService.createBtn(475, 650, 475, 100, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
         this.drawCamel(7.75, 9.25, '#509124');
     };
     return RecruitmentService;
