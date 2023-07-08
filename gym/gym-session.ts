@@ -5,7 +5,10 @@ class GymSession {
 
     constructor(
         private readonly _skill: CamelSkill,
-        _maxStamina: number) { 
+        _maxStamina: number,
+        private readonly _xpChangeOnSuccessfulAction = 9,
+        private readonly _staminaChangeOnSuccessfulAction = -3,
+        private readonly _staminaChangeOnFailedAction = -10) { 
             this._staminaRemaining = _maxStamina;
         }
 
@@ -19,8 +22,9 @@ class GymSession {
         if (!this._sessionActive) {
             return;
         }
-        this._xpGained += 9;
-        this._staminaRemaining -= 3; // TODO: range of values
+
+        this._xpGained += this._xpChangeOnSuccessfulAction;
+        this._staminaRemaining += this._staminaChangeOnSuccessfulAction; // TODO: range of values
         this.postAction();
     }
 
@@ -28,7 +32,8 @@ class GymSession {
         if (!this._sessionActive) {
             return;
         }
-        this._staminaRemaining -= 10; // TODO: range of values
+
+        this._staminaRemaining += this._staminaChangeOnFailedAction;
         return this.postAction();
     }
 
