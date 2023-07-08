@@ -13,7 +13,7 @@ var CanvasBtnService = /** @class */ (function () {
     CanvasBtnService.prototype.isInside = function (pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     };
-    CanvasBtnService.prototype.createBtn = function (xStart, yStart, width, height, backgroundColour, fontColour, onclickFunction, text) {
+    CanvasBtnService.prototype.createBtn = function (xStart, yStart, width, height, radius, backgroundColour, borderColour, fontColour, onclickFunction, text) {
         var _this = this;
         var rect = {
             x: xStart,
@@ -30,16 +30,17 @@ var CanvasBtnService = /** @class */ (function () {
             }
         }, false);
         context.beginPath();
-        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 2;
-        context.strokeStyle = '#000000';
+        context.lineWidth = 5;
+        context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Kremlin Pro Web';
         context.fillStyle = fontColour;
-        context.fillText(text, rect.x + rect.width / 8, rect.y + 3 * rect.height / 4, rect.x + 7 * rect.width / 8);
+        context.textAlign = "center";
+        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
     };
     return CanvasBtnService;
 }());
@@ -254,13 +255,13 @@ var RecruitmentService = /** @class */ (function () {
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this.drawCamel = function (xCoord, yCoord, colour) {
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1.5, 0, -3);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 0, 0, -2);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1, 0, -2);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1, 0, -1);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 2, 0, -1);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour);
-            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1.5, 0, -10);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, -6);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -6);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -2);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 2, 0, -2);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, 2);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, 2);
         };
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d');
@@ -291,12 +292,13 @@ var RecruitmentService = /** @class */ (function () {
         this._ctx.fillStyle = '#e8d7a7';
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var btnService = new CanvasBtnService(this._canvas);
-        btnService.createBtn(100, 100, 500, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
-        this.drawCamel(-5, 4, '#cc807a');
-        btnService.createBtn(700, 100, 500, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
-        this.drawCamel(1, -2, '#debb49');
-        btnService.createBtn(350, 400, 500, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
-        this.drawCamel(3.5, 7.5, '#509124');
+        var radius = 25;
+        btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        this.drawCamel(-3.25, 4.25, '#cc807a');
+        btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        this.drawCamel(2.75, -1.75, '#debb49');
+        btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(7.75, 9.25, '#509124');
     };
     return RecruitmentService;
 }());
@@ -422,8 +424,10 @@ var Camel = /** @class */ (function () {
     function Camel(id, quality) {
         this.id = id;
         var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        var agility = Math.ceil(Math.random() * 10 * (quality + 1));
         this.camelSkills = new CamelSkillsBuilder()
             .withSprintSpeed(sprintSpeed)
+            .withAgility(agility)
             .build();
     }
     return Camel;
@@ -607,9 +611,10 @@ var RacingCamel = /** @class */ (function () {
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
         this._jumpHeight = 0;
         this._gravityAcceleration = 9.81;
-        this._initialVelocity = 10;
         this._scaleFactor = 10;
+        this._initialVelocity = 0;
         this._currentVelocity = 0;
+        this._initialVelocity = 5 + (this.camel.camelSkills.agility.level / 10);
     }
     Object.defineProperty(RacingCamel.prototype, "jumpHeight", {
         get: function () {
@@ -702,6 +707,7 @@ var CamelSkills = /** @class */ (function () {
     function CamelSkills() {
         this.sprintSpeed = new CamelSkill("Sprint Speed");
         this.stamina = new CamelSkill("Stamina");
+        this.agility = new CamelSkill("Agility");
     }
     return CamelSkills;
 }());
@@ -711,6 +717,10 @@ var CamelSkillsBuilder = /** @class */ (function () {
     }
     CamelSkillsBuilder.prototype.withSprintSpeed = function (value) {
         this._camelSkills.sprintSpeed.setLevel(value);
+        return this;
+    };
+    CamelSkillsBuilder.prototype.withAgility = function (value) {
+        this._camelSkills.agility.setLevel(value);
         return this;
     };
     CamelSkillsBuilder.prototype.withStamina = function (value) {
