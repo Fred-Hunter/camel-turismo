@@ -19,8 +19,9 @@ class RecruitmentService {
     }
 
     leaveRecruitmentArea = () => {
-        this._canvas.style.zIndex = '-1';
-        document.dispatchEvent(startRace);
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     }
 
     validateEnoughCashMoney(cost: number): boolean {
