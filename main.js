@@ -47,10 +47,26 @@ var CanvasServiceService = /** @class */ (function () {
     function CanvasServiceService() {
     }
     CanvasServiceService.prototype.getCurrentCanvas = function () {
-        return;
+        return Array.from(document.querySelectorAll("canvas")).sort(function (c) { return +c.style.zIndex; })[0];
     };
-    CanvasServiceService.prototype.setCanvasZIndex = function (canvasName) {
-        return;
+    CanvasServiceService.prototype.setCanvasZIndex = function (canvasName, zIndex) {
+        var canvas = document.querySelector("#".concat(canvasName));
+        if (!canvas) {
+            console.error("No canvas found with name: ".concat(canvasName));
+            return;
+        }
+        canvas.style.zIndex = "".concat(zIndex);
+    };
+    CanvasServiceService.prototype.bringCanvasToTop = function (canvasName) {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        var getMax = function (a, b) { return Math.max(a, b); };
+        var maxZIndex = allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.map(function (c) { return +c.style.zIndex; }).reduce(getMax, 0);
+        this.setCanvasZIndex(canvasName, maxZIndex + 1);
+    };
+    CanvasServiceService.prototype.resetCanvases = function () {
+        var _this = this;
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return _this.setCanvasZIndex(c.id, 0); });
     };
     return CanvasServiceService;
 }());
@@ -434,6 +450,7 @@ var Race = /** @class */ (function () {
         camels.forEach(function (camel) {
             var racingCamel = new RacingCamel(camel);
             _this.racingCamels.push(racingCamel);
+            racingCamel.startJump();
         });
     }
     return Race;
@@ -444,7 +461,37 @@ var RacingCamel = /** @class */ (function () {
         this.completionPercentage = 0;
         this.raceSpeedPerSecond = 0;
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+        this._jumpHeight = 0;
+        this._gravityAcceleration = 9.81;
+        this._initialVelocity = 10;
+        this._scaleFactor = 10;
+        this._currentVelocity = 0;
     }
+    Object.defineProperty(RacingCamel.prototype, "jumpHeight", {
+        get: function () {
+            return this._jumpHeight;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    RacingCamel.prototype.startJump = function () {
+        this._currentVelocity = this._initialVelocity;
+    };
+    RacingCamel.prototype.handleJumpTick = function () {
+        if (this._currentVelocity == 0) {
+            // Have to start the jump
+            return;
+        }
+        this._jumpHeight += this._currentVelocity / this._scaleFactor;
+        this._currentVelocity += -(this._gravityAcceleration) / this._scaleFactor;
+        if (this._jumpHeight < 0) {
+            this._jumpHeight = 0;
+            this._currentVelocity = 0;
+        }
+        if (this._jumpHeight == 0) {
+            this.startJump();
+        }
+    };
     return RacingCamel;
 }());
 var CamelSkill = /** @class */ (function () {
