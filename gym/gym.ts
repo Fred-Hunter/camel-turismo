@@ -1,5 +1,5 @@
 class Gym {
-    getTreadmillSession(camel: Camel) {
+    static getTreadmillSession(camel: Camel) {
         return new TrainSession(
             camel.camelSkills.sprintSpeed, 
             camel.camelSkills.stamina.skillValue);

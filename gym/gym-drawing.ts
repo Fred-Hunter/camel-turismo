@@ -11,6 +11,7 @@ class GymDrawing {
     private _backgroundCanvas: HTMLCanvasElement;
     private backgroundCubeService: CubeService;
     private camelCubeService: CubeService;
+    private _trainSession: TrainSession | null = null;
 
     public drawGym() {
         const ctx = this._backgroundCanvas.getContext("2d")!;
@@ -18,11 +19,42 @@ class GymDrawing {
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-        const canvasColour = '#C2B280';
-
         this.drawFloor();
         this.drawTreadmill();
 
+        const buttonService = new CanvasBtnService(this._camelCanvas);
+        buttonService.createBtn(
+            (this._camelCanvas.width/window.devicePixelRatio)/2,
+            window.innerHeight/2,
+            550,
+            50,
+            25,
+            GlobalStaticConstants.backgroundColour,
+            GlobalStaticConstants.mediumColour,
+            "black",
+            () => this._trainSession = Gym.getTreadmillSession(camel),
+            "Start session");
+
+        buttonService.createBtn(
+            (this._camelCanvas.width/window.devicePixelRatio)/2,
+            window.innerHeight/2 + 100,
+            550,
+            50,
+            25,
+            GlobalStaticConstants.backgroundColour,
+            GlobalStaticConstants.mediumColour,
+            "black",
+            () => {this.exitGym(this._trainSession)},
+            "Back to map");
+    }
+
+    private exitGym(trainSession :TrainSession|null) {
+        debugger;
+        if (!trainSession) return;
+        trainSession.endSession();
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap()
     }
 
     public drawFloor() {

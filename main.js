@@ -1,6 +1,8 @@
 "use strict";
 class GlobalStaticConstants {
     static backgroundColour = "#e8d7a7";
+    static highlightColour = "#432818";
+    static mediumColour = "#bb9457";
 }
 class CanvasBtnService {
     canvas;
@@ -405,13 +407,19 @@ class MapOverview {
         ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
         canvas.addEventListener('click', (event) => {
             const mousePosition = this.getMousePosition(event);
+            // Hire
             if (mousePosition.x < rect.width / 2 && mousePosition.y < rect.height / 2) {
                 CanvasService.showAllCanvas();
                 this.hideMap();
                 CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d"));
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
+            // Gym
             else if (mousePosition.x > rect.width / 2 && mousePosition.y < rect.height / 2) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
+                    return;
+                }
                 CanvasService.showAllCanvas();
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
@@ -422,6 +430,7 @@ class MapOverview {
                 cashMoney += 1000;
                 CashMoneyService.drawCashMoney(ctx);
             }
+            // Race
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
                 if (!!camel) {
                     enterRequestSelectionRequested = true;
@@ -446,8 +455,8 @@ class PopupService {
         const x = (canvas.width / window.devicePixelRatio) / 2 - width / 2;
         const y = window.innerHeight / 2 - height / 4;
         const bgColour = GlobalStaticConstants.backgroundColour;
-        const textColour = "#432818";
-        const highlightColour = "#432818";
+        const textColour = GlobalStaticConstants.highlightColour;
+        const highlightColour = GlobalStaticConstants.highlightColour;
         // Draw the background rectangle
         const backgroundRect = [
             x,
@@ -649,13 +658,25 @@ class GymDrawing {
     _backgroundCanvas;
     backgroundCubeService;
     camelCubeService;
+    _trainSession = null;
     drawGym() {
         const ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        const canvasColour = '#C2B280';
         this.drawFloor();
         this.drawTreadmill();
+        const buttonService = new CanvasBtnService(this._camelCanvas);
+        buttonService.createBtn((this._camelCanvas.width / window.devicePixelRatio) / 2, window.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(camel), "Start session");
+        buttonService.createBtn((this._camelCanvas.width / window.devicePixelRatio) / 2, window.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
+    }
+    exitGym(trainSession) {
+        debugger;
+        if (!trainSession)
+            return;
+        trainSession.endSession();
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     }
     drawFloor() {
         for (let i = 0; i < 15; i++) {
@@ -812,6 +833,14 @@ class TrainSession extends GymSession {
         super();
         this._skill = _skill;
         this._staminaRemaining = _maxStamina;
+        PopupService.drawAlertPopup("Press spacebar to train!");
+        document.addEventListener('keypress', (event) => {
+            if (event.key !== " ") {
+                return;
+            }
+            this.onSuccessfulAction();
+            console.log(camel.camelSkills);
+        }, false);
     }
     startSession() {
         this._xpGained = 0;
@@ -871,7 +900,7 @@ class SpaSession extends GymSession {
     }
 }
 class Gym {
-    getTreadmillSession(camel) {
+    static getTreadmillSession(camel) {
         return new TrainSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.skillValue);
     }
     getSpaSession(camel) {

@@ -47,14 +47,19 @@ class MapOverview {
         
             const mousePosition = this.getMousePosition(event);
             
-
+            // Hire
             if (mousePosition.x < rect.width/2 && mousePosition.y < rect.height/2) {
                 CanvasService.showAllCanvas();
                 this.hideMap();
                 CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d")!);
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
+            // Gym
             else if (mousePosition.x > rect.width/2 && mousePosition.y < rect.height/2) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
+                    return;
+                }
                 CanvasService.showAllCanvas();
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
@@ -65,6 +70,7 @@ class MapOverview {
                 cashMoney += 1000;
                 CashMoneyService.drawCashMoney(ctx);
             }
+            // Race
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
                 if(!!camel) {
                     enterRequestSelectionRequested = true;
