@@ -1,6 +1,7 @@
 class CanvasService {
-    getCanvas(zIndex: string): HTMLCanvasElement {
+    getCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
+        canvas.setAttribute("id", `canvas-${name}`);
 
         document.body.appendChild(canvas);
 
