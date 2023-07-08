@@ -229,3 +229,14 @@ var CubeService = /** @class */ (function () {
     };
     return CubeService;
 }());
+var secondsPassed;
+var oldTimeStamp;
+function init() {
+    window.requestAnimationFrame(gameLoop);
+}
+function gameLoop(timeStamp) {
+    secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
+    oldTimeStamp = timeStamp;
+    window.requestAnimationFrame(gameLoop);
+}
+init();
