@@ -15,7 +15,12 @@ class RaceDrawing {
     private raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
     [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
     [10, 9], [10, 8], [10, 7],
-    [9, 7], [8, 7], [7, 7] , [6, 7] , [5, 7] , [4, 7]];
+    [9, 7], [8, 7], [7, 7], [6, 7], [5, 7], [4, 7],
+    [4, 6], [4, 5], [4, 4], [4, 3], [4, 2], [4, 1],
+    [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
+    [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [12, 13],
+    [11, 13], [10, 13], [9, 13], [8, 13], [7, 13], [6, 13], [5, 13], [4, 13]
+    ];
 
     public drawRaceCourse() {
         const ctx = this._backgroundCanvas.getContext("2d")!;
@@ -45,6 +50,7 @@ class RaceDrawing {
 
     public drawCamel(camel: RacingCamel) {
         camel.handleJumpTick();
+
         const numberOfRaceTrackCoords = this.raceTrackCoords.length;
         const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
 
@@ -55,12 +61,13 @@ class RaceDrawing {
             (nextCoordPercentage - currentCoordPercentage);
 
         const currentCoord = this.raceTrackCoords[currectCoordIndex];
-        const previousCoord = currectCoordIndex > 0 ? this.raceTrackCoords[currectCoordIndex - 1] : currentCoord;
 
-        const movingInPositiveX = currentCoord[0] > previousCoord[0];
-        const movingInNegativeX = currentCoord[0] < previousCoord[0];
-        const movingInPositiveY = currentCoord[1] > previousCoord[1];
-        const movingInNegativeY = currentCoord[1] < previousCoord[1];
+        const nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? this.raceTrackCoords[currectCoordIndex + 1] : currentCoord;
+
+        const movingInPositiveX = currentCoord[0] < nextCoord[0];
+        const movingInNegativeX = currentCoord[0] > nextCoord[0];
+        const movingInPositiveY = currentCoord[1] < nextCoord[1];
+        const movingInNegativeY = currentCoord[1] > nextCoord[1];
 
         const offset = percentageTowardsNextCoord;
 
