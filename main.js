@@ -25,7 +25,7 @@ var CanvasService = /** @class */ (function () {
 var Game = /** @class */ (function () {
     function Game(_canvas) {
         this._canvas = _canvas;
-        this.draw = function () { };
+        this.draw = function () { }; //test please ignore
         this.cubeService = new CubeService(_canvas.getContext("2d"));
     }
     Object.defineProperty(Game.prototype, "ctx", {
@@ -231,7 +231,12 @@ var CubeService = /** @class */ (function () {
 }());
 var secondsPassed;
 var oldTimeStamp;
+var racingService;
+var camel;
+var lastUsedId = 0;
 function init() {
+    racingService = new RaceService();
+    camel = new Camel(++lastUsedId, InitCamelQuality.High);
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
@@ -239,4 +244,123 @@ function gameLoop(timeStamp) {
     oldTimeStamp = timeStamp;
     window.requestAnimationFrame(gameLoop);
 }
-init();
+window.onload = function () { init(); };
+var InitCamelQuality;
+(function (InitCamelQuality) {
+    InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
+    InitCamelQuality[InitCamelQuality["Medium"] = 1] = "Medium";
+    InitCamelQuality[InitCamelQuality["High"] = 2] = "High";
+})(InitCamelQuality || (InitCamelQuality = {}));
+var Camel = /** @class */ (function () {
+    function Camel(id, quality) {
+        this.id = id;
+        var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        this.camelSkills = new CamelSkills(sprintSpeed);
+    }
+    return Camel;
+}());
+var RaceService = /** @class */ (function () {
+    function RaceService() {
+    }
+    RaceService.prototype.createRace = function (length, camels) {
+        if (camels.length <= 0) {
+            throw new Error('Tried to create a race with no camels');
+        }
+        var raceCamels = [];
+        camels.forEach(function (camel) {
+        });
+        raceCamels.push();
+        var race = new Race(length);
+        return race;
+    };
+    RaceService.prototype.startRace = function (race) {
+        if (race.length <= 0) {
+            throw new Error('Tried to start a race with bad length');
+        }
+        if (race.camels.length === 0) {
+            throw new Error('Tried to start a race with bad number of camels');
+        }
+        race.inProgress = true;
+    };
+    RaceService.prototype.simulateRaceStep = function (race) {
+        race.camels.forEach(function (racingCamel) {
+            racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
+            var completedDistance = race.length * racingCamel.completionPercentage;
+            var newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
+            racingCamel.completionPercentage = newCompletedDistance / race.length;
+            if (racingCamel.completionPercentage >= 1) {
+                race.inProgress = false;
+            }
+        });
+    };
+    return RaceService;
+}());
+var Race = /** @class */ (function () {
+    function Race(length) {
+        this.length = length;
+        this.camels = [];
+        this.inProgress = false;
+    }
+    return Race;
+}());
+var RacingCamel = /** @class */ (function () {
+    function RacingCamel(camel) {
+        this.camel = camel;
+        this.completionPercentage = 0;
+        this.raceSpeedPerSecond = 0;
+    }
+    return RacingCamel;
+}());
+var CamelSkill = /** @class */ (function () {
+    function CamelSkill(_name, _level) {
+        if (_level === void 0) { _level = 1; }
+        this._name = _name;
+        this._level = _level;
+        this._minSkillLevel = 1;
+        this._maxSkillLevel = 99;
+        this._currentXp = 0;
+        var xp = this.getXpRequiredForVirtualLevel(_level);
+        this._currentXp = xp;
+    }
+    Object.defineProperty(CamelSkill.prototype, "name", {
+        get: function () {
+            return this._name;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    CamelSkill.prototype.getXpRequiredForVirtualLevel = function (level) {
+        return (level - 1) * 100;
+    };
+    CamelSkill.prototype.getVirtualLevelWithXp = function (xp) {
+        return Math.floor(xp / 100) + 1;
+    };
+    Object.defineProperty(CamelSkill.prototype, "level", {
+        get: function () {
+            var virtualLevel = this.getVirtualLevelWithXp(this._currentXp);
+            if (virtualLevel <= this._minSkillLevel) {
+                return this._minSkillLevel;
+            }
+            if (virtualLevel >= this._maxSkillLevel) {
+                return this._maxSkillLevel;
+            }
+            return virtualLevel;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(CamelSkill.prototype, "addXp", {
+        set: function (value) {
+            this._currentXp += value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return CamelSkill;
+}());
+var CamelSkills = /** @class */ (function () {
+    function CamelSkills(sprintSpeed) {
+        this.sprintSpeed = new CamelSkill("Sprint Speed", sprintSpeed);
+    }
+    return CamelSkills;
+}());

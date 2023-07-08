@@ -1,3 +1,7 @@
 class CamelSkills {
-    public sprintSpeed = new CamelSkill("Sprint Speed", 1);
+    constructor(sprintSpeed: number) {
+        this.sprintSpeed = new CamelSkill("Sprint Speed", sprintSpeed);
+    }
+
+    public sprintSpeed: CamelSkill;
 }
