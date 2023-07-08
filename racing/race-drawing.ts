@@ -25,7 +25,8 @@ class RaceDrawing {
             for (let j = 0; j < 15; j++) {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
                     // If is a race track
-                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
+                    const height = -Math.random() / 6;
+                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', height);
                 } else {
                     const height = Math.random() / 3;
 
