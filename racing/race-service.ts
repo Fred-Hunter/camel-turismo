@@ -1,22 +1,14 @@
 class RaceService {
-    createRace(
-        length: number,
-        camels: Camel[]): Race {
-        if(camels.length <= 0){
-            throw new Error('Tried to create a race with no camels');
+    createRace(enteringCamel: Camel, raceLength: number): Race {
+        const camelsInRace = [enteringCamel];
+
+        for (let i = 0; i < 4; i++) {
+            // TODO randomise quality and allow quality about init camel quality
+            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            camelsInRace.push(competitorCamel);
         }
 
-        const raceCamels: RacingCamel[] = [];
-        
-        camels.forEach(camel => {
-            
-        });
-
-        raceCamels.push()
-
-        let race = new Race(length);
-
-        return race;
+        return new Race(raceLength, camelsInRace);
     }
 
     startRace(race: Race): void {
@@ -24,15 +16,15 @@ class RaceService {
             throw new Error('Tried to start a race with bad length');
         }
 
-        if (race.camels.length === 0) {
-            throw new Error('Tried to start a race with bad number of camels');
+        if (race.racingCamels.length === 0) {
+            throw new Error('Tried to start a race with no camels');
         }
 
         race.inProgress = true;
     }
 
     simulateRaceStep(race: Race) {
-        race.camels.forEach((racingCamel: RacingCamel) => {
+        race.racingCamels.forEach(racingCamel => {
             racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
 
             const completedDistance = race.length * racingCamel.completionPercentage;
