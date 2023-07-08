@@ -226,24 +226,30 @@ var RecruitmentService = /** @class */ (function () {
         var _this = this;
         this.canvasService = canvasService;
         this._canvasId = 'recruitmentCanvas';
+        this._recruitedCamel = false;
         this.leaveRecruitmentArea = function () {
             _this._canvas.style.zIndex = '-1';
             document.dispatchEvent(startRace);
         };
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment = function () {
+            if (_this._recruitedCamel) {
+                _this.leaveRecruitmentArea();
+            }
+        };
         this.spendHighCashMoney = function () {
             _this.tryBuyCamel(300);
             camel = new Camel(++lastUsedId, InitCamelQuality.High);
-            _this.leaveRecruitmentArea();
+            _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this.spendMediumCashMoney = function () {
             _this.tryBuyCamel(200);
             camel = new Camel(++lastUsedId, InitCamelQuality.Medium);
-            _this.leaveRecruitmentArea();
+            _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this.spendLowCashMoney = function () {
             _this.tryBuyCamel(100);
             camel = new Camel(++lastUsedId, InitCamelQuality.Low);
-            _this.leaveRecruitmentArea();
+            _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d');
@@ -267,6 +273,7 @@ var RecruitmentService = /** @class */ (function () {
         }
         cashMoney = cashMoney - cost;
         alert('Recruited camel!');
+        this._recruitedCamel = true;
     };
     RecruitmentService.prototype.drawInitCanvas = function () {
         this._ctx.fillStyle = '#e8d7a7';

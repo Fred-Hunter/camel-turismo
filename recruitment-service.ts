@@ -11,6 +11,8 @@ class RecruitmentService {
 
     private readonly _ctx: CanvasRenderingContext2D;
 
+    private _recruitedCamel = false;
+
     goToRecruitmentArea(): void {
         this._canvas.style.zIndex = '99';
     }
@@ -22,6 +24,12 @@ class RecruitmentService {
 
     validateEnoughCashMoney(cost: number): boolean {
         return cashMoney - cost >= 0;
+    }
+
+    leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
+        if (this._recruitedCamel) {
+            this.leaveRecruitmentArea();
+        }
     }
 
     tryBuyCamel(cost: number) {
@@ -36,24 +44,25 @@ class RecruitmentService {
         }
         cashMoney = cashMoney - cost;
         alert('Recruited camel!');
+        this._recruitedCamel = true;
     }
 
     spendHighCashMoney = () => {
         this.tryBuyCamel(300);
         camel = new Camel(++lastUsedId, InitCamelQuality.High);
-        this.leaveRecruitmentArea();
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     spendMediumCashMoney = () => {
         this.tryBuyCamel(200);
         camel = new Camel(++lastUsedId, InitCamelQuality.Medium);
-        this.leaveRecruitmentArea();
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     spendLowCashMoney = () => {
         this.tryBuyCamel(100);
         camel = new Camel(++lastUsedId, InitCamelQuality.Low);
-        this.leaveRecruitmentArea();
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     drawInitCanvas(): void {
