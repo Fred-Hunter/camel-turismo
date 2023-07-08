@@ -11,7 +11,8 @@ let lastUsedId = 0;
 
 // Race
 let raceCanvas: HTMLCanvasElement;
-let racingService: RaceService;
+let raceSimulation: RaceSimulation;
+let raceDrawing: RaceDrawing;
 let race: Race;
 
 function init() {
@@ -23,9 +24,13 @@ function init() {
     
     // Race
     raceCanvas = canvasService.getCanvas('1');
-    racingService = new RaceService();
-    race = racingService.createRace(camel, 1000);
-    racingService.startRace(race);
+    raceDrawing = new RaceDrawing(raceCanvas);
+    raceSimulation = new RaceSimulation();
+    
+    // TODO make triggered
+    race = raceSimulation.createRace(camel, 1000);
+    raceSimulation.startRace(race);
+    raceDrawing.drawRaceCourse();
 
     window.requestAnimationFrame(gameLoop);
 }
@@ -35,7 +40,7 @@ function gameLoop(timeStamp: number) {
     oldTimeStamp = timeStamp;
 
     if (!!race && race.inProgress) {
-        racingService.simulateRaceStep(race);
+        raceSimulation.simulateRaceStep(race);
         race.racingCamels.forEach(camel => {
             console.log(`${camel.camel.id} - ${camel.completionPercentage}`);
         });

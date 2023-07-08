@@ -1,4 +1,4 @@
-class RaceService {
+class RaceSimulation {
     createRace(enteringCamel: Camel, raceLength: number): Race {
         const camelsInRace = [enteringCamel];
 

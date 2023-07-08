@@ -41,46 +41,11 @@ var CubeService = /** @class */ (function () {
     function CubeService(ctx) {
         this.ctx = ctx;
     }
-    CubeService.prototype.drawHighlightIfMousedOver = function (coordX, coordY, sideLength, colour) {
-        var xOffset = window.innerWidth / 2;
-        var x = xOffset + (coordX - coordY) * sideLength;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100;
-        // top
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
-        this.ctx.closePath();
-        var isMousedOver = false; //this.ctx.isPointInPath(clientMouseX * window.devicePixelRatio, clientMouseY * window.devicePixelRatio);
-        if (isMousedOver) {
-            this.ctx.globalAlpha = 0.5;
-            this.ctx.fillStyle = this.shadeColor(colour, 30);
-            this.ctx.fill();
-        }
-        this.ctx.globalAlpha = 1;
-        return isMousedOver;
-    };
-    CubeService.prototype.drawCubeArray = function (coordXStart, coordXEnd, coordYStart, coordYEnd, sideLength, colour, height) {
-        if (height === void 0) { height = 0; }
-        if (coordXStart > coordXEnd || coordYStart > coordYEnd) {
-            return;
-        }
-        for (var i = coordXStart; i <= coordXEnd; i++) {
-            for (var j = coordYStart; j <= coordYEnd; j++) {
-                this.drawCube(i, j, sideLength, colour, height);
-            }
-        }
-    };
     CubeService.prototype.drawCube = function (coordX, coordY, sideLength, colour, height, xStart, yStart) {
         if (height === void 0) { height = 0; }
         if (xStart === void 0) { xStart = 0; }
         if (yStart === void 0) { yStart = 0; }
-        var xOffset = window.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
+        var _a = ImportantService.ConvertCoordToReal(coordX, coordY, sideLength, height, xStart, yStart), x = _a.x, y = _a.y;
         // left
         this.ctx.beginPath();
         this.ctx.moveTo(x, y + sideLength);
@@ -108,119 +73,8 @@ var CubeService = /** @class */ (function () {
         this.ctx.closePath();
         this.ctx.fillStyle = this.shadeColor(colour, 20);
         this.ctx.fill();
-    };
-    CubeService.prototype.drawLeft = function (coordX, coordY, sideLength, colour, height, xStart, yStart) {
-        if (height === void 0) { height = 0; }
-        if (xStart === void 0) { xStart = 0; }
-        if (yStart === void 0) { yStart = 0; }
-        var xOffset = window.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
-        // left
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 10);
-        this.ctx.fill();
-    };
-    CubeService.prototype.drawRight = function (coordX, coordY, sideLength, colour, height, xStart, yStart) {
-        if (height === void 0) { height = 0; }
-        if (xStart === void 0) { xStart = 0; }
-        if (yStart === void 0) { yStart = 0; }
-        var xOffset = window.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
-        // right
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 0);
-        this.ctx.fill();
-    };
-    CubeService.prototype.drawTop = function (coordX, coordY, sideLength, colour, height, xStart, yStart) {
-        if (height === void 0) { height = 0; }
-        if (xStart === void 0) { xStart = 0; }
-        if (yStart === void 0) { yStart = 0; }
-        var xOffset = window.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
-        // top
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 20);
-        this.ctx.fill();
-    };
-    CubeService.prototype.drawRealCube = function (x, y, sideLength, colour) {
-        // left
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 10);
-        this.ctx.fill();
-        // right
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 0);
-        this.ctx.fill();
-        // top
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 0.5);
-        this.ctx.lineTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 20);
-        this.ctx.fill();
-    };
-    CubeService.prototype.drawPyramid = function (coordX, coordY, sideLength, colour, height, xStart, yStart) {
-        if (height === void 0) { height = 0; }
-        if (xStart === void 0) { xStart = 0; }
-        if (yStart === void 0) { yStart = 0; }
-        var xOffset = window.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + yStart * 10;
-        // left
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x - sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 10);
-        this.ctx.fill();
-        // right
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + sideLength);
-        this.ctx.lineTo(x + sideLength, y + sideLength * 1.5);
-        this.ctx.lineTo(x, y + sideLength * 2);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.shadeColor(colour, 0);
-        this.ctx.fill();
-        this.ctx.fill();
+        this.ctx.fillStyle = '#000000';
+        // this.ctx.fillText(coordX + ',' + coordY, x, y);
     };
     CubeService.prototype.shadeColor = function (colour, percent) {
         colour = colour.substring(1);
@@ -228,6 +82,22 @@ var CubeService = /** @class */ (function () {
         return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
     };
     return CubeService;
+}());
+var ImportantService = /** @class */ (function () {
+    function ImportantService() {
+    }
+    ImportantService.ConvertCoordToReal = function (coordX, coordY, sideLength, height, xStart, yStart) {
+        if (height === void 0) { height = 0; }
+        if (xStart === void 0) { xStart = 0; }
+        if (yStart === void 0) { yStart = 0; }
+        var xOffset = window.innerWidth / 2;
+        coordX = coordX * 50 / sideLength;
+        coordY = coordY * 50 / sideLength;
+        var x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
+        var y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
+        return { x: x, y: y };
+    };
+    return ImportantService;
 }());
 // Time
 var secondsPassed;
@@ -239,7 +109,8 @@ var camel;
 var lastUsedId = 0;
 // Race
 var raceCanvas;
-var racingService;
+var raceSimulation;
+var raceDrawing;
 var race;
 function init() {
     // Canvas
@@ -248,16 +119,19 @@ function init() {
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
     // Race
     raceCanvas = canvasService.getCanvas('1');
-    racingService = new RaceService();
-    race = racingService.createRace(camel, 1000);
-    racingService.startRace(race);
+    raceDrawing = new RaceDrawing(raceCanvas);
+    raceSimulation = new RaceSimulation();
+    // TODO make triggered
+    race = raceSimulation.createRace(camel, 1000);
+    raceSimulation.startRace(race);
+    raceDrawing.drawRaceCourse();
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
     secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
     oldTimeStamp = timeStamp;
     if (!!race && race.inProgress) {
-        racingService.simulateRaceStep(race);
+        raceSimulation.simulateRaceStep(race);
         race.racingCamels.forEach(function (camel) {
             console.log("".concat(camel.camel.id, " - ").concat(camel.completionPercentage));
         });
@@ -265,6 +139,52 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
+var GymSession = /** @class */ (function () {
+    function GymSession(_skill, _maxStamina) {
+        this._skill = _skill;
+        this._sessionActive = false;
+        this._xpGained = 0;
+        this._staminaRemaining = 0;
+        this._staminaRemaining = _maxStamina;
+    }
+    GymSession.prototype.startSession = function () {
+        this._sessionActive = true;
+        this._xpGained = 0;
+    };
+    GymSession.prototype.onSuccessfulAction = function () {
+        // Review
+        if (!this._sessionActive) {
+            return;
+        }
+        this._xpGained += 9;
+        this._staminaRemaining -= 3; // TODO: range of values
+        this.postAction();
+    };
+    GymSession.prototype.onFailedAction = function () {
+        if (!this._sessionActive) {
+            return;
+        }
+        this._staminaRemaining -= 10; // TODO: range of values
+        return this.postAction();
+    };
+    GymSession.prototype.postAction = function () {
+        if (!this._sessionActive) {
+            return;
+        }
+        if (this._staminaRemaining <= 0) {
+            this._xpGained /= 2;
+            this.endSession();
+        }
+    };
+    GymSession.prototype.endSession = function () {
+        if (!this._sessionActive) {
+            return;
+        }
+        this._skill.addXp(this._xpGained);
+        this._sessionActive = false;
+    };
+    return GymSession;
+}());
 var InitCamelQuality;
 (function (InitCamelQuality) {
     InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
@@ -279,10 +199,47 @@ var Camel = /** @class */ (function () {
     }
     return Camel;
 }());
-var RaceService = /** @class */ (function () {
-    function RaceService() {
+var RaceDrawing = /** @class */ (function () {
+    function RaceDrawing(_canvas) {
+        this._canvas = _canvas;
+        this.cubeService = new CubeService(_canvas.getContext("2d"));
     }
-    RaceService.prototype.createRace = function (enteringCamel, raceLength) {
+    RaceDrawing.prototype.drawRaceCourse = function () {
+        var ctx = this._canvas.getContext("2d");
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        var canvasColour = '#C2B280';
+        var raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10]];
+        var _loop_1 = function (i) {
+            var _loop_2 = function (j) {
+                if (raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
+                    this_1.cubeService.drawCube(i, j, 50, '#5892a1', -0.2);
+                }
+                else {
+                    this_1.cubeService.drawCube(i, j, 50, canvasColour);
+                }
+            };
+            for (var j = 0; j < 15; j++) {
+                _loop_2(j);
+            }
+        };
+        var this_1 = this;
+        for (var i = 0; i < 15; i++) {
+            _loop_1(i);
+        }
+    };
+    RaceDrawing.prototype.drawCamels = function (race) {
+        var _this = this;
+        race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
+    };
+    RaceDrawing.prototype.drawCamel = function (camel) {
+        var percentageCompleted = camel.completionPercentage;
+    };
+    return RaceDrawing;
+}());
+var RaceSimulation = /** @class */ (function () {
+    function RaceSimulation() {
+    }
+    RaceSimulation.prototype.createRace = function (enteringCamel, raceLength) {
         var camelsInRace = [enteringCamel];
         for (var i = 0; i < 4; i++) {
             // TODO randomise quality and allow quality about init camel quality
@@ -291,7 +248,7 @@ var RaceService = /** @class */ (function () {
         }
         return new Race(raceLength, camelsInRace);
     };
-    RaceService.prototype.startRace = function (race) {
+    RaceSimulation.prototype.startRace = function (race) {
         if (race.length <= 0) {
             throw new Error('Tried to start a race with bad length');
         }
@@ -300,7 +257,7 @@ var RaceService = /** @class */ (function () {
         }
         race.inProgress = true;
     };
-    RaceService.prototype.simulateRaceStep = function (race) {
+    RaceSimulation.prototype.simulateRaceStep = function (race) {
         race.racingCamels.forEach(function (racingCamel) {
             racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
             var completedDistance = race.length * racingCamel.completionPercentage;
@@ -311,7 +268,7 @@ var RaceService = /** @class */ (function () {
             }
         });
     };
-    return RaceService;
+    return RaceSimulation;
 }());
 var Race = /** @class */ (function () {
     function Race(length, camels) {
@@ -372,13 +329,9 @@ var CamelSkill = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(CamelSkill.prototype, "addXp", {
-        set: function (value) {
-            this._currentXp += value;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    CamelSkill.prototype.addXp = function (value) {
+        this._currentXp += value;
+    };
     return CamelSkill;
 }());
 var CamelSkills = /** @class */ (function () {
