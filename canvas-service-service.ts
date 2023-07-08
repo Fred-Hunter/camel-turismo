@@ -1,11 +1,11 @@
 class CanvasServiceService {
 
-    public getCurrentCanvas(): HTMLCanvasElement{
+    public static getCurrentCanvas(): HTMLCanvasElement{
         return Array.from(document.querySelectorAll("canvas")).sort(c => +c.style.zIndex)[0];
     }
 
-    public setCanvasZIndex(canvasName:string, zIndex: number): void{
-        const canvas: HTMLCanvasElement | null  = document.querySelector(`#${canvasName}`);
+    public static setCanvasZIndex(canvasName:string, zIndex: number): void{
+        const canvas: HTMLCanvasElement | null  = document.querySelector(`#canvas-${canvasName}`);
 
         if (!canvas) {
             console.error(`No canvas found with name: ${canvasName}`);
@@ -15,7 +15,7 @@ class CanvasServiceService {
         canvas.style.zIndex = `${zIndex}`;
     }
 
-    public bringCanvasToTop(canvasName:string): void{
+    public static bringCanvasToTop(canvasName:string): void{
         const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
 
         const getMax = (a: number, b: number) => Math.max(a, b);
@@ -24,7 +24,7 @@ class CanvasServiceService {
         this.setCanvasZIndex(canvasName, maxZIndex + 1);
     }
 
-    public resetCanvases(): void{
+    public static resetCanvases(): void{
         const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
         allCanvases.forEach(c => this.setCanvasZIndex(c.id, 0));
     }
