@@ -13,7 +13,7 @@ var CanvasBtnService = /** @class */ (function () {
     CanvasBtnService.prototype.isInside = function (pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     };
-    CanvasBtnService.prototype.createBtn = function (xStart, yStart, width, height, backgroundColour, fontColour, onclickFunction, text) {
+    CanvasBtnService.prototype.createBtn = function (xStart, yStart, width, height, radius, backgroundColour, borderColour, fontColour, onclickFunction, text) {
         var _this = this;
         var rect = {
             x: xStart,
@@ -30,16 +30,17 @@ var CanvasBtnService = /** @class */ (function () {
             }
         }, false);
         context.beginPath();
-        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 2;
-        context.strokeStyle = '#000000';
+        context.lineWidth = 5;
+        context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Kremlin Pro Web';
         context.fillStyle = fontColour;
-        context.fillText(text, rect.x + rect.width / 8, rect.y + 3 * rect.height / 4, rect.x + 7 * rect.width / 8);
+        context.textAlign = "center";
+        context.fillText(text, rect.x + rect.width / 2, rect.y + 5 * rect.height / 8, rect.x + rect.width);
     };
     return CanvasBtnService;
 }());
@@ -278,12 +279,13 @@ var RecruitmentService = /** @class */ (function () {
         this._ctx.fillStyle = '#e8d7a7';
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var btnService = new CanvasBtnService(this._canvas);
-        btnService.createBtn(100, 100, 500, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        var radius = 25;
+        btnService.createBtn(100, 100, 475, 100, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
         this.drawCamel(-5, 4, '#cc807a');
-        btnService.createBtn(700, 100, 500, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(700, 100, 475, 100, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
         this.drawCamel(1, -2, '#debb49');
-        btnService.createBtn(350, 400, 500, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
-        this.drawCamel(3.5, 7.5, '#509124');
+        btnService.createBtn(375, 400, 475, 100, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(3.75, 7.25, '#509124');
     };
     return RecruitmentService;
 }());
