@@ -1,4 +1,6 @@
 class RaceSimulation {
+    private _finishedCamels: RacingCamel[] = [];
+
     createRace(
         enteringCamel: Camel,
         raceLength: number,
@@ -33,6 +35,10 @@ class RaceSimulation {
 
     simulateRaceStep(race: Race) {
         race.racingCamels.forEach(racingCamel => {
+            if (this._finishedCamels.indexOf(racingCamel) > -1) {
+                return;
+            }
+
             racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
@@ -44,7 +50,10 @@ class RaceSimulation {
             racingCamel.completionPercentage = newCompletedDistance / race.length;
 
             if (racingCamel.completionPercentage >= 1) {
-                this.handleFinishedRace(race);
+                this._finishedCamels.push(racingCamel);
+                if (this._finishedCamels.length >= 3) {
+                    this.handleFinishedRace(race);
+                }
             }
 
             if (hasSprint) {
@@ -56,14 +65,13 @@ class RaceSimulation {
     handleFinishedRace(race: Race) {
         race.inProgress = false;
 
-        const position = race.racingCamels
-            .sort((a, b) => b.completionPercentage - a.completionPercentage)
-            .map(o => o.camel)
-            .indexOf(camel);
+        const position = this._finishedCamels.map(o => o.camel).indexOf(camel);
 
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
         cashMoney += prizeCashMoney;
+
+        this._finishedCamels = [];
 
         musicService.setAudio('HomeScreenAudio');
         musicService.startAudio();

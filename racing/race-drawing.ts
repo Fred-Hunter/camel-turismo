@@ -44,15 +44,16 @@ class RaceDrawing {
 
     public drawCamel(camel: RacingCamel, race: Race) {
         const numberOfRaceTrackCoords = race.track.length;
-        const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
+        const completionPercentage = Math.min(camel.completionPercentage, 1);
+        const currectCoordIndex = Math.floor(completionPercentage * numberOfRaceTrackCoords);
 
         const currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
         const nextCoordPercentage = (currectCoordIndex + 1) / numberOfRaceTrackCoords;
 
-        const percentageTowardsNextCoord = (camel.completionPercentage - currentCoordPercentage) /
+        const percentageTowardsNextCoord = (completionPercentage - currentCoordPercentage) /
             (nextCoordPercentage - currentCoordPercentage);
 
-        const currentCoord = race.track[currectCoordIndex];
+        const currentCoord = currectCoordIndex < numberOfRaceTrackCoords ? race.track[currectCoordIndex] : race.track[currectCoordIndex - 1];
 
         const nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? race.track[currectCoordIndex + 1] : currentCoord;
 

@@ -25,6 +25,12 @@ class RacingCamel {
     }
 
     public handleJumpTick() {
+        if (this.completionPercentage >= 1) {
+            this._jumpHeight = 0;
+            this._currentVelocity = 0;
+            return;
+        }
+
         if (this._currentVelocity == 0) {
             // Have to start the jump
             return;

@@ -822,12 +822,13 @@ class RaceDrawing {
     }
     drawCamel(camel, race) {
         const numberOfRaceTrackCoords = race.track.length;
-        const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
+        const completionPercentage = Math.min(camel.completionPercentage, 1);
+        const currectCoordIndex = Math.floor(completionPercentage * numberOfRaceTrackCoords);
         const currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
         const nextCoordPercentage = (currectCoordIndex + 1) / numberOfRaceTrackCoords;
-        const percentageTowardsNextCoord = (camel.completionPercentage - currentCoordPercentage) /
+        const percentageTowardsNextCoord = (completionPercentage - currentCoordPercentage) /
             (nextCoordPercentage - currentCoordPercentage);
-        const currentCoord = race.track[currectCoordIndex];
+        const currentCoord = currectCoordIndex < numberOfRaceTrackCoords ? race.track[currectCoordIndex] : race.track[currectCoordIndex - 1];
         const nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? race.track[currectCoordIndex + 1] : currentCoord;
         const movingInPositiveX = currentCoord[0] < nextCoord[0];
         const movingInNegativeX = currentCoord[0] > nextCoord[0];
@@ -927,6 +928,7 @@ class RaceSelection {
     }
 }
 class RaceSimulation {
+    _finishedCamels = [];
     createRace(enteringCamel, raceLength, prizeCashMoney, raceSize) {
         const camelsInRace = [enteringCamel];
         for (let i = 0; i < raceSize; i++) {
@@ -950,6 +952,9 @@ class RaceSimulation {
     }
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
+            if (this._finishedCamels.indexOf(racingCamel) > -1) {
+                return;
+            }
             racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
@@ -958,7 +963,10 @@ class RaceSimulation {
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
             if (racingCamel.completionPercentage >= 1) {
-                this.handleFinishedRace(race);
+                this._finishedCamels.push(racingCamel);
+                if (this._finishedCamels.length >= 3) {
+                    this.handleFinishedRace(race);
+                }
             }
             if (hasSprint) {
                 racingCamel.stamina -= 0.1; //0.06
@@ -967,12 +975,10 @@ class RaceSimulation {
     }
     handleFinishedRace(race) {
         race.inProgress = false;
-        const position = race.racingCamels
-            .sort((a, b) => b.completionPercentage - a.completionPercentage)
-            .map(o => o.camel)
-            .indexOf(camel);
+        const position = this._finishedCamels.map(o => o.camel).indexOf(camel);
         const prizeCashMoney = this.getPrizeMoney(race, position);
         cashMoney += prizeCashMoney;
+        this._finishedCamels = [];
         musicService.setAudio('HomeScreenAudio');
         musicService.startAudio();
         CanvasService.hideAllCanvas();
@@ -1070,6 +1076,11 @@ class RacingCamel {
         this._currentVelocity = this._initialVelocity;
     }
     handleJumpTick() {
+        if (this.completionPercentage >= 1) {
+            this._jumpHeight = 0;
+            this._currentVelocity = 0;
+            return;
+        }
         if (this._currentVelocity == 0) {
             // Have to start the jump
             return;
