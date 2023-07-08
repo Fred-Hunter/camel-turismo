@@ -195,9 +195,6 @@ function gameLoop(timeStamp) {
     oldTimeStamp = timeStamp;
     if (!!race && race.inProgress) {
         raceSimulation.simulateRaceStep(race);
-        race.racingCamels.forEach(function (camel) {
-            console.log("".concat(camel.camel.id, " - ").concat(camel.completionPercentage));
-        });
     }
     raceDrawing.drawCamels(race);
     window.requestAnimationFrame(gameLoop);
@@ -347,6 +344,8 @@ var RaceDrawing = /** @class */ (function () {
     function RaceDrawing(_backgroundCanvas, _camelCanvas) {
         this._backgroundCanvas = _backgroundCanvas;
         this._camelCanvas = _camelCanvas;
+        this.raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
+            [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10]];
         this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d"));
         this.camelCubeService = new CubeService(_camelCanvas.getContext("2d"));
     }
@@ -355,10 +354,9 @@ var RaceDrawing = /** @class */ (function () {
         ctx.fillStyle = '#e8d7a7';
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var canvasColour = '#C2B280';
-        var raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10]];
         var _loop_1 = function (i) {
             var _loop_2 = function (j) {
-                if (raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
+                if (this_1.raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
                     this_1.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 }
                 else {
@@ -433,11 +431,11 @@ var RaceSimulation = /** @class */ (function () {
     }
     RaceSimulation.prototype.createRace = function (enteringCamel, raceLength) {
         var camelsInRace = [enteringCamel];
-        for (var i = 0; i < 4; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            var competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
-            camelsInRace.push(competitorCamel);
-        }
+        // for (let i = 0; i < 4; i++) {
+        //     // TODO randomise quality and allow quality about init camel quality
+        //     const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+        //     camelsInRace.push(competitorCamel);
+        // }
         return new Race(raceLength, camelsInRace);
     };
     RaceSimulation.prototype.startRace = function (race) {

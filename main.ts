@@ -44,9 +44,6 @@ function gameLoop(timeStamp: number) {
 
     if (!!race && race.inProgress) {
         raceSimulation.simulateRaceStep(race);
-        race.racingCamels.forEach(camel => {
-            console.log(`${camel.camel.id} - ${camel.completionPercentage}`);
-        });
     }
 
     raceDrawing.drawCamels(race);

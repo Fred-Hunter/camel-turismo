@@ -2,11 +2,11 @@ class RaceSimulation {
     createRace(enteringCamel: Camel, raceLength: number): Race {
         const camelsInRace = [enteringCamel];
 
-        for (let i = 0; i < 4; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
-            camelsInRace.push(competitorCamel);
-        }
+        // for (let i = 0; i < 4; i++) {
+        //     // TODO randomise quality and allow quality about init camel quality
+        //     const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+        //     camelsInRace.push(competitorCamel);
+        // }
 
         return new Race(raceLength, camelsInRace);
     }
