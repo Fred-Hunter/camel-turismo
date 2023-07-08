@@ -34,6 +34,7 @@ class RacingCamel {
             this._currentVelocity = 0;
         }
 
+        // Remove
         if (this._jumpHeight == 0) {
             this.startJump();
         }
