@@ -12,6 +12,8 @@ class Race {
         }
 
     racingCamels: RacingCamel[] = [];
+    triggered: boolean = false;
+    initialised: boolean = false;
     inProgress: boolean = false;
     winner: undefined;
 }

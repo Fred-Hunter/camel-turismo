@@ -17,8 +17,10 @@ let raceDrawing: RaceDrawing;
 let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
-let leaderboardService: LeaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
+let countdown: Countdown;
+
+let leaderboardService: LeaderboardService;
 
 // Map
 let map: MapOverview;
@@ -34,14 +36,17 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
+    CanvasService.createCanvas('6', CanvasNames.Countdown);
 
     recruitmentService = new RecruitmentService();
-    
+
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    countdown = new Countdown();
 
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d")!);
 
@@ -53,47 +58,15 @@ function init() {
     MapOverview.showMap();
     MapOverview.renderMap();
 
+    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     })
-
-    document.addEventListener(
-        "enterRaceSelection",
-        async (_: any) => {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceSelection);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-
-            raceSelection.drawSelectionScreen();
-        },
-        false
-    );
     
-    document.addEventListener(
-        "startRace",
-        async (_: any) => {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceBackground);
-            CanvasService.showCanvas(CanvasNames.RaceCamel);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-
-            musicService.setAudio("RaceAudio");
-            musicService.startAudio()
-
-            const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-            raceDrawing.drawRaceCourse(race);
-            window.requestAnimationFrame(gameLoop);
-            await delay(8500).then(_ => {
-                raceSimulation.startRace(race);
-            })
-        },
-        false
-    );
-
+    window.requestAnimationFrame(gameLoop);
     // document.addEventListener(
     //     "goToGym",
     //     (_: any) => {
@@ -104,19 +77,52 @@ function init() {
     // );
 }
 
+let raceTriggeredTimestamp: number;
+let enterRequestSelectionRequested: boolean = false;
+
 function gameLoop(timeStamp: number) {
-    secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
-    oldTimeStamp = timeStamp;
+    try {
+        secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
+        oldTimeStamp = timeStamp;
 
-    if (!!race && race.inProgress) {
-        raceSimulation.simulateRaceStep(race);
+        if (!!race && race.inProgress) {
+            raceSimulation.simulateRaceStep(race);
+            raceDrawing.drawCamels(race);
+            leaderboardService.drawLeaderboard();
+        }
+
+        if (!!race && race.triggered) {
+            if (!race.initialised) {
+                raceDrawing.drawRaceCourse(race);
+                raceTriggeredTimestamp = timeStamp;
+                raceDrawing.drawCamels(race);
+                race.initialised = true;
+            }
+            
+            countdown.displayCountdown(8000 - (timeStamp - raceTriggeredTimestamp));
+
+            if (timeStamp - raceTriggeredTimestamp >= 7500) {
+                CanvasService.hideCanvas(CanvasNames.Countdown);
+                race.triggered = false
+                raceSimulation.startRace(race);
+            }
+        }
+
+        if (enterRequestSelectionRequested) {
+            CanvasService.hideAllCanvas();
+            CanvasService.showCanvas(CanvasNames.RaceSelection);
+            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+
+            raceSelection.drawSelectionScreen();
+
+            enterRequestSelectionRequested = false;
+        }
+
+    } catch {
+        console.log('error')
+    } finally {
+        window.requestAnimationFrame(gameLoop);
     }
-
-    raceDrawing.drawCamels(race);
-
-    leaderboardService.drawLeaderboard();
-
-    window.requestAnimationFrame(gameLoop);
 }
 
 window.onload = () => { init() };

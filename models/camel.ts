@@ -1,7 +1,12 @@
 enum InitCamelQuality {
     Low = 0,
     Medium = 1,
-    High = 2
+    High = 2,
+    Cpu1 = 3,
+    Cpu2 = 4,
+    Cpu3 = 5,
+    Cpu4 = 6,
+    Cpu5 = 7
 }
 
 class Camel {

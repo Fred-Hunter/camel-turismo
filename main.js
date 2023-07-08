@@ -69,6 +69,8 @@ class CanvasNames {
     static MapOverview = 'map-overview';
     static GymCamel = 'gym-camel';
     static GymBackground = 'gym-background';
+    static PopupCanvas = 'popup';
+    static Countdown = 'countdown';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -273,8 +275,9 @@ let raceDrawing;
 let gymDrawing;
 let race;
 let startRace = new Event("startRace");
-let leaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
+let countdown;
+let leaderboardService;
 // Map
 let map;
 // Audio
@@ -287,12 +290,15 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
+    CanvasService.createCanvas('6', CanvasNames.Countdown);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    countdown = new Countdown();
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
@@ -300,32 +306,13 @@ function init() {
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
+    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     });
-    document.addEventListener("enterRaceSelection", async (_) => {
-        CanvasService.hideAllCanvas();
-        CanvasService.showCanvas(CanvasNames.RaceSelection);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-        raceSelection.drawSelectionScreen();
-    }, false);
-    document.addEventListener("startRace", async (_) => {
-        CanvasService.hideAllCanvas();
-        CanvasService.showCanvas(CanvasNames.RaceBackground);
-        CanvasService.showCanvas(CanvasNames.RaceCamel);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-        musicService.setAudio("RaceAudio");
-        musicService.startAudio();
-        const delay = (ms) => new Promise(res => setTimeout(res, ms));
-        raceDrawing.drawRaceCourse(race);
-        window.requestAnimationFrame(gameLoop);
-        await delay(8500).then(_ => {
-            raceSimulation.startRace(race);
-        });
-    }, false);
+    window.requestAnimationFrame(gameLoop);
     // document.addEventListener(
     //     "goToGym",
     //     (_: any) => {
@@ -335,15 +322,45 @@ function init() {
     //     false
     // );
 }
+let raceTriggeredTimestamp;
+let enterRequestSelectionRequested = false;
 function gameLoop(timeStamp) {
-    secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
-    oldTimeStamp = timeStamp;
-    if (!!race && race.inProgress) {
-        raceSimulation.simulateRaceStep(race);
+    try {
+        secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
+        oldTimeStamp = timeStamp;
+        if (!!race && race.inProgress) {
+            raceSimulation.simulateRaceStep(race);
+            raceDrawing.drawCamels(race);
+            leaderboardService.drawLeaderboard();
+        }
+        if (!!race && race.triggered) {
+            if (!race.initialised) {
+                raceDrawing.drawRaceCourse(race);
+                raceTriggeredTimestamp = timeStamp;
+                raceDrawing.drawCamels(race);
+                race.initialised = true;
+            }
+            countdown.displayCountdown(8000 - (timeStamp - raceTriggeredTimestamp));
+            if (timeStamp - raceTriggeredTimestamp >= 7500) {
+                CanvasService.hideCanvas(CanvasNames.Countdown);
+                race.triggered = false;
+                raceSimulation.startRace(race);
+            }
+        }
+        if (enterRequestSelectionRequested) {
+            CanvasService.hideAllCanvas();
+            CanvasService.showCanvas(CanvasNames.RaceSelection);
+            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+            raceSelection.drawSelectionScreen();
+            enterRequestSelectionRequested = false;
+        }
     }
-    raceDrawing.drawCamels(race);
-    leaderboardService.drawLeaderboard();
-    window.requestAnimationFrame(gameLoop);
+    catch {
+        console.log('error');
+    }
+    finally {
+        window.requestAnimationFrame(gameLoop);
+    }
 }
 window.onload = () => { init(); };
 class MapOverview {
@@ -400,15 +417,99 @@ class MapOverview {
                 (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width / 2 && mousePosition.y > rect.height / 2) {
-                console.log("xxx");
+                cashMoney += 1000;
+                CashMoneyService.drawCashMoney(ctx);
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
                 if (!!camel) {
-                    document.dispatchEvent(enterRaceSelection);
+                    enterRequestSelectionRequested = true;
                 }
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
+    }
+}
+class PopupService {
+    constructor() {
+    }
+    static drawAlertPopup(text) {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        CanvasService.bringCanvasToTop(CanvasNames.PopupCanvas);
+        CanvasService.showCanvas(CanvasNames.PopupCanvas);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx)
+            return;
+        const width = 400;
+        const height = 120;
+        const x = (canvas.width / window.devicePixelRatio) / 2 - width / 2;
+        const y = window.innerHeight / 2 - height / 4;
+        const bgColour = GlobalStaticConstants.backgroundColour;
+        const textColour = "#432818";
+        const highlightColour = "#432818";
+        // Draw the background rectangle
+        const backgroundRect = [
+            x,
+            y,
+            width,
+            height
+        ];
+        ctx.strokeStyle = highlightColour;
+        ctx.lineWidth = 3;
+        ctx.fillStyle = bgColour;
+        ctx.rect(...backgroundRect);
+        ctx.fill();
+        ctx.stroke();
+        // Draw the popup content
+        const textLines = this.getLines(ctx, text, width / 2 - 50);
+        let textOffset = 0;
+        ctx.fillStyle = textColour;
+        ctx.font = 'bold 20px Arial';
+        textLines.forEach((t) => {
+            ctx.fillText(t, x + 20, y + backgroundRect[3] / 3 + textOffset);
+            textOffset += 30;
+        });
+        // Draw the close button
+        ctx.fillStyle = highlightColour;
+        ctx.fillRect(x + backgroundRect[2] - 60, y, 60, 30);
+        ctx.fillStyle = "#fff";
+        ctx.font = '14px Arial';
+        ctx.fillText('Close', x + backgroundRect[2] - 55, y + 20, backgroundRect[3]);
+        // Add an event listener to handle the close button click
+        canvas.addEventListener('click', function (event) {
+            var rect = canvas.getBoundingClientRect();
+            var mouseX = event.clientX - rect.left;
+            var mouseY = event.clientY - rect.top;
+            if (mouseX >= backgroundRect[0] &&
+                mouseX <= backgroundRect[0] + backgroundRect[2] &&
+                mouseY >= backgroundRect[1] &&
+                mouseY <= backgroundRect[1] + backgroundRect[3]) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                CanvasService.hideCanvas(CanvasNames.PopupCanvas);
+            }
+        });
+    }
+    static drawTwoOptionPopup(canvas, x, y, option1Text, option2Text, option1Callback, option2Callback) {
+        if (!canvas)
+            return;
+        const ctx = canvas.getContext('2d');
+    }
+    static getLines(ctx, text, maxWidth) {
+        var words = text.split(" ");
+        var lines = [];
+        var currentLine = words[0];
+        for (var i = 1; i < words.length; i++) {
+            var word = words[i];
+            var width = ctx.measureText(currentLine + " " + word).width;
+            if (width < maxWidth) {
+                currentLine += " " + word;
+            }
+            else {
+                lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
     }
 }
 class RecruitmentService {
@@ -442,15 +543,15 @@ class RecruitmentService {
     tryBuyCamel(cost) {
         const camelAlreadyExists = camel !== undefined && camel !== null;
         // if (camelAlreadyExists) {
-        // alert ('Already recruited a camel!');
+        // PopupService.drawAlertPopup('Already recruited a camel!');
         // return;
         // }
         if (!this.validateEnoughCashMoney(cost)) {
-            alert('Not enough cash money!');
+            PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
         cashMoney = cashMoney - cost;
-        alert(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
+        PopupService.drawAlertPopup(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
         this._recruitedCamel = true;
     }
     spendHighCashMoney = () => {
@@ -518,6 +619,21 @@ class MusicService {
     }
     setAudio(audioName) {
         this.currentAudio = audioName;
+    }
+}
+class Countdown {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    displayCountdown(seconds) {
+        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        const middleX = this._canvas.width / window.devicePixelRatio / 2;
+        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        this._ctx.font = "240px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
     }
 }
 class GymDrawing {
@@ -768,6 +884,11 @@ var InitCamelQuality;
     InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
     InitCamelQuality[InitCamelQuality["Medium"] = 1] = "Medium";
     InitCamelQuality[InitCamelQuality["High"] = 2] = "High";
+    InitCamelQuality[InitCamelQuality["Cpu1"] = 3] = "Cpu1";
+    InitCamelQuality[InitCamelQuality["Cpu2"] = 4] = "Cpu2";
+    InitCamelQuality[InitCamelQuality["Cpu3"] = 5] = "Cpu3";
+    InitCamelQuality[InitCamelQuality["Cpu4"] = 6] = "Cpu4";
+    InitCamelQuality[InitCamelQuality["Cpu5"] = 7] = "Cpu5";
 })(InitCamelQuality || (InitCamelQuality = {}));
 class Camel {
     id;
@@ -785,6 +906,12 @@ class Camel {
     color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     camelSkills;
 }
+var Difficulty;
+(function (Difficulty) {
+    Difficulty[Difficulty["Easy"] = 0] = "Easy";
+    Difficulty[Difficulty["Normal"] = 1] = "Normal";
+    Difficulty[Difficulty["Hard"] = 2] = "Hard";
+})(Difficulty || (Difficulty = {}));
 class RaceDrawing {
     constructor() {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
@@ -805,15 +932,78 @@ class RaceDrawing {
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
-                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
+                    // If is a race track
+                    const height = -Math.random() / 6;
+                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', height);
                 }
                 else {
                     const height = Math.random() / 3;
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);
+                    const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
+                    if (shouldIncludeObject) {
+                        // Randomize object
+                        const random = Math.floor(Math.random() * 10);
+                        if (random < 5) {
+                            this.drawPalmTree(i, j, height);
+                        }
+                        else if (random < 9) {
+                            this.drawRocks(i, j, height);
+                        }
+                        else {
+                            this.drawStaticCamel(i, j, height);
+                        }
+                    }
                 }
             }
         }
+    }
+    drawStaticCamel(newXCoord, newYCoord, height) {
+        const xCoord = newXCoord;
+        const yCoord = newYCoord + 0.5;
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, -1.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -1.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 2 + height, -0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, 0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, 0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1.5 + height, 1.5, -1.5);
+    }
+    drawRocks(i, j, height) {
+        var xOffset = (Math.random() - 0.5) * 0.5;
+        var yOffset = (Math.random() - 0.5) * 0.5;
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 12, '#555555', height);
+    }
+    drawPalmTree(i, j, height) {
+        var xOffset = (Math.random() - 0.5) * 0.5;
+        var yOffset = (Math.random() - 0.5) * 0.5;
+        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 1);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 2);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 3);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 4);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
     }
     drawCamels(race) {
         const ctx = this._camelCanvas.getContext("2d");
@@ -909,9 +1099,9 @@ class RaceSelection {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const radius = 25;
-        const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
-        const enterWorldCup = () => this.selectRace(120, 10000, 300, 15);
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
         btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
@@ -919,21 +1109,42 @@ class RaceSelection {
         btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
         CashMoneyService.drawCashMoney(this._ctx);
     }
-    selectRace(raceLength, prizeMoney, entryFee, raceSize) {
+    selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
+        if (cashMoney < entryFee) {
+            return;
+        }
         if (cashMoney >= entryFee) {
             cashMoney -= entryFee;
         }
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
-        document.dispatchEvent(startRace);
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.showCanvas(CanvasNames.Countdown);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio();
+        race.triggered = true;
     }
 }
 class RaceSimulation {
     _finishedCamels = [];
-    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize) {
+    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize, difficulty) {
         const camelsInRace = [enteringCamel];
+        let competitorQuality;
+        if (difficulty === Difficulty.Easy) {
+            competitorQuality = InitCamelQuality.High;
+        }
+        else if (difficulty === Difficulty.Normal) {
+            competitorQuality = InitCamelQuality.Cpu1;
+        }
+        else {
+            competitorQuality = InitCamelQuality.Cpu5;
+        }
         for (let i = 0; i < raceSize; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
         const trackCreator = new RaceTrackCreator();
@@ -984,6 +1195,7 @@ class RaceSimulation {
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
+        PopupService.drawAlertPopup(`Congratulations, your postion was ${position + 1}, and you won $${prizeCashMoney}!`);
     }
     getPrizeMoney(race, position) {
         const prizePool = race.prizeCashMoney;
@@ -1051,6 +1263,8 @@ class Race {
         });
     }
     racingCamels = [];
+    triggered = false;
+    initialised = false;
     inProgress = false;
     winner;
 }

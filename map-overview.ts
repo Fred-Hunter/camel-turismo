@@ -23,12 +23,12 @@ class MapOverview {
 
         const scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
 
-        
         let rect = {
             x: 0,
             y: 0,
             width: window.innerHeight / 0.815,
-            height: window.innerHeight};
+            height: window.innerHeight
+        };
 
         if (scaleToWidth) {
             rect = {
@@ -61,11 +61,12 @@ class MapOverview {
                 (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width/2 && mousePosition.y > rect.height/2) {
-                console.log("xxx");
+                cashMoney += 1000;
+                CashMoneyService.drawCashMoney(ctx);
             }
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
                 if(!!camel) {
-                    document.dispatchEvent(enterRaceSelection);
+                    enterRequestSelectionRequested = true;
                 }
             }
         }, false);

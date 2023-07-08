@@ -24,15 +24,90 @@ class RaceDrawing {
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
-                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
+                    // If is a race track
+                    const height = -Math.random() / 6;
+                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', height);
                 } else {
                     const height = Math.random() / 3;
 
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);
+
+                    const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
+                    
+                    if (shouldIncludeObject) {
+                        // Randomize object
+                        
+                        const random = Math.floor(Math.random() * 10);
+                        if (random < 5) {
+                            this.drawPalmTree(i,j, height);
+                        }
+                        else if (random < 9) {
+                            this.drawRocks(i,j, height);
+                        }
+                        else {
+                            this.drawStaticCamel(i,j, height);
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private drawStaticCamel(newXCoord: number, newYCoord: number, height: number) {
+        const xCoord = newXCoord;
+        const yCoord = newYCoord + 0.5;
+
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, -1.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -1.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 2 + height, -0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, 0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, 0.5, -1.5);
+        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1.5 + height, 1.5, -1.5);
+    }
+
+    public drawRocks(i: number, j: number, height: number) {
+        var xOffset = (Math.random() - 0.5) * 0.5;
+        var yOffset = (Math.random() - 0.5) * 0.5;
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 12, '#555555', height);
+    }
+
+    public drawPalmTree(i: number, j: number, height: number) {
+        var xOffset =  (Math.random() - 0.5) * 0.5;
+        var yOffset =  (Math.random() - 0.5) * 0.5;
+
+        this.backgroundCubeService.drawCube(i-0.5 + xOffset, j + yOffset, 5, '#3e6549', height+5);
+        this.backgroundCubeService.drawCube(i-0.4 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i-0.3 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i-0.2 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i-0.1 + xOffset, j + yOffset, 5, '#3e6549', height+5);
+
+        this.backgroundCubeService.drawCube(i + xOffset, j-0.5 + yOffset, 5, '#3e6549', height+5);
+        this.backgroundCubeService.drawCube(i + xOffset, j-0.4 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j-0.3 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j-0.2 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j-0.1 + yOffset, 5, '#3e6549', height+5);
+
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+1);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+2);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+3);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+4);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height+6);
+
+        this.backgroundCubeService.drawCube(i + xOffset, j+0.1 + yOffset, 5, '#3e6549', height+5);
+        this.backgroundCubeService.drawCube(i + xOffset, j+0.2 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j+0.3 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j+0.4 + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i + xOffset, j+0.5 + yOffset, 5, '#3e6549', height+5);
+        
+        this.backgroundCubeService.drawCube(i+0.1 + xOffset, j + yOffset, 5, '#3e6549', height+5);
+        this.backgroundCubeService.drawCube(i+0.2 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i+0.3 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i+0.4 + xOffset, j + yOffset, 5, '#3e6549', height+6);
+        this.backgroundCubeService.drawCube(i+0.5 + xOffset, j + yOffset, 5, '#3e6549', height+5);
     }
 
     public drawCamels(race: Race) {

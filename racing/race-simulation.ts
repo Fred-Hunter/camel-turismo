@@ -5,12 +5,22 @@ class RaceSimulation {
         enteringCamel: Camel,
         raceLength: number,
         prizeCashMoney: number,
-        raceSize: number): Race {
+        raceSize: number,
+        difficulty: Difficulty): Race {
         const camelsInRace = [enteringCamel];
 
+        let competitorQuality: InitCamelQuality;
+
+        if (difficulty === Difficulty.Easy) {
+            competitorQuality = InitCamelQuality.High;
+        } else if (difficulty === Difficulty.Normal) {
+            competitorQuality = InitCamelQuality.Cpu1;
+        } else {
+            competitorQuality = InitCamelQuality.Cpu5;
+        }
+
         for (let i = 0; i < raceSize; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
 
@@ -79,6 +89,8 @@ class RaceSimulation {
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
+
+        PopupService.drawAlertPopup(`Congratulations, your postion was ${position + 1}, and you won $${prizeCashMoney}!`);
     }
 
     getPrizeMoney(race: Race, position: number) {
