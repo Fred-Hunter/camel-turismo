@@ -14,7 +14,7 @@ class RaceSimulation {
 
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.CreateTrack(raceLength);
-
+        
         return new Race(raceLength, camelsInRace, track, prizeCashMoney);
     }
 

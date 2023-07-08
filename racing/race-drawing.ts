@@ -32,7 +32,7 @@ class RaceDrawing {
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);
 
-                    const shouldIncludeObject = Math.floor(Math.random() * 5) == 4;
+                    const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
                     
                     if (shouldIncludeObject) {
                         // Randomize object

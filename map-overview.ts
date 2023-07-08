@@ -66,7 +66,7 @@ class MapOverview {
             }
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
                 if(!!camel) {
-                    document.dispatchEvent(enterRaceSelection);
+                    enterRequestSelectionRequested = true;
                 }
             }
         }, false);

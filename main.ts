@@ -17,8 +17,9 @@ let raceDrawing: RaceDrawing;
 let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
-let leaderboardService: LeaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
+
+let leaderboardService: LeaderboardService;
 
 // Map
 let map: MapOverview;
@@ -38,7 +39,7 @@ function init() {
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
 
     recruitmentService = new RecruitmentService();
-    
+
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
@@ -61,42 +62,8 @@ function init() {
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     })
-
-    document.addEventListener(
-        "enterRaceSelection",
-        async (_: any) => {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceSelection);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-
-            raceSelection.drawSelectionScreen();
-        },
-        false
-    );
     
-    document.addEventListener(
-        "startRace",
-        async (_: any) => {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceBackground);
-            CanvasService.showCanvas(CanvasNames.RaceCamel);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-
-            musicService.setAudio("RaceAudio");
-            musicService.startAudio()
-
-            const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-            raceDrawing.drawRaceCourse(race);
-            window.requestAnimationFrame(gameLoop);
-            await delay(8500).then(_ => {
-                raceSimulation.startRace(race);
-            })
-        },
-        false
-    );
-
+    window.requestAnimationFrame(gameLoop);
     // document.addEventListener(
     //     "goToGym",
     //     (_: any) => {
@@ -107,19 +74,49 @@ function init() {
     // );
 }
 
+let raceTriggeredTimestamp: number;
+let enterRequestSelectionRequested: boolean = false;
+
 function gameLoop(timeStamp: number) {
-    secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
-    oldTimeStamp = timeStamp;
+    try {
+        secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
+        oldTimeStamp = timeStamp;
 
-    if (!!race && race.inProgress) {
-        raceSimulation.simulateRaceStep(race);
+        if (!!race && race.inProgress) {
+            raceSimulation.simulateRaceStep(race);
+            raceDrawing.drawCamels(race);
+            leaderboardService.drawLeaderboard();
+        }
+
+        if (!!race && race.triggered) {
+            if (!race.initialised) {
+                raceDrawing.drawRaceCourse(race);
+                raceTriggeredTimestamp = timeStamp;
+                raceDrawing.drawCamels(race);
+                race.initialised = true;
+            }
+
+            if (timeStamp - raceTriggeredTimestamp >= 8500) {
+                race.triggered = false
+                raceSimulation.startRace(race);
+            }
+        }
+
+        if (enterRequestSelectionRequested) {
+            CanvasService.hideAllCanvas();
+            CanvasService.showCanvas(CanvasNames.RaceSelection);
+            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+
+            raceSelection.drawSelectionScreen();
+
+            enterRequestSelectionRequested = false;
+        }
+
+    } catch {
+        console.log('error')
+    } finally {
+        window.requestAnimationFrame(gameLoop);
     }
-
-    raceDrawing.drawCamels(race);
-
-    leaderboardService.drawLeaderboard();
-
-    window.requestAnimationFrame(gameLoop);
 }
 
 window.onload = () => { init() };
