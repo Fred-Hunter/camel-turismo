@@ -427,8 +427,10 @@ class MapOverview {
                 (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width / 2 && mousePosition.y > rect.height / 2) {
-                cashMoney += 1000;
-                CashMoneyService.drawCashMoney(ctx);
+                if (!!camel && camel.camelSkills.agility.skillValue > 20) {
+                    cashMoney += 1000;
+                    CashMoneyService.drawCashMoney(ctx);
+                }
             }
             // Race
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
