@@ -888,7 +888,7 @@ class RaceSimulation {
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
-            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
+            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
@@ -897,7 +897,7 @@ class RaceSimulation {
                 this.handleFinishedRace(race);
             }
             if (hasSprint) {
-                racingCamel.stamina -= 0.06;
+                racingCamel.stamina -= 0.1; //0.06
             }
         });
     }
@@ -1000,7 +1000,7 @@ class RacingCamel {
         return this._jumpHeight;
     }
     _gravityAcceleration = 9.81;
-    _scaleFactor = 10;
+    _scaleFactor = 20;
     _initialVelocity = 0;
     _currentVelocity = 0;
     startJump() {
