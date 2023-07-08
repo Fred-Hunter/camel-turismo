@@ -286,20 +286,55 @@ var MapOverview = /** @class */ (function () {
     MapOverview.hideMap = function () {
         CanvasService.hideCanvas(CanvasNames.MapOverview);
     };
+    MapOverview.getMousePosition = function (event) {
+        var canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    };
     MapOverview.renderMap = function () {
         var _this = this;
         var canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
         var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
         if (!ctx)
             return;
+        var scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
+        var rect = {
+            x: 0,
+            y: 0,
+            width: window.innerHeight / 0.815,
+            height: window.innerHeight
+        };
+        if (scaleToWidth) {
+            rect = {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: 0.815 * window.innerWidth
+            };
+        }
         var img = new Image();
         img.src = './graphics/camelmap-nobreed.svg';
-        img.width = 10; //window.innerWidth;
-        ctx.drawImage(img, 0, 0, window.innerWidth, 0.815 * window.innerWidth);
-        canvas.addEventListener("click", function () {
-            CanvasService.showAllCanvas();
-            _this.hideMap();
-        });
+        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
+        canvas.addEventListener('click', function (event) {
+            var mousePosition = _this.getMousePosition(event);
+            if (mousePosition.x < rect.width / 2 && mousePosition.y < rect.height / 2) {
+                CanvasService.showAllCanvas();
+                _this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
+            }
+            else if (mousePosition.x > rect.width / 2 && mousePosition.y < rect.height / 2) {
+                console.log("Gym");
+            }
+            else if (mousePosition.x > rect.width / 2 && mousePosition.y > rect.height / 2) {
+                console.log("xxx");
+            }
+            else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
+                console.log("race");
+            }
+        }, false);
     };
     return MapOverview;
 }());
