@@ -17,9 +17,9 @@ class RaceSelection {
 
         const radius = 25;
 
-        const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
-        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15);
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
 
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
@@ -37,7 +37,8 @@ class RaceSelection {
         raceLength: number, 
         prizeMoney: number, 
         entryFee: number,
-        raceSize: number) {
+        raceSize: number,
+        difficulty: Difficulty) {
 
         if(cashMoney < entryFee){
             return;
@@ -47,7 +48,7 @@ class RaceSelection {
             cashMoney -= entryFee;
         }
 
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
 
         CanvasService.hideAllCanvas();
         CanvasService.showCanvas(CanvasNames.RaceBackground);

@@ -3,18 +3,28 @@ class RaceSimulation {
         enteringCamel: Camel,
         raceLength: number,
         prizeCashMoney: number,
-        raceSize: number): Race {
+        raceSize: number,
+        difficulty: Difficulty): Race {
         const camelsInRace = [enteringCamel];
 
+        let competitorQuality: InitCamelQuality;
+
+        if (difficulty === Difficulty.Easy) {
+            competitorQuality = InitCamelQuality.Low;
+        } else if (difficulty === Difficulty.Normal) {
+            competitorQuality = InitCamelQuality.Medium;
+        } else {
+            competitorQuality = InitCamelQuality.Cpu5;
+        }
+
         for (let i = 0; i < raceSize; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
 
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.CreateTrack(raceLength);
-        
+
         return new Race(raceLength, camelsInRace, track, prizeCashMoney);
     }
 

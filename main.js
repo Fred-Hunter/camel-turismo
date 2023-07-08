@@ -862,6 +862,11 @@ var InitCamelQuality;
     InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
     InitCamelQuality[InitCamelQuality["Medium"] = 1] = "Medium";
     InitCamelQuality[InitCamelQuality["High"] = 2] = "High";
+    InitCamelQuality[InitCamelQuality["Cpu1"] = 3] = "Cpu1";
+    InitCamelQuality[InitCamelQuality["Cpu2"] = 4] = "Cpu2";
+    InitCamelQuality[InitCamelQuality["Cpu3"] = 5] = "Cpu3";
+    InitCamelQuality[InitCamelQuality["Cpu4"] = 6] = "Cpu4";
+    InitCamelQuality[InitCamelQuality["Cpu5"] = 7] = "Cpu5";
 })(InitCamelQuality || (InitCamelQuality = {}));
 class Camel {
     id;
@@ -879,6 +884,12 @@ class Camel {
     color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     camelSkills;
 }
+var Difficulty;
+(function (Difficulty) {
+    Difficulty[Difficulty["Easy"] = 0] = "Easy";
+    Difficulty[Difficulty["Normal"] = 1] = "Normal";
+    Difficulty[Difficulty["Hard"] = 2] = "Hard";
+})(Difficulty || (Difficulty = {}));
 class RaceDrawing {
     constructor() {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
@@ -1064,9 +1075,9 @@ class RaceSelection {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const radius = 25;
-        const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
-        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15);
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
         btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
@@ -1074,14 +1085,14 @@ class RaceSelection {
         btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
         CashMoneyService.drawCashMoney(this._ctx);
     }
-    selectRace(raceLength, prizeMoney, entryFee, raceSize) {
+    selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
         if (cashMoney < entryFee) {
             return;
         }
         if (cashMoney >= entryFee) {
             cashMoney -= entryFee;
         }
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
         CanvasService.hideAllCanvas();
         CanvasService.showCanvas(CanvasNames.RaceBackground);
         CanvasService.showCanvas(CanvasNames.RaceCamel);
@@ -1093,11 +1104,20 @@ class RaceSelection {
     }
 }
 class RaceSimulation {
-    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize) {
+    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize, difficulty) {
         const camelsInRace = [enteringCamel];
+        let competitorQuality;
+        if (difficulty === Difficulty.Easy) {
+            competitorQuality = InitCamelQuality.Low;
+        }
+        else if (difficulty === Difficulty.Normal) {
+            competitorQuality = InitCamelQuality.Medium;
+        }
+        else {
+            competitorQuality = InitCamelQuality.Cpu5;
+        }
         for (let i = 0; i < raceSize; i++) {
-            // TODO randomise quality and allow quality about init camel quality
-            const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
         const trackCreator = new RaceTrackCreator();
