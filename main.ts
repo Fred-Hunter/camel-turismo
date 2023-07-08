@@ -79,7 +79,6 @@ let enterRequestSelectionRequested: boolean = false;
 
 function gameLoop(timeStamp: number) {
     try {
-        console.log('lloping');
         secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
         oldTimeStamp = timeStamp;
 
@@ -97,7 +96,6 @@ function gameLoop(timeStamp: number) {
                 race.initialised = true;
             }
 
-            console.log(timeStamp - raceTriggeredTimestamp);
             if (timeStamp - raceTriggeredTimestamp >= 8500) {
                 race.triggered = false
                 raceSimulation.startRace(race);

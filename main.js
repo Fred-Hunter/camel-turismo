@@ -322,7 +322,6 @@ let raceTriggeredTimestamp;
 let enterRequestSelectionRequested = false;
 function gameLoop(timeStamp) {
     try {
-        console.log('lloping');
         secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
         oldTimeStamp = timeStamp;
         if (!!race && race.inProgress) {
@@ -337,7 +336,6 @@ function gameLoop(timeStamp) {
                 raceDrawing.drawCamels(race);
                 race.initialised = true;
             }
-            console.log(timeStamp - raceTriggeredTimestamp);
             if (timeStamp - raceTriggeredTimestamp >= 8500) {
                 race.triggered = false;
                 raceSimulation.startRace(race);
