@@ -233,22 +233,20 @@ var RecruitmentService = /** @class */ (function () {
         };
         this.leaveRecruitmentAreaIfSuccessfulRecruitment = function () {
             if (_this._recruitedCamel) {
+                camel = new Camel(++lastUsedId, InitCamelQuality.High);
                 _this.leaveRecruitmentArea();
             }
         };
         this.spendHighCashMoney = function () {
             _this.tryBuyCamel(300);
-            camel = new Camel(++lastUsedId, InitCamelQuality.High);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this.spendMediumCashMoney = function () {
             _this.tryBuyCamel(200);
-            camel = new Camel(++lastUsedId, InitCamelQuality.Medium);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this.spendLowCashMoney = function () {
             _this.tryBuyCamel(100);
-            camel = new Camel(++lastUsedId, InitCamelQuality.Low);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
         this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);

@@ -28,6 +28,7 @@ class RecruitmentService {
 
     leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
         if (this._recruitedCamel) {
+            camel = new Camel(++lastUsedId, InitCamelQuality.High);
             this.leaveRecruitmentArea();
         }
     }
@@ -49,19 +50,16 @@ class RecruitmentService {
 
     spendHighCashMoney = () => {
         this.tryBuyCamel(300);
-        camel = new Camel(++lastUsedId, InitCamelQuality.High);
         this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     spendMediumCashMoney = () => {
         this.tryBuyCamel(200);
-        camel = new Camel(++lastUsedId, InitCamelQuality.Medium);
         this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     spendLowCashMoney = () => {
         this.tryBuyCamel(100);
-        camel = new Camel(++lastUsedId, InitCamelQuality.Low);
         this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
