@@ -53,8 +53,10 @@ class RaceSelection {
         CanvasService.hideAllCanvas();
         CanvasService.showCanvas(CanvasNames.RaceBackground);
         CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.showCanvas(CanvasNames.Countdown);
         CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
         CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
         
         musicService.setAudio("RaceAudio");
         musicService.startAudio()

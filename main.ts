@@ -18,6 +18,7 @@ let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
 let enterRaceSelection = new Event("enterRaceSelection");
+let countdown: Countdown;
 
 let leaderboardService: LeaderboardService;
 
@@ -37,6 +38,7 @@ function init() {
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
     CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
+    CanvasService.createCanvas('6', CanvasNames.Countdown);
 
     recruitmentService = new RecruitmentService();
 
@@ -44,6 +46,7 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    countdown = new Countdown();
 
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d")!);
 
@@ -95,8 +98,11 @@ function gameLoop(timeStamp: number) {
                 raceDrawing.drawCamels(race);
                 race.initialised = true;
             }
+            
+            countdown.displayCountdown(9000 - (timeStamp - raceTriggeredTimestamp));
 
             if (timeStamp - raceTriggeredTimestamp >= 8500) {
+                CanvasService.hideCanvas(CanvasNames.Countdown);
                 race.triggered = false
                 raceSimulation.startRace(race);
             }

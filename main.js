@@ -70,6 +70,7 @@ class CanvasNames {
     static GymCamel = 'gym-camel';
     static GymBackground = 'gym-background';
     static PopupCanvas = 'popup';
+    static Countdown = 'countdown';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -275,6 +276,7 @@ let gymDrawing;
 let race;
 let startRace = new Event("startRace");
 let enterRaceSelection = new Event("enterRaceSelection");
+let countdown;
 let leaderboardService;
 // Map
 let map;
@@ -290,11 +292,13 @@ function init() {
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
     CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
+    CanvasService.createCanvas('6', CanvasNames.Countdown);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    countdown = new Countdown();
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
@@ -336,7 +340,9 @@ function gameLoop(timeStamp) {
                 raceDrawing.drawCamels(race);
                 race.initialised = true;
             }
+            countdown.displayCountdown(9000 - (timeStamp - raceTriggeredTimestamp));
             if (timeStamp - raceTriggeredTimestamp >= 8500) {
+                CanvasService.hideCanvas(CanvasNames.Countdown);
                 race.triggered = false;
                 raceSimulation.startRace(race);
             }
@@ -613,6 +619,21 @@ class MusicService {
     }
     setAudio(audioName) {
         this.currentAudio = audioName;
+    }
+}
+class Countdown {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    displayCountdown(seconds) {
+        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        const middleX = this._canvas.width / window.devicePixelRatio / 2;
+        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        this._ctx.font = "120px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 10, middleY);
     }
 }
 class GymDrawing {
@@ -1097,8 +1118,10 @@ class RaceSelection {
         CanvasService.hideAllCanvas();
         CanvasService.showCanvas(CanvasNames.RaceBackground);
         CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.showCanvas(CanvasNames.Countdown);
         CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
         CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
         race.triggered = true;
