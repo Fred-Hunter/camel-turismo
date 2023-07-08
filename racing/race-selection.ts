@@ -43,6 +43,16 @@ class RaceSelection {
         }
 
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
-        document.dispatchEvent(startRace);
+
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio()
+
+        race.triggered = true;
     }
 }
