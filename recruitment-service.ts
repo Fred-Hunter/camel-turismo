@@ -15,21 +15,55 @@ class RecruitmentService {
         this._canvas.style.zIndex = '99';
     }
 
-    leaveRecruitmentArea(): void {
+    leaveRecruitmentArea = () => {
         this._canvas.style.zIndex = '-1';
+        document.dispatchEvent(startRace);
     }
 
-    onclickFn(): void {
-        alert('camel recruited');
+    validateEnoughCashMoney(cost: number): boolean {
+        return cashMoney - cost >= 0;
+    }
+
+    tryBuyCamel(cost: number) {
+        if (camel !== undefined && camel !== null) {
+            // todo: change camels/allow more than one
+            alert ('Already recruited a camel!');
+            return;
+        }
+        if (!this.validateEnoughCashMoney(cost)) {
+            alert('Not enough cash money!');
+            return;
+        }
+        cashMoney = cashMoney - cost;
+        alert('Recruited camel!');
+    }
+
+    spendHighCashMoney = () => {
+        this.tryBuyCamel(300);
+        camel = new Camel(++lastUsedId, InitCamelQuality.High);
+        this.leaveRecruitmentArea();
+    }
+
+    spendMediumCashMoney = () => {
+        this.tryBuyCamel(200);
+        camel = new Camel(++lastUsedId, InitCamelQuality.Medium);
+        this.leaveRecruitmentArea();
+    }
+
+    spendLowCashMoney = () => {
+        this.tryBuyCamel(100);
+        camel = new Camel(++lastUsedId, InitCamelQuality.Low);
+        this.leaveRecruitmentArea();
     }
 
     drawInitCanvas(): void {
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this._ctx.fillStyle = '#e8d7a7';
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         let btnService = new CanvasBtnService(this._canvas);
 
-        btnService.createBtn(100,100,400,100,'#fff','#246',this.onclickFn,'Recruit camel');
+        btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(600, 100, 400, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(350, 400, 400, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
     }
 }

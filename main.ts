@@ -8,35 +8,39 @@ let canvasService: CanvasService;
 // Recruitment
 let camel: Camel;
 let lastUsedId = 0;
-
 let recruitmentService: RecruitmentService;
+let cashMoney = 100;
+
 // Race
 let raceCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
 let race: Race;
+let startRace = new Event("startRace");
 
 function init() {
     // Canvas
     canvasService = new CanvasService();
 
     // Camel
-    camel = new Camel(++lastUsedId, InitCamelQuality.High);
-
     canvasService = new CanvasService();
-    recruitmentService = new RecruitmentService(canvasService, 0);
+    recruitmentService = new RecruitmentService(canvasService, 99);
     
     // Race
     raceCanvas = canvasService.getCanvas('1');
     raceDrawing = new RaceDrawing(raceCanvas);
     raceSimulation = new RaceSimulation();
     
-    // TODO make triggered
-    race = raceSimulation.createRace(camel, 1000);
-    raceSimulation.startRace(race);
-    raceDrawing.drawRaceCourse();
-
-    window.requestAnimationFrame(gameLoop);
+    document.addEventListener(
+        "startRace",
+        (_: any) => {
+            race = raceSimulation.createRace(camel, 1000);
+            raceSimulation.startRace(race);
+            raceDrawing.drawRaceCourse();
+            window.requestAnimationFrame(gameLoop);
+        },
+        false
+    );
 }
 
 function gameLoop(timeStamp: number) {

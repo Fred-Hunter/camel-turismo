@@ -10,7 +10,8 @@ class RaceDrawing {
     public drawRaceCourse() {
         const ctx = this._canvas.getContext("2d")!;
 
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillStyle = '#e8d7a7';
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         const canvasColour = '#C2B280';
 
