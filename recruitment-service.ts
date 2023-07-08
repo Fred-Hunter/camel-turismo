@@ -38,15 +38,15 @@ class RecruitmentService {
     tryBuyCamel(cost: number) {
         const camelAlreadyExists = camel !== undefined && camel !== null;
         // if (camelAlreadyExists) {
-            // alert ('Already recruited a camel!');
+            // PopupService.drawAlertPopup('Already recruited a camel!');
             // return;
         // }
         if (!this.validateEnoughCashMoney(cost)) {
-            alert('Not enough cash money!');
+            PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
         cashMoney = cashMoney - cost;
-        alert(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
+        PopupService.drawAlertPopup(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
         this._recruitedCamel = true;
     }
 
