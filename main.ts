@@ -34,6 +34,7 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
 
     recruitmentService = new RecruitmentService();
@@ -52,6 +53,8 @@ function init() {
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
+
+    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
 
     // Audio
     musicService = new MusicService();
