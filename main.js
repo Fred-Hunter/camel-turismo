@@ -65,6 +65,7 @@ class CanvasNames {
     static Recruitment = 'recruitmentCanvas';
     static RaceBackground = 'race-background';
     static RaceCamel = 'race-camel';
+    static RaceSelection = 'race-selection';
     static MapOverview = 'map-overview';
     static GymCamel = 'gym-camel';
     static GymBackground = 'gym-background';
@@ -207,10 +208,12 @@ let cashMoney = 100;
 let raceCamelCanvas;
 let raceBackgroundCanvas;
 let raceSimulation;
+let raceSelection;
 let raceDrawing;
 let gymDrawing;
 let race;
 let startRace = new Event("startRace");
+let enterRaceSelection = new Event("enterRaceSelection");
 // Map
 let map;
 // Audio
@@ -223,10 +226,12 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
+    raceSelection = new RaceSelection();
     // Gym
     gymDrawing = new GymDrawing();
     // Map
@@ -238,8 +243,18 @@ function init() {
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     });
+    document.addEventListener("enterRaceSelection", async (_) => {
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceSelection);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+        raceSelection.drawSelectionScreen();
+    }, false);
     document.addEventListener("startRace", async (_) => {
-        race = raceSimulation.createRace(camel, 5, 100);
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
         const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -325,11 +340,7 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
-                CanvasService.showAllCanvas();
-                this.hideMap();
-                CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-                CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-                document.dispatchEvent(startRace);
+                document.dispatchEvent(enterRaceSelection);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -825,6 +836,34 @@ class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
+    }
+}
+class RaceSelection {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    drawSelectionScreen() {
+        const btnService = new CanvasBtnService(this._canvas);
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
+        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        const radius = 25;
+        const enterStreetRace = () => this.selectRace(40, 100, 0);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200);
+        const enterWorldCup = () => this.selectRace(120, 10000, 300);
+        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race - $0');
+        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby - $200');
+        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup - $300');
+        CashMoneyService.drawCashMoney(this._ctx);
+    }
+    selectRace(raceLength, prizeMoney, entryFee) {
+        if (cashMoney >= entryFee) {
+            cashMoney -= prizeMoney;
+        }
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney);
+        document.dispatchEvent(startRace);
     }
 }
 class RaceSimulation {
