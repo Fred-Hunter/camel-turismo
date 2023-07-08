@@ -98,21 +98,6 @@ var CanvasService = /** @class */ (function () {
     };
     return CanvasService;
 }());
-var Game = /** @class */ (function () {
-    function Game(_canvas) {
-        this._canvas = _canvas;
-        this.draw = function () { }; //test please ignore
-        this.cubeService = new CubeService(_canvas.getContext("2d"));
-    }
-    Object.defineProperty(Game.prototype, "ctx", {
-        get: function () {
-            return this._canvas.getContext("2d");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    return Game;
-}());
 var CubeService = /** @class */ (function () {
     function CubeService(ctx) {
         this.ctx = ctx;
