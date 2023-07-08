@@ -261,6 +261,10 @@ function init() {
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
     }, false);
+    document.addEventListener("goToGym", function (_) {
+        gymDrawing.drawGym();
+        window.requestAnimationFrame(gameLoop);
+    }, false);
 }
 function gameLoop(timeStamp) {
     secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
