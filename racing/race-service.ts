@@ -33,7 +33,7 @@ class RaceService {
 
     simulateRaceStep(race: Race) {
         race.camels.forEach((racingCamel: RacingCamel) => {
-            racingCamel.raceSpeedPerSecond = racingCamel.camel.sprintSpeed * 20 * Math.random();
+            racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
 
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
