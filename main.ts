@@ -13,6 +13,7 @@ let raceCamelCanvas: HTMLCanvasElement;
 let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
+let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
 
@@ -35,6 +36,9 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
 
+    // Gym
+    gymDrawing = new GymDrawing();
+
     // Map
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
@@ -46,6 +50,15 @@ function init() {
             race = raceSimulation.createRace(camel, 5000);
             raceSimulation.startRace(race);
             raceDrawing.drawRaceCourse(race);
+            window.requestAnimationFrame(gameLoop);
+        },
+        false
+    );
+
+    document.addEventListener(
+        "goToGym",
+        (_: any) => {
+            gymDrawing.drawGym();
             window.requestAnimationFrame(gameLoop);
         },
         false
