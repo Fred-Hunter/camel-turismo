@@ -63,6 +63,8 @@ class CanvasNames {
     static RaceBackground = 'race-background';
     static RaceCamel = 'race-camel';
     static MapOverview = 'map-overview';
+    static GymCamel = 'gym-camel';
+    static GymBackground = 'gym-background';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -216,6 +218,8 @@ function init() {
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
     CanvasService.createCanvas('2', CanvasNames.RaceCamel);
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
+    CanvasService.createCanvas('1', CanvasNames.GymCamel);
+    CanvasService.createCanvas('0', CanvasNames.GymBackground);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
@@ -242,10 +246,14 @@ function init() {
             raceSimulation.startRace(race);
         });
     }, false);
-    document.addEventListener("goToGym", (_) => {
-        gymDrawing.drawGym();
-        window.requestAnimationFrame(gameLoop);
-    }, false);
+    // document.addEventListener(
+    //     "goToGym",
+    //     (_: any) => {
+    //         gymDrawing.drawGym();
+    //         window.requestAnimationFrame(gameLoop);
+    //     },
+    //     false
+    // );
 }
 function gameLoop(timeStamp) {
     secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
@@ -304,7 +312,11 @@ class MapOverview {
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
             else if (mousePosition.x > rect.width / 2 && mousePosition.y < rect.height / 2) {
-                console.log("Gym");
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
+                CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
+                (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width / 2 && mousePosition.y > rect.height / 2) {
                 console.log("xxx");
@@ -421,13 +433,13 @@ class MusicService {
 }
 class GymDrawing {
     constructor() {
-        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
-        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
+        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.GymCamel);
+        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.GymBackground);
         this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d"));
         this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d"));
     }
-    _backgroundCanvas;
     _camelCanvas;
+    _backgroundCanvas;
     backgroundCubeService;
     camelCubeService;
     drawGym() {
