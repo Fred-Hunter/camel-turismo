@@ -201,11 +201,18 @@ function init() {
     raceSimulation = new RaceSimulation();
     // Map
     MapOverview.hideMap();
+    // Audio
+    musicService = new MusicService();
+    window.addEventListener('keydown', function () {
+        musicService.startAudio();
+    });
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 5000);
         raceSimulation.startRace(race);
         raceDrawing.drawRaceCourse(race);
         window.requestAnimationFrame(gameLoop);
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio();
     }, false);
 }
 function gameLoop(timeStamp) {
@@ -306,17 +313,28 @@ var RecruitmentService = /** @class */ (function () {
 }());
 var MusicService = /** @class */ (function () {
     function MusicService() {
+        this.currentAudio = "HomeScreenAudio";
         this.HomeScreenAudio = new Audio("audio/Mii Camel.mp3");
-        this.RaceAudio = new Audio("Music/Camel Mall.mp3");
+        this.RaceAudio = new Audio("audio/Camel Mall.mp3");
         this.HomeScreenAudio.loop = true;
-    }
-    MusicService.prototype.startRaceAudio = function () {
-        this.HomeScreenAudio.pause();
         this.RaceAudio.loop = true;
+    }
+    MusicService.prototype.startAudio = function () {
+        if (this.currentAudio == "HomeScreenAudio") {
+            this.RaceAudio.pause();
+            this.HomeScreenAudio.play();
+        }
+        else if (this.currentAudio == "RaceAudio") {
+            this.HomeScreenAudio.pause();
+            this.RaceAudio.play();
+        }
+        else {
+            this.HomeScreenAudio.pause();
+            this.RaceAudio.pause();
+        }
     };
-    MusicService.prototype.startHomeScreenAudio = function () {
-        this.RaceAudio.pause();
-        this.HomeScreenAudio.play();
+    MusicService.prototype.setAudio = function (audioName) {
+        this.currentAudio = audioName;
     };
     return MusicService;
 }());
