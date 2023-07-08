@@ -21,17 +21,20 @@ let map: MapOverview;
 
 function init() {
     // Camel
-    recruitmentService = new RecruitmentService(3);
+    CanvasService.createCanvas('3', CanvasNames.Recruitment);
+    CanvasService.createCanvas('1', CanvasNames.RaceBackground);
+    CanvasService.createCanvas('2', CanvasNames.RaceCamel);
+    CanvasService.createCanvas('4', CanvasNames.MapOverview);
+
+    recruitmentService = new RecruitmentService();
     
     // Race
-    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
-    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
+    raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
 
     // Map
-    const mapCanvas = CanvasService.createCanvas('4','map-overview');
-    map = new MapOverview(mapCanvas);
+    //map = new MapOverview();
+
     CanvasService.hideCanvas('map-overview');
     
     document.addEventListener(

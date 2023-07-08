@@ -1,12 +1,14 @@
 class RaceDrawing {
     constructor(
-        private readonly _backgroundCanvas: HTMLCanvasElement,
-        private readonly _camelCanvas: HTMLCanvasElement,
     ) {
-        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d")!);
-        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d")!);
+        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
+        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
+        this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d")!);
+        this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d")!);
     }
 
+    private _backgroundCanvas: HTMLCanvasElement;
+    private _camelCanvas: HTMLCanvasElement;
     private backgroundCubeService: CubeService;
     private camelCubeService: CubeService;
 

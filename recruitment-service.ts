@@ -1,12 +1,10 @@
 class RecruitmentService {
-    constructor(zIndex: number = -1) {
-        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d')!;
         this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
     }
-
-    private readonly _canvasId = 'recruitmentCanvas';
 
     private readonly _canvas: HTMLCanvasElement;
 
@@ -72,14 +70,14 @@ class RecruitmentService {
 
         let btnService = new CanvasBtnService(this._canvas);
 
-        btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
-        this.drawCamel(-5.5, 4.5, '#cc807a');
+        btnService.createBtn(100, 100, 500, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        this.drawCamel(-5, 4, '#cc807a');
 
-        btnService.createBtn(600, 100, 400, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
-        this.drawCamel(-0.5, -0.5, '#debb49');
+        btnService.createBtn(700, 100, 500, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        this.drawCamel(1, -2, '#debb49');
 
-        btnService.createBtn(350, 400, 400, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
-        this.drawCamel(3, 8., '#509124');
+        btnService.createBtn(350, 400, 500, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(3.5, 7.5, '#509124');
     }
 
     drawCamel = (xCoord: number, yCoord: number, colour: string) => {

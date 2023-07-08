@@ -43,6 +43,15 @@ var CanvasBtnService = /** @class */ (function () {
     };
     return CanvasBtnService;
 }());
+var CanvasNames = /** @class */ (function () {
+    function CanvasNames() {
+    }
+    CanvasNames.Recruitment = 'recruitmentCanvas';
+    CanvasNames.RaceBackground = 'race-background';
+    CanvasNames.RaceCamel = 'race-camel';
+    CanvasNames.MapOverview = 'map-overview';
+    return CanvasNames;
+}());
 var CanvasService = /** @class */ (function () {
     function CanvasService() {
     }
@@ -179,15 +188,16 @@ var startRace = new Event("startRace");
 var map;
 function init() {
     // Camel
-    recruitmentService = new RecruitmentService(3);
+    CanvasService.createCanvas('3', CanvasNames.Recruitment);
+    CanvasService.createCanvas('1', CanvasNames.RaceBackground);
+    CanvasService.createCanvas('2', CanvasNames.RaceCamel);
+    CanvasService.createCanvas('4', CanvasNames.MapOverview);
+    recruitmentService = new RecruitmentService();
     // Race
-    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
-    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
+    raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     // Map
-    var mapCanvas = CanvasService.createCanvas('4', 'map-overview');
-    map = new MapOverview(mapCanvas);
+    //map = new MapOverview();
     CanvasService.hideCanvas('map-overview');
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 2000);
@@ -213,10 +223,8 @@ var MapOverview = /** @class */ (function () {
     return MapOverview;
 }());
 var RecruitmentService = /** @class */ (function () {
-    function RecruitmentService(zIndex) {
-        if (zIndex === void 0) { zIndex = -1; }
+    function RecruitmentService() {
         var _this = this;
-        this._canvasId = 'recruitmentCanvas';
         this._recruitedCamel = false;
         this.leaveRecruitmentArea = function () {
             _this._canvas.style.zIndex = '-1';
@@ -249,7 +257,7 @@ var RecruitmentService = /** @class */ (function () {
             _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour);
             _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1);
         };
-        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d');
         this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
@@ -278,12 +286,12 @@ var RecruitmentService = /** @class */ (function () {
         this._ctx.fillStyle = '#e8d7a7';
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var btnService = new CanvasBtnService(this._canvas);
-        btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
-        this.drawCamel(-5.5, 4.5, '#cc807a');
-        btnService.createBtn(600, 100, 400, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
-        this.drawCamel(-0.5, -0.5, '#debb49');
-        btnService.createBtn(350, 400, 400, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
-        this.drawCamel(3, 8., '#509124');
+        btnService.createBtn(100, 100, 500, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        this.drawCamel(-5, 4, '#cc807a');
+        btnService.createBtn(700, 100, 500, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        this.drawCamel(1, -2, '#debb49');
+        btnService.createBtn(350, 400, 500, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(3.5, 7.5, '#509124');
     };
     return RecruitmentService;
 }());
@@ -416,15 +424,15 @@ var Camel = /** @class */ (function () {
     return Camel;
 }());
 var RaceDrawing = /** @class */ (function () {
-    function RaceDrawing(_backgroundCanvas, _camelCanvas) {
-        this._backgroundCanvas = _backgroundCanvas;
-        this._camelCanvas = _camelCanvas;
+    function RaceDrawing() {
         this.raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
             [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
             [10, 9], [10, 8], [10, 7],
             [9, 7], [9, 6], [9, 5], [9, 4], [9, 3], [9, 2]];
-        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d"));
-        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d"));
+        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
+        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
+        this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d"));
+        this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d"));
     }
     RaceDrawing.prototype.drawRaceCourse = function () {
         var ctx = this._backgroundCanvas.getContext("2d");
