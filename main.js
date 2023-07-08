@@ -136,12 +136,19 @@ function gameLoop(timeStamp) {
             console.log("".concat(camel.camel.id, " - ").concat(camel.completionPercentage));
         });
     }
+    raceDrawing.drawCamels(race);
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
 var GymSession = /** @class */ (function () {
-    function GymSession(_skill, _maxStamina) {
+    function GymSession(_skill, _maxStamina, _xpChangeOnSuccessfulAction, _staminaChangeOnSuccessfulAction, _staminaChangeOnFailedAction) {
+        if (_xpChangeOnSuccessfulAction === void 0) { _xpChangeOnSuccessfulAction = 9; }
+        if (_staminaChangeOnSuccessfulAction === void 0) { _staminaChangeOnSuccessfulAction = -3; }
+        if (_staminaChangeOnFailedAction === void 0) { _staminaChangeOnFailedAction = -10; }
         this._skill = _skill;
+        this._xpChangeOnSuccessfulAction = _xpChangeOnSuccessfulAction;
+        this._staminaChangeOnSuccessfulAction = _staminaChangeOnSuccessfulAction;
+        this._staminaChangeOnFailedAction = _staminaChangeOnFailedAction;
         this._sessionActive = false;
         this._xpGained = 0;
         this._staminaRemaining = 0;
@@ -156,15 +163,15 @@ var GymSession = /** @class */ (function () {
         if (!this._sessionActive) {
             return;
         }
-        this._xpGained += 9;
-        this._staminaRemaining -= 3; // TODO: range of values
+        this._xpGained += this._xpChangeOnSuccessfulAction;
+        this._staminaRemaining += this._staminaChangeOnSuccessfulAction; // TODO: range of values
         this.postAction();
     };
     GymSession.prototype.onFailedAction = function () {
         if (!this._sessionActive) {
             return;
         }
-        this._staminaRemaining -= 10; // TODO: range of values
+        this._staminaRemaining += this._staminaChangeOnFailedAction;
         return this.postAction();
     };
     GymSession.prototype.postAction = function () {
@@ -185,6 +192,16 @@ var GymSession = /** @class */ (function () {
     };
     return GymSession;
 }());
+var Gym = /** @class */ (function () {
+    function Gym() {
+    }
+    Gym.prototype.getTreadmillSession = function (camel) {
+        return new GymSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.level);
+    };
+    Gym.prototype.getSpaSession = function (camel) {
+    };
+    return Gym;
+}());
 var InitCamelQuality;
 (function (InitCamelQuality) {
     InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
@@ -195,7 +212,9 @@ var Camel = /** @class */ (function () {
     function Camel(id, quality) {
         this.id = id;
         var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
-        this.camelSkills = new CamelSkills(sprintSpeed);
+        this.camelSkills = new CamelSkillsBuilder()
+            .withSprintSpeed(sprintSpeed)
+            .build();
     }
     return Camel;
 }());
@@ -229,10 +248,14 @@ var RaceDrawing = /** @class */ (function () {
     };
     RaceDrawing.prototype.drawCamels = function (race) {
         var _this = this;
+        var ctx = this._canvas.getContext("2d");
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
     };
     RaceDrawing.prototype.drawCamel = function (camel) {
-        var percentageCompleted = camel.completionPercentage;
+        var xCoord = 1;
+        var yCoord = 1 + 9 * camel.completionPercentage;
+        this.cubeService.drawCube(xCoord, yCoord, 10, '#fff');
     };
     return RaceDrawing;
 }());
@@ -292,14 +315,12 @@ var RacingCamel = /** @class */ (function () {
     return RacingCamel;
 }());
 var CamelSkill = /** @class */ (function () {
-    function CamelSkill(_name, _level) {
-        if (_level === void 0) { _level = 1; }
+    function CamelSkill(_name) {
         this._name = _name;
-        this._level = _level;
         this._minSkillLevel = 1;
         this._maxSkillLevel = 99;
         this._currentXp = 0;
-        var xp = this.getXpRequiredForVirtualLevel(_level);
+        var xp = this.getXpRequiredForVirtualLevel(1);
         this._currentXp = xp;
     }
     Object.defineProperty(CamelSkill.prototype, "name", {
@@ -314,6 +335,9 @@ var CamelSkill = /** @class */ (function () {
     };
     CamelSkill.prototype.getVirtualLevelWithXp = function (xp) {
         return Math.floor(xp / 100) + 1;
+    };
+    CamelSkill.prototype.setLevel = function (value) {
+        this._currentXp = this.getXpRequiredForVirtualLevel(value);
     };
     Object.defineProperty(CamelSkill.prototype, "level", {
         get: function () {
@@ -335,8 +359,26 @@ var CamelSkill = /** @class */ (function () {
     return CamelSkill;
 }());
 var CamelSkills = /** @class */ (function () {
-    function CamelSkills(sprintSpeed) {
-        this.sprintSpeed = new CamelSkill("Sprint Speed", sprintSpeed);
+    function CamelSkills() {
+        this.sprintSpeed = new CamelSkill("Sprint Speed");
+        this.stamina = new CamelSkill("Stamina");
     }
     return CamelSkills;
+}());
+var CamelSkillsBuilder = /** @class */ (function () {
+    function CamelSkillsBuilder() {
+        this._camelSkills = new CamelSkills();
+    }
+    CamelSkillsBuilder.prototype.withSprintSpeed = function (value) {
+        this._camelSkills.sprintSpeed.setLevel(value);
+        return this;
+    };
+    CamelSkillsBuilder.prototype.withStamina = function (value) {
+        this._camelSkills.stamina.setLevel(value);
+        return this;
+    };
+    CamelSkillsBuilder.prototype.build = function () {
+        return this._camelSkills;
+    };
+    return CamelSkillsBuilder;
 }());

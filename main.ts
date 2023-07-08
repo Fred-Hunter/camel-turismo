@@ -46,6 +46,8 @@ function gameLoop(timeStamp: number) {
         });
     }
 
+    raceDrawing.drawCamels(race);
+
     window.requestAnimationFrame(gameLoop);
 }
 

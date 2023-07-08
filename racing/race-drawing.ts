@@ -28,10 +28,15 @@ class RaceDrawing {
     }
 
     public drawCamels(race: Race) {
+        const ctx = this._canvas.getContext("2d")!;
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        
         race.racingCamels.forEach(camel => this.drawCamel(camel));
     }
 
     public drawCamel(camel: RacingCamel) {
-        const percentageCompleted = camel.completionPercentage;
+        const xCoord = 1;
+        const yCoord = 1 + 9 * camel.completionPercentage;
+        this.cubeService.drawCube(xCoord, yCoord, 10, '#fff');
     }
 }
