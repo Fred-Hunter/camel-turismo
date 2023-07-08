@@ -1,30 +1,43 @@
 class GymSession {
-    private _sessionActive = false;
+    protected _sessionActive = false;
+
+    public startSession() {
+        this._sessionActive = true;
+    }
+
+    public endSession() {
+        if (!this._sessionActive) {
+            return;
+        }
+        this._sessionActive = false;
+    }
+}
+
+class TrainSession extends GymSession {
     private _xpGained = 0;
     private _staminaRemaining = 0;
 
     constructor(
-        private readonly _skill: CamelSkill,
-        _maxStamina: number,
-        private readonly _xpChangeOnSuccessfulAction = 9,
-        private readonly _staminaChangeOnSuccessfulAction = -3,
-        private readonly _staminaChangeOnFailedAction = -10) { 
-            this._staminaRemaining = _maxStamina;
-        }
-
-    public startSession() {
-        this._sessionActive = true;
-        this._xpGained = 0;
+        protected readonly _skill: CamelSkill,
+        _maxStamina: number,) 
+    {
+        super()
+        this._staminaRemaining = _maxStamina;
     }
     
+    public startSession(): void {
+        this._xpGained = 0;
+        super.startSession()
+    }
+
     public onSuccessfulAction() {
         // Review
         if (!this._sessionActive) {
             return;
         }
 
-        this._xpGained += this._xpChangeOnSuccessfulAction;
-        this._staminaRemaining += this._staminaChangeOnSuccessfulAction; // TODO: range of values
+        this._xpGained += 9;
+        this._staminaRemaining += -3; // TODO: range of values
         this.postAction();
     }
 
@@ -33,7 +46,7 @@ class GymSession {
             return;
         }
 
-        this._staminaRemaining += this._staminaChangeOnFailedAction;
+        this._staminaRemaining += -10;
         return this.postAction();
     }
 
@@ -48,10 +61,33 @@ class GymSession {
     }
 
     public endSession() {
-        if (!this._sessionActive) {
-            return;
-        }
+        super.endSession()
         this._skill.addXp(this._xpGained);
-        this._sessionActive = false;
+    }
+}
+
+class SpaSession extends GymSession {
+    private _startTime = 0;
+    private _staiminaGained = 0;
+
+    constructor(
+        protected readonly _skill: CamelSkill) 
+    {
+        super()
+    }
+
+    public startSession(): void {
+        this._startTime = secondsPassed;
+        super.startSession()
+    }
+
+    public endSession() {
+        super.endSession()
+        this._staiminaGained = secondsPassed - this._startTime;
+        if (this._staiminaGained < this._skill.level) {
+            this._skill.addSkillValue(this._staiminaGained);
+        } else {
+            this._skill.addSkillValue(this._skill.level);
+        }
     }
 }

@@ -1,11 +1,13 @@
 class Gym {
     getTreadmillSession(camel: Camel) {
-        return new GymSession(
+        return new TrainSession(
             camel.camelSkills.sprintSpeed, 
-            camel.camelSkills.stamina.level);
+            camel.camelSkills.stamina.skillValue);
     }
 
     getSpaSession(camel: Camel) {
-        
+        // Take Away Money
+        return new SpaSession(
+            camel.camelSkills.stamina);
     }
 }
