@@ -26,7 +26,7 @@ class RaceDrawing {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
                     this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
                 } else {
-                    const height = Math.random() / 2;
+                    const height = Math.random() / 3;
 
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);

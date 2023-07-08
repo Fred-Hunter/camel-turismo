@@ -718,7 +718,7 @@ class RaceDrawing {
                     this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
                 }
                 else {
-                    const height = Math.random() / 2;
+                    const height = Math.random() / 3;
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);
                 }
