@@ -83,7 +83,7 @@ class RaceSimulation {
             return prizePool * 0.2;
         }
 
-        if (position === 1) {
+        if (position === 2) {
             return prizePool * 0.05;
         }
 

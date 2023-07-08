@@ -39,7 +39,7 @@ class RaceSelection {
         entryFee: number,
         raceSize: number) {
         if (cashMoney >= entryFee) {
-            cashMoney -= prizeMoney;
+            cashMoney -= entryFee;
         }
 
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);

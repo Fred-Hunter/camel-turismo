@@ -919,7 +919,7 @@ class RaceSelection {
     }
     selectRace(raceLength, prizeMoney, entryFee, raceSize) {
         if (cashMoney >= entryFee) {
-            cashMoney -= prizeMoney;
+            cashMoney -= entryFee;
         }
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
         document.dispatchEvent(startRace);
@@ -985,7 +985,7 @@ class RaceSimulation {
         if (position === 1) {
             return prizePool * 0.2;
         }
-        if (position === 1) {
+        if (position === 2) {
             return prizePool * 0.05;
         }
         return 0;
