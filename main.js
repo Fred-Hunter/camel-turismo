@@ -232,8 +232,11 @@ var CubeService = /** @class */ (function () {
 var secondsPassed;
 var oldTimeStamp;
 var racingService;
+var camel;
+var lastUsedId = 0;
 function init() {
     racingService = new RaceService();
+    camel = new Camel(++lastUsedId, InitCamelQuality.High);
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
@@ -242,6 +245,20 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
+var InitCamelQuality;
+(function (InitCamelQuality) {
+    InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
+    InitCamelQuality[InitCamelQuality["Medium"] = 1] = "Medium";
+    InitCamelQuality[InitCamelQuality["High"] = 2] = "High";
+})(InitCamelQuality || (InitCamelQuality = {}));
+var Camel = /** @class */ (function () {
+    function Camel(id, quality) {
+        this.id = id;
+        var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        this.camelSkills = new CamelSkills(sprintSpeed);
+    }
+    return Camel;
+}());
 var RaceService = /** @class */ (function () {
     function RaceService() {
     }
@@ -342,8 +359,8 @@ var CamelSkill = /** @class */ (function () {
     return CamelSkill;
 }());
 var CamelSkills = /** @class */ (function () {
-    function CamelSkills() {
-        this.sprintSpeed = new CamelSkill("Sprint Speed");
+    function CamelSkills(sprintSpeed) {
+        this.sprintSpeed = new CamelSkill("Sprint Speed", sprintSpeed);
     }
     return CamelSkills;
 }());
