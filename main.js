@@ -325,7 +325,11 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
-                console.log("race");
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+                CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+                document.dispatchEvent(startRace);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -346,8 +350,9 @@ class RecruitmentService {
         this._canvas.style.zIndex = '99';
     }
     leaveRecruitmentArea = () => {
-        this._canvas.style.zIndex = '-1';
-        document.dispatchEvent(startRace);
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     };
     validateEnoughCashMoney(cost) {
         return cashMoney - cost >= 0;
@@ -847,7 +852,7 @@ class RaceSimulation {
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
-            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
+            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
@@ -856,7 +861,7 @@ class RaceSimulation {
                 race.inProgress = false;
             }
             if (hasSprint) {
-                racingCamel.stamina -= 0.06;
+                racingCamel.stamina -= 0.1; //0.06
             }
         });
     }
