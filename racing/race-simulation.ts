@@ -21,7 +21,7 @@ class RaceSimulation {
         }
 
         race.inProgress = true;
-        race.racingCamels.forEach(x => x.startJump());
+        // race.racingCamels.forEach(x => x.startJump());
     }
 
     simulateRaceStep(race: Race) {
