@@ -2,9 +2,6 @@
 let secondsPassed: number;
 let oldTimeStamp: number = 0;
 
-// Canvas
-let canvasService: CanvasService;
-
 // Recruitment
 let camel: Camel;
 let lastUsedId = 0;
@@ -20,16 +17,13 @@ let race: Race;
 let startRace = new Event("startRace");
 
 function init() {
-    // Canvas
-    canvasService = new CanvasService();
-
     // Camel
-    canvasService = new CanvasService();
-    recruitmentService = new RecruitmentService(canvasService, 99);
+    camel = new Camel(++lastUsedId, InitCamelQuality.High);
+    recruitmentService = new RecruitmentService(0);
     
     // Race
-    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     

@@ -1,6 +1,6 @@
 class RecruitmentService {
-    constructor(public canvasService: CanvasService, zIndex: number = -1) {
-        this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);
+    constructor(zIndex: number = -1) {
+        this._canvas = CanvasService.getCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d')!;
         this.drawInitCanvas();
     }
