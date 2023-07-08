@@ -1,6 +1,8 @@
 class RacingCamel {
     constructor(
-        public camel: Camel) { }
+        public camel: Camel) { 
+            this._initialVelocity = 5 + (this.camel.camelSkills.agility.level / 10);
+        }
 
     completionPercentage: number = 0;
     raceSpeedPerSecond: number = 0;
@@ -13,8 +15,8 @@ class RacingCamel {
     }
 
     private readonly _gravityAcceleration = 9.81;
-    private readonly _initialVelocity = 10;
     private readonly _scaleFactor = 10;
+    private readonly _initialVelocity: number = 0;
     private _currentVelocity = 0;
 
     public startJump() {
