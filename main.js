@@ -247,7 +247,7 @@ class LeaderboardService {
         this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
-        const colour = this.getProgressBarColour([252, 213, 53], [61, 204, 83], 1 - camel.completionPercentage);
+        const colour = this.getProgressBarColour([255, 238, 150], [61, 204, 83], 1 - camel.completionPercentage);
         this.ctx.beginPath();
         this.ctx.fillStyle = colour;
         this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
