@@ -4,4 +4,8 @@ class Gym {
             camel.camelSkills.sprintSpeed, 
             camel.camelSkills.stamina.level);
     }
+
+    getSpaSession(camel: Camel) {
+        
+    }
 }
