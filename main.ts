@@ -21,7 +21,8 @@ let map: MapOverview;
 
 function init() {
     // Camel
-    recruitmentService = new RecruitmentService(3);
+    raceBackgroundCanvas = CanvasService.createCanvas('3', 'recruitmentCanvas');
+    recruitmentService = new RecruitmentService();
     
     // Race
     raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
