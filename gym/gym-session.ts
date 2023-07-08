@@ -23,6 +23,14 @@ class TrainSession extends GymSession {
     {
         super()
         this._staminaRemaining = _maxStamina;
+        PopupService.drawAlertPopup("Press spacebar to train!");
+        document.addEventListener('keypress', (event) => {
+            if (event.key !== " "){
+                return;
+            }
+            this.onSuccessfulAction();
+            console.log(camel.camelSkills)
+        }, false);
     }
     
     public startSession(): void {

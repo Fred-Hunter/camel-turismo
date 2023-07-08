@@ -17,8 +17,8 @@ class PopupService {
         const y = window.innerHeight/2 - height/4; 
 
         const bgColour = GlobalStaticConstants.backgroundColour;
-        const textColour = "#432818";
-        const highlightColour = "#432818";
+        const textColour =GlobalStaticConstants.highlightColour;
+        const highlightColour =GlobalStaticConstants.highlightColour;
 
         // Draw the background rectangle
         const backgroundRect: [number, number, number, number] = [
