@@ -80,6 +80,8 @@ class RecruitmentService {
 
         btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
         this.drawCamel(7.75, 9.25, '#509124');
+
+        CashMoneyService.drawCashMoney(this._ctx);
     }
 
     drawCamel = (xCoord: number, yCoord: number, colour: string) => {

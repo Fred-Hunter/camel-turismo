@@ -1,7 +1,25 @@
 "use strict";
 var CanvasBtnService = /** @class */ (function () {
     function CanvasBtnService(canvas) {
+        var _this = this;
         this.canvas = canvas;
+        this.drawBtn = function (context, rect, radius, backgroundColour, borderColour, fontColour, text) {
+            context.beginPath();
+            context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
+            context.fillStyle = backgroundColour;
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = borderColour;
+            context.stroke();
+            context.closePath();
+            context.font = '30pt Garamond';
+            context.fillStyle = fontColour;
+            context.textAlign = "center";
+            context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
+        };
+        this.displayHoverState = function (context, rect, radius, borderColour, fontColour, text) {
+            _this.drawBtn(context, rect, radius, borderColour, borderColour, fontColour, text);
+        };
     }
     CanvasBtnService.prototype.getMousePosition = function (event) {
         var rect = this.canvas.getBoundingClientRect();
@@ -29,18 +47,16 @@ var CanvasBtnService = /** @class */ (function () {
                 onclickFunction();
             }
         }, false);
-        context.beginPath();
-        context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
-        context.fillStyle = backgroundColour;
-        context.fill();
-        context.lineWidth = 5;
-        context.strokeStyle = borderColour;
-        context.stroke();
-        context.closePath();
-        context.font = '30pt Kremlin Pro Web';
-        context.fillStyle = fontColour;
-        context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
+        this.canvas.addEventListener('mousemove', function (event) {
+            var mousePos = _this.getMousePosition(event);
+            if (_this.isInside(mousePos, rect)) {
+                _this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
+            }
+            else {
+                _this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+            }
+        }, false);
+        this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
     };
     return CanvasBtnService;
 }());
@@ -115,6 +131,24 @@ var CanvasService = /** @class */ (function () {
         return canvas;
     };
     return CanvasService;
+}());
+var CashMoneyService = /** @class */ (function () {
+    function CashMoneyService() {
+    }
+    CashMoneyService.drawCashMoney = function (ctx) {
+        var img = new Image();
+        img.src = './egyptian-pound.jpg';
+        img.onload = function () {
+            ctx.drawImage(img, window.innerWidth - 450, window.innerHeight - 150, 400, 125);
+            ctx.fillStyle = '#e8be9e';
+            ctx.fillRect(window.innerWidth - 375, window.innerHeight - 125, 250, 25);
+            ctx.font = '30pt Garamond';
+            ctx.fillStyle = '#000';
+            ctx.textAlign = "center";
+            ctx.fillText('Cash money: ' + cashMoney, window.innerWidth - 250, window.innerHeight - 102, 250);
+        };
+    };
+    return CashMoneyService;
 }());
 var CubeService = /** @class */ (function () {
     function CubeService(ctx) {
@@ -214,15 +248,18 @@ function init() {
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
+    // Audio
+    musicService = new MusicService();
+    window.addEventListener('keydown', function () {
+        musicService.startAudio();
+    });
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 5000);
         raceSimulation.startRace(race);
         raceDrawing.drawRaceCourse(race);
         window.requestAnimationFrame(gameLoop);
-    }, false);
-    document.addEventListener("goToGym", function (_) {
-        gymDrawing.drawGym();
-        window.requestAnimationFrame(gameLoop);
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio();
     }, false);
 }
 function gameLoop(timeStamp) {
@@ -253,7 +290,8 @@ var MapOverview = /** @class */ (function () {
             return;
         var img = new Image();
         img.src = './graphics/camelmap-nobreed.svg';
-        ctx.drawImage(img, 100, 100);
+        img.width = 10; //window.innerWidth;
+        ctx.drawImage(img, 0, 0, window.innerWidth, 0.815 * window.innerWidth);
         canvas.addEventListener("click", function () {
             CanvasService.showAllCanvas();
             _this.hideMap();
@@ -332,22 +370,34 @@ var RecruitmentService = /** @class */ (function () {
         this.drawCamel(2.75, -1.75, '#debb49');
         btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
         this.drawCamel(7.75, 9.25, '#509124');
+        CashMoneyService.drawCashMoney(this._ctx);
     };
     return RecruitmentService;
 }());
 var MusicService = /** @class */ (function () {
     function MusicService() {
+        this.currentAudio = "HomeScreenAudio";
         this.HomeScreenAudio = new Audio("audio/Mii Camel.mp3");
-        this.RaceAudio = new Audio("Music/Camel Mall.mp3");
+        this.RaceAudio = new Audio("audio/Camel Mall.mp3");
         this.HomeScreenAudio.loop = true;
-    }
-    MusicService.prototype.startRaceAudio = function () {
-        this.HomeScreenAudio.pause();
         this.RaceAudio.loop = true;
+    }
+    MusicService.prototype.startAudio = function () {
+        if (this.currentAudio == "HomeScreenAudio") {
+            this.RaceAudio.pause();
+            this.HomeScreenAudio.play();
+        }
+        else if (this.currentAudio == "RaceAudio") {
+            this.HomeScreenAudio.pause();
+            this.RaceAudio.play();
+        }
+        else {
+            this.HomeScreenAudio.pause();
+            this.RaceAudio.pause();
+        }
     };
-    MusicService.prototype.startHomeScreenAudio = function () {
-        this.RaceAudio.pause();
-        this.HomeScreenAudio.play();
+    MusicService.prototype.setAudio = function (audioName) {
+        this.currentAudio = audioName;
     };
     return MusicService;
 }());

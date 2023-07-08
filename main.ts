@@ -43,6 +43,12 @@ function init() {
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
+
+    // Audio
+    musicService = new MusicService();
+    window.addEventListener('keydown', () => {
+        musicService.startAudio();
+    })
     
     document.addEventListener(
         "startRace",
@@ -51,6 +57,8 @@ function init() {
             raceSimulation.startRace(race);
             raceDrawing.drawRaceCourse(race);
             window.requestAnimationFrame(gameLoop);
+            musicService.setAudio("RaceAudio");
+            musicService.startAudio()
         },
         false
     );
