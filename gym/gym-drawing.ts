@@ -49,7 +49,6 @@ class GymDrawing {
     }
 
     private exitGym(trainSession :TrainSession|null) {
-        debugger;
         if (!trainSession) return;
         trainSession.endSession();
         CanvasService.hideAllCanvas();

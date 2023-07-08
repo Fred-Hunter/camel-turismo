@@ -672,7 +672,6 @@ class GymDrawing {
         buttonService.createBtn((this._camelCanvas.width / window.devicePixelRatio) / 2, window.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
     }
     exitGym(trainSession) {
-        debugger;
         if (!trainSession)
             return;
         trainSession.endSession();
