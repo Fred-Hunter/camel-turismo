@@ -9,7 +9,7 @@ class RaceSimulation {
         }
 
         const trackCreator = new RaceTrackCreator();
-        const track = trackCreator.CreateTrack(100);
+        const track = trackCreator.CreateTrack(raceLength);
 
         return new Race(raceLength, camelsInRace, track);
     }
@@ -31,7 +31,7 @@ class RaceSimulation {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
-            racingCamel.raceSpeedPerSecond = baseMovementSpeed * 20 * Math.random();
+            racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
 
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;

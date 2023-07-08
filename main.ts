@@ -53,7 +53,7 @@ function init() {
     document.addEventListener(
         "startRace",
         (_: any) => {
-            race = raceSimulation.createRace(camel, 2000);
+            race = raceSimulation.createRace(camel, 30);
             raceSimulation.startRace(race);
             raceDrawing.drawRaceCourse(race);
             window.requestAnimationFrame(gameLoop);

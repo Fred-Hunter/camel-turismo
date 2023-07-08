@@ -232,9 +232,15 @@ function init() {
         musicService.startAudio();
     });
     document.addEventListener("startRace", (_) => {
-        race = raceSimulation.createRace(camel, 2000);
+        race = raceSimulation.createRace(camel, 30);
         raceSimulation.startRace(race);
         raceDrawing.drawRaceCourse(race);
+        window.requestAnimationFrame(gameLoop);
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio();
+    }, false);
+    document.addEventListener("goToGym", (_) => {
+        gymDrawing.drawGym();
         window.requestAnimationFrame(gameLoop);
     }, false);
 }
@@ -757,7 +763,7 @@ class RaceSimulation {
             camelsInRace.push(competitorCamel);
         }
         const trackCreator = new RaceTrackCreator();
-        const track = trackCreator.CreateTrack(100);
+        const track = trackCreator.CreateTrack(raceLength);
         return new Race(raceLength, camelsInRace, track);
     }
     startRace(race) {
@@ -774,7 +780,7 @@ class RaceSimulation {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
-            racingCamel.raceSpeedPerSecond = baseMovementSpeed * 20 * Math.random();
+            racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
