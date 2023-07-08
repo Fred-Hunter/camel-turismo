@@ -1,6 +1,6 @@
 class RecruitmentService {
     constructor(zIndex: number = -1) {
-        this._canvas = CanvasService.getCanvas(zIndex.toString(), this._canvasId);
+        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d')!;
         this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
