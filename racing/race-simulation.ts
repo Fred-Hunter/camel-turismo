@@ -10,9 +10,9 @@ class RaceSimulation {
         let competitorQuality: InitCamelQuality;
 
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.Low;
+            competitorQuality = InitCamelQuality.High;
         } else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Medium;
+            competitorQuality = InitCamelQuality.Cpu1;
         } else {
             competitorQuality = InitCamelQuality.Cpu5;
         }
@@ -81,6 +81,8 @@ class RaceSimulation {
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
+
+        PopupService.drawAlertPopup(`Congratulations, your postion was ${position + 1}, and you won $${prizeCashMoney}!`);
     }
 
     getPrizeMoney(race: Race, position: number) {

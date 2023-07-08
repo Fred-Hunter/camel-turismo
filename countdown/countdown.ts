@@ -14,7 +14,7 @@ class Countdown {
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
 
-        this._ctx.font = "120px Garamond";
-        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 10, middleY);
+        this._ctx.font = "240px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
     }
 }

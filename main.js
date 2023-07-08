@@ -632,8 +632,8 @@ class Countdown {
         this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
-        this._ctx.font = "120px Garamond";
-        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 10, middleY);
+        this._ctx.font = "240px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
     }
 }
 class GymDrawing {
@@ -1132,10 +1132,10 @@ class RaceSimulation {
         const camelsInRace = [enteringCamel];
         let competitorQuality;
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.Low;
+            competitorQuality = InitCamelQuality.High;
         }
         else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Medium;
+            competitorQuality = InitCamelQuality.Cpu1;
         }
         else {
             competitorQuality = InitCamelQuality.Cpu5;
@@ -1188,6 +1188,7 @@ class RaceSimulation {
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
+        PopupService.drawAlertPopup(`Congratulations, your postion was ${position + 1}, and you won $${prizeCashMoney}!`);
     }
     getPrizeMoney(race, position) {
         const prizePool = race.prizeCashMoney;
