@@ -43,37 +43,10 @@ var CanvasBtnService = /** @class */ (function () {
     };
     return CanvasBtnService;
 }());
-var CanvasServiceService = /** @class */ (function () {
-    function CanvasServiceService() {
-    }
-    CanvasServiceService.getCurrentCanvas = function () {
-        return Array.from(document.querySelectorAll("canvas")).sort(function (c) { return +c.style.zIndex; })[0];
-    };
-    CanvasServiceService.setCanvasZIndex = function (canvasName, zIndex) {
-        var canvas = document.querySelector("#canvas-".concat(canvasName));
-        if (!canvas) {
-            console.error("No canvas found with name: ".concat(canvasName));
-            return;
-        }
-        canvas.style.zIndex = "".concat(zIndex);
-    };
-    CanvasServiceService.bringCanvasToTop = function (canvasName) {
-        var allCanvases = Array.from(document.querySelectorAll("canvas"));
-        var getMax = function (a, b) { return Math.max(a, b); };
-        var maxZIndex = allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.map(function (c) { return +c.style.zIndex; }).reduce(getMax, 0);
-        this.setCanvasZIndex(canvasName, maxZIndex + 1);
-    };
-    CanvasServiceService.resetCanvases = function () {
-        var _this = this;
-        var allCanvases = Array.from(document.querySelectorAll("canvas"));
-        allCanvases.forEach(function (c) { return _this.setCanvasZIndex(c.id, 0); });
-    };
-    return CanvasServiceService;
-}());
 var CanvasService = /** @class */ (function () {
     function CanvasService() {
     }
-    CanvasService.prototype.getCanvas = function (zIndex, name) {
+    CanvasService.getCanvas = function (zIndex, name) {
         if (name === void 0) { name = "default"; }
         var canvas = document.createElement('canvas');
         canvas.setAttribute("id", "canvas-".concat(name));
@@ -91,6 +64,36 @@ var CanvasService = /** @class */ (function () {
         var ctx = canvas.getContext('2d');
         // Normalize coordinate system to use css pixels.
         ctx.scale(scale, scale);
+        return canvas;
+    };
+    CanvasService.getCurrentCanvas = function () {
+        return Array.from(document.querySelectorAll("canvas")).sort(function (c) { return +c.style.zIndex; })[0];
+    };
+    CanvasService.setCanvasZIndex = function (canvasName, zIndex) {
+        this.getCanvasByName(canvasName).style.zIndex = "".concat(zIndex);
+    };
+    CanvasService.bringCanvasToTop = function (canvasName) {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        var getMax = function (a, b) { return Math.max(a, b); };
+        var maxZIndex = allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.map(function (c) { return +c.style.zIndex; }).reduce(getMax, 0);
+        this.setCanvasZIndex(canvasName, maxZIndex + 1);
+    };
+    CanvasService.resetCanvases = function () {
+        var _this = this;
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return _this.setCanvasZIndex(c.id, 0); });
+    };
+    CanvasService.hideCanvas = function (canvasName) {
+        this.getCanvasByName(canvasName).style.display = "none";
+    };
+    CanvasService.showCanvas = function (canvasName) {
+        this.getCanvasByName(canvasName).style.display = "initial";
+    };
+    CanvasService.getCanvasByName = function (canvasName) {
+        var canvas = document.querySelector("#canvas-".concat(canvasName));
+        if (!canvas) {
+            throw "`No canvas found with name: ${canvasName}`";
+        }
         return canvas;
     };
     return CanvasService;
@@ -175,8 +178,6 @@ var ImportantService = /** @class */ (function () {
 // Time
 var secondsPassed;
 var oldTimeStamp = 0;
-// Canvas
-var canvasService;
 // Recruitment
 var camel;
 var lastUsedId = 0;
@@ -190,14 +191,12 @@ var raceDrawing;
 var race;
 var startRace = new Event("startRace");
 function init() {
-    // Canvas
-    canvasService = new CanvasService();
     // Camel
-    canvasService = new CanvasService();
-    recruitmentService = new RecruitmentService(canvasService, 99);
+    camel = new Camel(++lastUsedId, InitCamelQuality.High);
+    recruitmentService = new RecruitmentService(3);
     // Race
-    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     document.addEventListener("startRace", function (_) {
@@ -221,10 +220,9 @@ function gameLoop(timeStamp) {
 }
 window.onload = function () { init(); };
 var RecruitmentService = /** @class */ (function () {
-    function RecruitmentService(canvasService, zIndex) {
+    function RecruitmentService(zIndex) {
         if (zIndex === void 0) { zIndex = -1; }
         var _this = this;
-        this.canvasService = canvasService;
         this._canvasId = 'recruitmentCanvas';
         this._recruitedCamel = false;
         this.leaveRecruitmentArea = function () {
@@ -249,7 +247,7 @@ var RecruitmentService = /** @class */ (function () {
             _this.tryBuyCamel(100);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
-        this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);
+        this._canvas = CanvasService.getCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d');
         this.drawInitCanvas();
     }
