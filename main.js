@@ -12,7 +12,7 @@ var CanvasBtnService = /** @class */ (function () {
             context.strokeStyle = borderColour;
             context.stroke();
             context.closePath();
-            context.font = '30pt Kremlin Pro Web';
+            context.font = '30pt Garamond';
             context.fillStyle = fontColour;
             context.textAlign = "center";
             context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
@@ -142,7 +142,7 @@ var CashMoneyService = /** @class */ (function () {
             ctx.drawImage(img, window.innerWidth - 450, window.innerHeight - 150, 400, 125);
             ctx.fillStyle = '#e8be9e';
             ctx.fillRect(window.innerWidth - 375, window.innerHeight - 125, 250, 25);
-            ctx.font = '30pt Kremlin Pro Web';
+            ctx.font = '30pt Garamond';
             ctx.fillStyle = '#000';
             ctx.textAlign = "center";
             ctx.fillText('Cash money: ' + cashMoney, window.innerWidth - 250, window.innerHeight - 102, 250);

@@ -30,7 +30,7 @@ class CanvasBtnService {
         context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
-        context.font = '30pt Kremlin Pro Web';
+        context.font = '30pt Garamond';
         context.fillStyle = fontColour;
         context.textAlign = "center";
         context.fillText(text, rect.x + rect.width / 2, rect.y + 3*rect.height/4, rect.x + rect.width);
