@@ -1,7 +1,25 @@
 "use strict";
 var CanvasBtnService = /** @class */ (function () {
     function CanvasBtnService(canvas) {
+        var _this = this;
         this.canvas = canvas;
+        this.drawBtn = function (context, rect, radius, backgroundColour, borderColour, fontColour, text) {
+            context.beginPath();
+            context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
+            context.fillStyle = backgroundColour;
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = borderColour;
+            context.stroke();
+            context.closePath();
+            context.font = '30pt Kremlin Pro Web';
+            context.fillStyle = fontColour;
+            context.textAlign = "center";
+            context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
+        };
+        this.displayHoverState = function (context, rect, radius, borderColour, fontColour, text) {
+            _this.drawBtn(context, rect, radius, borderColour, borderColour, fontColour, text);
+        };
     }
     CanvasBtnService.prototype.getMousePosition = function (event) {
         var rect = this.canvas.getBoundingClientRect();
@@ -29,18 +47,16 @@ var CanvasBtnService = /** @class */ (function () {
                 onclickFunction();
             }
         }, false);
-        context.beginPath();
-        context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
-        context.fillStyle = backgroundColour;
-        context.fill();
-        context.lineWidth = 5;
-        context.strokeStyle = borderColour;
-        context.stroke();
-        context.closePath();
-        context.font = '30pt Kremlin Pro Web';
-        context.fillStyle = fontColour;
-        context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
+        this.canvas.addEventListener('mousemove', function (event) {
+            var mousePos = _this.getMousePosition(event);
+            if (_this.isInside(mousePos, rect)) {
+                _this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
+            }
+            else {
+                _this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+            }
+        }, false);
+        this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
     };
     return CanvasBtnService;
 }());
