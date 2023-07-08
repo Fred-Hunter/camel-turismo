@@ -287,7 +287,8 @@ var MapOverview = /** @class */ (function () {
             return;
         var img = new Image();
         img.src = './graphics/camelmap-nobreed.svg';
-        ctx.drawImage(img, 100, 100);
+        img.width = 10; //window.innerWidth;
+        ctx.drawImage(img, 0, 0, window.innerWidth, 0.815 * window.innerWidth);
         canvas.addEventListener("click", function () {
             CanvasService.showAllCanvas();
             _this.hideMap();
