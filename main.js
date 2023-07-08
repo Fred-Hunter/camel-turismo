@@ -424,8 +424,10 @@ var Camel = /** @class */ (function () {
     function Camel(id, quality) {
         this.id = id;
         var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        var agility = Math.ceil(Math.random() * 10 * (quality + 1));
         this.camelSkills = new CamelSkillsBuilder()
             .withSprintSpeed(sprintSpeed)
+            .withAgility(agility)
             .build();
     }
     return Camel;
@@ -604,9 +606,10 @@ var RacingCamel = /** @class */ (function () {
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
         this._jumpHeight = 0;
         this._gravityAcceleration = 9.81;
-        this._initialVelocity = 10;
         this._scaleFactor = 10;
+        this._initialVelocity = 0;
         this._currentVelocity = 0;
+        this._initialVelocity = 5 + (this.camel.camelSkills.agility.level / 10);
     }
     Object.defineProperty(RacingCamel.prototype, "jumpHeight", {
         get: function () {
@@ -699,6 +702,7 @@ var CamelSkills = /** @class */ (function () {
     function CamelSkills() {
         this.sprintSpeed = new CamelSkill("Sprint Speed");
         this.stamina = new CamelSkill("Stamina");
+        this.agility = new CamelSkill("Agility");
     }
     return CamelSkills;
 }());
@@ -708,6 +712,10 @@ var CamelSkillsBuilder = /** @class */ (function () {
     }
     CamelSkillsBuilder.prototype.withSprintSpeed = function (value) {
         this._camelSkills.sprintSpeed.setLevel(value);
+        return this;
+    };
+    CamelSkillsBuilder.prototype.withAgility = function (value) {
+        this._camelSkills.agility.setLevel(value);
         return this;
     };
     CamelSkillsBuilder.prototype.withStamina = function (value) {
