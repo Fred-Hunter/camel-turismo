@@ -19,7 +19,7 @@ class RaceDrawing {
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         const canvasColour = '#C2B280';
-        const lighterColour = '#d8c380';
+        const lighterColour = '#d8bd80';
 
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
