@@ -196,6 +196,65 @@ class ImportantService {
         return { x, y };
     }
 }
+class LeaderboardService {
+    ctx;
+    constructor(ctx) {
+        this.ctx = ctx;
+        this._camelCubeService = new CubeService(ctx);
+    }
+    _camelCubeService;
+    drawLeaderboard() {
+        const cols = Math.ceil(race.racingCamels.length / 5);
+        let height = 0;
+        race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).forEach(racingCamel => {
+            this.drawCamel(racingCamel, height);
+            height -= 5;
+        });
+    }
+    isCamelUserOwned(racingCamel) {
+        return racingCamel == camel;
+    }
+    componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+    getProgressBarColour(color1, color2, weight) {
+        var w1 = weight;
+        var w2 = 1 - w1;
+        var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+            Math.round(color1[1] * w1 + color2[1] * w2),
+            Math.round(color1[2] * w1 + color2[2] * w2)];
+        return "#" + this.componentToHex(rgb[0]) + this.componentToHex(rgb[1]) + this.componentToHex(rgb[2]);
+    }
+    drawCamel(camel, heightOffset) {
+        const x = 5.5;
+        const y = -6.5;
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 1.5 + heightOffset, 0, -3);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 0 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 2 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, heightOffset);
+        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset);
+        if (this.isCamelUserOwned(camel.camel)) {
+            this.ctx.fillText('Your camel', window.innerWidth - 260, 70 - heightOffset * 10);
+        }
+        this.ctx.fillStyle = '#000';
+        this.ctx.font = '10pt Garamond';
+        const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = '#fff';
+        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+        const colour = this.getProgressBarColour([252, 213, 53], [61, 204, 83], 1 - camel.completionPercentage);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = colour;
+        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+}
 // Time
 let secondsPassed;
 let oldTimeStamp = 0;
@@ -213,6 +272,7 @@ let raceDrawing;
 let gymDrawing;
 let race;
 let startRace = new Event("startRace");
+let leaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
 // Map
 let map;
@@ -232,6 +292,7 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
     // Map
@@ -280,6 +341,7 @@ function gameLoop(timeStamp) {
         raceSimulation.simulateRaceStep(race);
     }
     raceDrawing.drawCamels(race);
+    leaderboardService.drawLeaderboard();
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = () => { init(); };
@@ -438,15 +500,19 @@ class MusicService {
     startAudio() {
         if (this.currentAudio == "HomeScreenAudio") {
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
             this.HomeScreenAudio.play();
         }
         else if (this.currentAudio == "RaceAudio") {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.play();
         }
         else {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
         }
     }
     setAudio(audioName) {
@@ -752,12 +818,6 @@ class RaceDrawing {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }
-    isCamelUserOwned(racingCamel) {
-        return racingCamel == camel;
-    }
-    drawUserCamelIndicator(x, y, camel) {
-        this.camelCubeService.drawCube(x - 1, y - 1.5, 5, '#41e87b', camel.jumpHeight);
-    }
     drawCamel(camel, race) {
         camel.handleJumpTick();
         const numberOfRaceTrackCoords = race.track.length;
@@ -779,11 +839,6 @@ class RaceDrawing {
         const newYCoord = movingInPositiveY ? currentCoord[1] + offset :
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
-        const isUsersCamel = this.isCamelUserOwned(camel.camel);
-        if (isUsersCamel) {
-            const x = movingInNegativeX || movingInPositiveX ? newXCoord - 0.5 : newXCoord;
-            this.drawUserCamelIndicator(x, newYCoord, camel);
-        }
         if (movingInNegativeY) {
             this.drawNegativeYCamel(newXCoord, newYCoord, camel);
         }

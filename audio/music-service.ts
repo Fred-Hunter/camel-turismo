@@ -14,13 +14,17 @@ class MusicService {
     startAudio() {
         if (this.currentAudio == "HomeScreenAudio") {
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
             this.HomeScreenAudio.play();
         } else if (this.currentAudio == "RaceAudio") {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.play();
         } else {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
         }
     }
 

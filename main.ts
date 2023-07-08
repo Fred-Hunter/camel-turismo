@@ -17,6 +17,7 @@ let raceDrawing: RaceDrawing;
 let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
+let leaderboardService: LeaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
 
 // Map
@@ -41,6 +42,8 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+
+    leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d")!);
 
     // Gym
     gymDrawing = new GymDrawing();
@@ -110,6 +113,8 @@ function gameLoop(timeStamp: number) {
     }
 
     raceDrawing.drawCamels(race);
+
+    leaderboardService.drawLeaderboard();
 
     window.requestAnimationFrame(gameLoop);
 }
