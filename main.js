@@ -1217,7 +1217,11 @@ class RaceSimulation {
     }
     handleFinishedRace(race) {
         race.inProgress = false;
-        const position = this._finishedCamels.map(o => o.camel).indexOf(camel);
+        let position = this._finishedCamels.map(o => o.camel).indexOf(camel);
+        position = position > -1 ?
+            position :
+            position + 1 +
+                race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
         const prizeCashMoney = this.getPrizeMoney(race, position);
         cashMoney += prizeCashMoney;
         this._finishedCamels = [];
