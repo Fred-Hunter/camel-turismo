@@ -4,11 +4,13 @@ class CamelSkill {
     {
         const xp = this.getXpRequiredForVirtualLevel(1);
         this._currentXp = xp;
+        this._skillValue = this.level;
     }
 
     private readonly _minSkillLevel = 1;
     private readonly _maxSkillLevel = 99;
     private _currentXp = 0;
+    private _skillValue = 0;
 
     public get name() {
         return this._name;
@@ -38,7 +40,18 @@ class CamelSkill {
         return virtualLevel;
     }
 
+    public addSkillValue(value: number) {
+        this._skillValue += value
+    }
+
+    public get skillValue():number {
+        return this._skillValue
+    }
+
     public addXp(value: number) {
         this._currentXp += value;
+        if (this.getVirtualLevelWithXp(this._currentXp) > this.getVirtualLevelWithXp(this._currentXp - value)) {
+            this._skillValue = this.level
+        }
     }
 }
