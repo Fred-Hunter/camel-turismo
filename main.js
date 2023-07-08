@@ -69,6 +69,7 @@ class CanvasNames {
     static MapOverview = 'map-overview';
     static GymCamel = 'gym-camel';
     static GymBackground = 'gym-background';
+    static PopupCanvas = 'popup';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -196,6 +197,66 @@ class ImportantService {
         return { x, y };
     }
 }
+class LeaderboardService {
+    ctx;
+    constructor(ctx) {
+        this.ctx = ctx;
+        this._camelCubeService = new CubeService(ctx);
+    }
+    _camelCubeService;
+    drawLeaderboard() {
+        const cols = Math.ceil(race.racingCamels.length / 5);
+        let height = 0;
+        race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).forEach(racingCamel => {
+            this.drawCamel(racingCamel, height);
+            height -= 5;
+        });
+    }
+    isCamelUserOwned(racingCamel) {
+        return racingCamel == camel;
+    }
+    componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+    getProgressBarColour(color1, color2, weight) {
+        var w1 = weight;
+        var w2 = 1 - w1;
+        var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+            Math.round(color1[1] * w1 + color2[1] * w2),
+            Math.round(color1[2] * w1 + color2[2] * w2)];
+        return "#" + this.componentToHex(rgb[0]) + this.componentToHex(rgb[1]) + this.componentToHex(rgb[2]);
+    }
+    drawCamel(camel, heightOffset) {
+        const x = 5.5;
+        const y = -6.5;
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1.5 + heightOffset, 0, -3);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 0 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 2 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, heightOffset);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset);
+        if (this.isCamelUserOwned(camel.camel)) {
+            this.ctx.fillStyle = '#96876e';
+            this.ctx.fillText('Your camel', window.innerWidth - 100, 59 - heightOffset * 10);
+        }
+        this.ctx.fillStyle = '#000';
+        this.ctx.font = '10pt Garamond';
+        const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = '#fff';
+        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+        const colour = this.getProgressBarColour([255, 238, 150], [61, 204, 83], 1 - camel.completionPercentage);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = colour;
+        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+}
 // Time
 let secondsPassed;
 let oldTimeStamp = 0;
@@ -213,6 +274,7 @@ let raceDrawing;
 let gymDrawing;
 let race;
 let startRace = new Event("startRace");
+let leaderboardService;
 let enterRaceSelection = new Event("enterRaceSelection");
 // Map
 let map;
@@ -226,18 +288,21 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection();
+    leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
     // Map
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
+    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
@@ -280,6 +345,7 @@ function gameLoop(timeStamp) {
         raceSimulation.simulateRaceStep(race);
     }
     raceDrawing.drawCamels(race);
+    leaderboardService.drawLeaderboard();
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = () => { init(); };
@@ -340,10 +406,95 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
-                document.dispatchEvent(enterRaceSelection);
+                if (!!camel) {
+                    document.dispatchEvent(enterRaceSelection);
+                }
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
+    }
+}
+class PopupService {
+    constructor() {
+    }
+    static drawAlertPopup(text) {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        CanvasService.bringCanvasToTop(CanvasNames.PopupCanvas);
+        CanvasService.showCanvas(CanvasNames.PopupCanvas);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx)
+            return;
+        const width = 400;
+        const height = 120;
+        const x = (canvas.width / window.devicePixelRatio) / 2 - width / 2;
+        const y = window.innerHeight / 2 - height / 4;
+        const bgColour = GlobalStaticConstants.backgroundColour;
+        const textColour = "#432818";
+        const highlightColour = "#432818";
+        // Draw the background rectangle
+        const backgroundRect = [
+            x,
+            y,
+            width,
+            height
+        ];
+        ctx.strokeStyle = highlightColour;
+        ctx.lineWidth = 3;
+        ctx.fillStyle = bgColour;
+        ctx.rect(...backgroundRect);
+        ctx.fill();
+        ctx.stroke();
+        // Draw the popup content
+        const textLines = this.getLines(ctx, text, width / 2 - 50);
+        let textOffset = 0;
+        ctx.fillStyle = textColour;
+        ctx.font = 'bold 20px Arial';
+        textLines.forEach((t) => {
+            ctx.fillText(t, x + 20, y + backgroundRect[3] / 3 + textOffset);
+            textOffset += 30;
+        });
+        // Draw the close button
+        ctx.fillStyle = highlightColour;
+        ctx.fillRect(x + backgroundRect[2] - 60, y, 60, 30);
+        ctx.fillStyle = "#fff";
+        ctx.font = '14px Arial';
+        ctx.fillText('Close', x + backgroundRect[2] - 55, y + 20, backgroundRect[3]);
+        // Add an event listener to handle the close button click
+        canvas.addEventListener('click', function (event) {
+            var rect = canvas.getBoundingClientRect();
+            var mouseX = event.clientX - rect.left;
+            var mouseY = event.clientY - rect.top;
+            if (mouseX >= backgroundRect[0] &&
+                mouseX <= backgroundRect[0] + backgroundRect[2] &&
+                mouseY >= backgroundRect[1] &&
+                mouseY <= backgroundRect[1] + backgroundRect[3]) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                CanvasService.hideCanvas(CanvasNames.PopupCanvas);
+            }
+        });
+    }
+    static drawTwoOptionPopup(canvas, x, y, option1Text, option2Text, option1Callback, option2Callback) {
+        if (!canvas)
+            return;
+        const ctx = canvas.getContext('2d');
+    }
+    static getLines(ctx, text, maxWidth) {
+        var words = text.split(" ");
+        var lines = [];
+        var currentLine = words[0];
+        for (var i = 1; i < words.length; i++) {
+            var word = words[i];
+            var width = ctx.measureText(currentLine + " " + word).width;
+            if (width < maxWidth) {
+                currentLine += " " + word;
+            }
+            else {
+                lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
     }
 }
 class RecruitmentService {
@@ -375,17 +526,17 @@ class RecruitmentService {
         }
     };
     tryBuyCamel(cost) {
-        if (camel !== undefined && camel !== null) {
-            // todo: change camels/allow more than one
-            alert('Already recruited a camel!');
-            return;
-        }
+        const camelAlreadyExists = camel !== undefined && camel !== null;
+        // if (camelAlreadyExists) {
+        // alert ('Already recruited a camel!');
+        // return;
+        // }
         if (!this.validateEnoughCashMoney(cost)) {
             alert('Not enough cash money!');
             return;
         }
         cashMoney = cashMoney - cost;
-        alert('Recruited camel!');
+        alert(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
         this._recruitedCamel = true;
     }
     spendHighCashMoney = () => {
@@ -436,15 +587,19 @@ class MusicService {
     startAudio() {
         if (this.currentAudio == "HomeScreenAudio") {
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
             this.HomeScreenAudio.play();
         }
         else if (this.currentAudio == "RaceAudio") {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.play();
         }
         else {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
         }
     }
     setAudio(audioName) {
@@ -564,45 +719,45 @@ class GymDrawing {
     }
     drawNegativeYCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, camel.jumpHeight);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight);
     }
     drawNegativeXCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 1, -1.5);
     }
     drawPositiveYCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 0);
     }
     drawPositiveXCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
 class GymSession {
@@ -713,6 +868,7 @@ class Camel {
             .withStamina(stamina)
             .build();
     }
+    color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     camelSkills;
 }
 class RaceDrawing {
@@ -750,14 +906,7 @@ class RaceDrawing {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }
-    isCamelUserOwned(racingCamel) {
-        return racingCamel == camel;
-    }
-    drawUserCamelIndicator(x, y, camel) {
-        this.camelCubeService.drawCube(x - 1, y - 1.5, 5, '#41e87b', camel.jumpHeight);
-    }
     drawCamel(camel, race) {
-        camel.handleJumpTick();
         const numberOfRaceTrackCoords = race.track.length;
         const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
         const currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
@@ -777,11 +926,6 @@ class RaceDrawing {
         const newYCoord = movingInPositiveY ? currentCoord[1] + offset :
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
-        const isUsersCamel = this.isCamelUserOwned(camel.camel);
-        if (isUsersCamel) {
-            const x = movingInNegativeX || movingInPositiveX ? newXCoord - 0.5 : newXCoord;
-            this.drawUserCamelIndicator(x, newYCoord, camel);
-        }
         if (movingInNegativeY) {
             this.drawNegativeYCamel(newXCoord, newYCoord, camel);
         }
@@ -797,45 +941,45 @@ class RaceDrawing {
     }
     drawNegativeYCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, camel.jumpHeight);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight);
     }
     drawNegativeXCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 1, -1.5);
     }
     drawPositiveYCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 2 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 0);
     }
     drawPositiveXCamel(newXCoord, newYCoord, camel) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
 class RaceSelection {
@@ -850,26 +994,28 @@ class RaceSelection {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const radius = 25;
-        const enterStreetRace = () => this.selectRace(40, 100, 0);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200);
-        const enterWorldCup = () => this.selectRace(120, 10000, 300);
-        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race - $0');
-        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby - $200');
-        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup - $300');
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
+        const enterWorldCup = () => this.selectRace(120, 10000, 300, 15);
+        const middleX = this._canvas.width / window.devicePixelRatio / 2;
+        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
+        btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
+        btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
         CashMoneyService.drawCashMoney(this._ctx);
     }
-    selectRace(raceLength, prizeMoney, entryFee) {
+    selectRace(raceLength, prizeMoney, entryFee, raceSize) {
         if (cashMoney >= entryFee) {
-            cashMoney -= prizeMoney;
+            cashMoney -= entryFee;
         }
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney);
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize);
         document.dispatchEvent(startRace);
     }
 }
 class RaceSimulation {
-    createRace(enteringCamel, raceLength, prizeCashMoney) {
+    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize) {
         const camelsInRace = [enteringCamel];
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < raceSize; i++) {
             // TODO randomise quality and allow quality about init camel quality
             const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
             camelsInRace.push(competitorCamel);
@@ -890,6 +1036,7 @@ class RaceSimulation {
     }
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
+            racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
@@ -926,7 +1073,7 @@ class RaceSimulation {
         if (position === 1) {
             return prizePool * 0.2;
         }
-        if (position === 1) {
+        if (position === 2) {
             return prizePool * 0.05;
         }
         return 0;
@@ -996,7 +1143,6 @@ class RacingCamel {
     }
     completionPercentage = 0;
     raceSpeedPerSecond = 0;
-    color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     stamina = 0;
     _jumpHeight = 0;
     get jumpHeight() {

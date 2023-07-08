@@ -23,12 +23,12 @@ class MapOverview {
 
         const scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
 
-        
         let rect = {
             x: 0,
             y: 0,
             width: window.innerHeight / 0.815,
-            height: window.innerHeight};
+            height: window.innerHeight
+        };
 
         if (scaleToWidth) {
             rect = {
@@ -64,7 +64,9 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
-                document.dispatchEvent(enterRaceSelection);
+                if(!!camel) {
+                    document.dispatchEvent(enterRaceSelection);
+                }
             }
         }, false);
 

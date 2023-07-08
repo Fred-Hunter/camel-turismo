@@ -2,10 +2,11 @@ class RaceSimulation {
     createRace(
         enteringCamel: Camel,
         raceLength: number,
-        prizeCashMoney: number): Race {
+        prizeCashMoney: number,
+        raceSize: number): Race {
         const camelsInRace = [enteringCamel];
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < raceSize; i++) {
             // TODO randomise quality and allow quality about init camel quality
             const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
             camelsInRace.push(competitorCamel);
@@ -32,6 +33,7 @@ class RaceSimulation {
 
     simulateRaceStep(race: Race) {
         race.racingCamels.forEach(racingCamel => {
+            racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
@@ -82,7 +84,7 @@ class RaceSimulation {
             return prizePool * 0.2;
         }
 
-        if (position === 1) {
+        if (position === 2) {
             return prizePool * 0.05;
         }
 

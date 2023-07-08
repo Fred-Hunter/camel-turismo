@@ -36,17 +36,17 @@ class RecruitmentService {
     }
 
     tryBuyCamel(cost: number) {
-        if (camel !== undefined && camel !== null) {
-            // todo: change camels/allow more than one
-            alert ('Already recruited a camel!');
-            return;
-        }
+        const camelAlreadyExists = camel !== undefined && camel !== null;
+        // if (camelAlreadyExists) {
+            // alert ('Already recruited a camel!');
+            // return;
+        // }
         if (!this.validateEnoughCashMoney(cost)) {
             alert('Not enough cash money!');
             return;
         }
         cashMoney = cashMoney - cost;
-        alert('Recruited camel!');
+        alert(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
         this._recruitedCamel = true;
     }
 
