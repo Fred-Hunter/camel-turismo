@@ -46,7 +46,7 @@ var CanvasBtnService = /** @class */ (function () {
 var CanvasService = /** @class */ (function () {
     function CanvasService() {
     }
-    CanvasService.getCanvas = function (zIndex, name) {
+    CanvasService.createCanvas = function (zIndex, name) {
         if (name === void 0) { name = "default"; }
         var canvas = document.createElement('canvas');
         canvas.setAttribute("id", "canvas-".concat(name));
@@ -175,14 +175,20 @@ var raceSimulation;
 var raceDrawing;
 var race;
 var startRace = new Event("startRace");
+// Map
+var map;
 function init() {
     // Camel
     recruitmentService = new RecruitmentService(3);
     // Race
-    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
+    // Map
+    var mapCanvas = CanvasService.createCanvas('4', 'map-overview');
+    map = new MapOverview(mapCanvas);
+    CanvasService.hideCanvas('map-overview');
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 2000);
         raceSimulation.startRace(race);
@@ -200,6 +206,12 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
+var MapOverview = /** @class */ (function () {
+    function MapOverview(canvas) {
+        this.canvas = canvas;
+    }
+    return MapOverview;
+}());
 var RecruitmentService = /** @class */ (function () {
     function RecruitmentService(zIndex) {
         if (zIndex === void 0) { zIndex = -1; }
@@ -228,8 +240,18 @@ var RecruitmentService = /** @class */ (function () {
             _this.tryBuyCamel(100);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
-        this._canvas = CanvasService.getCanvas(zIndex.toString(), this._canvasId);
+        this.drawCamel = function (xCoord, yCoord, colour) {
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1.5, 0, -3);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 0, 0, -2);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1, 0, -2);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1, 0, -1);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 2, 0, -1);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour);
+            _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1);
+        };
+        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d');
+        this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
     }
     RecruitmentService.prototype.goToRecruitmentArea = function () {
@@ -257,46 +279,75 @@ var RecruitmentService = /** @class */ (function () {
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var btnService = new CanvasBtnService(this._canvas);
         btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        this.drawCamel(-5.5, 4.5, '#cc807a');
         btnService.createBtn(600, 100, 400, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        this.drawCamel(-0.5, -0.5, '#debb49');
         btnService.createBtn(350, 400, 400, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(3, 8., '#509124');
     };
     return RecruitmentService;
 }());
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var GymSession = /** @class */ (function () {
-    function GymSession(_skill, _maxStamina, _xpChangeOnSuccessfulAction, _staminaChangeOnSuccessfulAction, _staminaChangeOnFailedAction) {
-        if (_xpChangeOnSuccessfulAction === void 0) { _xpChangeOnSuccessfulAction = 9; }
-        if (_staminaChangeOnSuccessfulAction === void 0) { _staminaChangeOnSuccessfulAction = -3; }
-        if (_staminaChangeOnFailedAction === void 0) { _staminaChangeOnFailedAction = -10; }
-        this._skill = _skill;
-        this._xpChangeOnSuccessfulAction = _xpChangeOnSuccessfulAction;
-        this._staminaChangeOnSuccessfulAction = _staminaChangeOnSuccessfulAction;
-        this._staminaChangeOnFailedAction = _staminaChangeOnFailedAction;
+    function GymSession() {
         this._sessionActive = false;
-        this._xpGained = 0;
-        this._staminaRemaining = 0;
-        this._staminaRemaining = _maxStamina;
     }
     GymSession.prototype.startSession = function () {
         this._sessionActive = true;
-        this._xpGained = 0;
     };
-    GymSession.prototype.onSuccessfulAction = function () {
+    GymSession.prototype.endSession = function () {
+        if (!this._sessionActive) {
+            return;
+        }
+        this._sessionActive = false;
+    };
+    return GymSession;
+}());
+var TrainSession = /** @class */ (function (_super) {
+    __extends(TrainSession, _super);
+    function TrainSession(_skill, _maxStamina) {
+        var _this = _super.call(this) || this;
+        _this._skill = _skill;
+        _this._xpGained = 0;
+        _this._staminaRemaining = 0;
+        _this._staminaRemaining = _maxStamina;
+        return _this;
+    }
+    TrainSession.prototype.startSession = function () {
+        this._xpGained = 0;
+        _super.prototype.startSession.call(this);
+    };
+    TrainSession.prototype.onSuccessfulAction = function () {
         // Review
         if (!this._sessionActive) {
             return;
         }
-        this._xpGained += this._xpChangeOnSuccessfulAction;
-        this._staminaRemaining += this._staminaChangeOnSuccessfulAction; // TODO: range of values
+        this._xpGained += 9;
+        this._staminaRemaining += -3; // TODO: range of values
         this.postAction();
     };
-    GymSession.prototype.onFailedAction = function () {
+    TrainSession.prototype.onFailedAction = function () {
         if (!this._sessionActive) {
             return;
         }
-        this._staminaRemaining += this._staminaChangeOnFailedAction;
+        this._staminaRemaining += -10;
         return this.postAction();
     };
-    GymSession.prototype.postAction = function () {
+    TrainSession.prototype.postAction = function () {
         if (!this._sessionActive) {
             return;
         }
@@ -305,22 +356,46 @@ var GymSession = /** @class */ (function () {
             this.endSession();
         }
     };
-    GymSession.prototype.endSession = function () {
-        if (!this._sessionActive) {
-            return;
-        }
+    TrainSession.prototype.endSession = function () {
+        _super.prototype.endSession.call(this);
         this._skill.addXp(this._xpGained);
-        this._sessionActive = false;
     };
-    return GymSession;
-}());
+    return TrainSession;
+}(GymSession));
+var SpaSession = /** @class */ (function (_super) {
+    __extends(SpaSession, _super);
+    function SpaSession(_skill) {
+        var _this = _super.call(this) || this;
+        _this._skill = _skill;
+        _this._startTime = 0;
+        _this._staiminaGained = 0;
+        return _this;
+    }
+    SpaSession.prototype.startSession = function () {
+        this._startTime = secondsPassed;
+        _super.prototype.startSession.call(this);
+    };
+    SpaSession.prototype.endSession = function () {
+        _super.prototype.endSession.call(this);
+        this._staiminaGained = secondsPassed - this._startTime;
+        if (this._staiminaGained < this._skill.level) {
+            this._skill.addSkillValue(this._staiminaGained);
+        }
+        else {
+            this._skill.addSkillValue(this._skill.level);
+        }
+    };
+    return SpaSession;
+}(GymSession));
 var Gym = /** @class */ (function () {
     function Gym() {
     }
     Gym.prototype.getTreadmillSession = function (camel) {
-        return new GymSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.level);
+        return new TrainSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.skillValue);
     };
     Gym.prototype.getSpaSession = function (camel) {
+        // Take Away Money
+        return new SpaSession(camel.camelSkills.stamina);
     };
     return Gym;
 }());
@@ -381,6 +456,7 @@ var RaceDrawing = /** @class */ (function () {
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
     };
     RaceDrawing.prototype.drawCamel = function (camel) {
+        camel.handleJumpTick();
         var numberOfRaceTrackCoords = this.raceTrackCoords.length;
         var currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
         var currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
@@ -401,41 +477,57 @@ var RaceDrawing = /** @class */ (function () {
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
         if (movingInNegativeY) {
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1.5, 0, -3);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 0, 0, -2);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1, 0, -1);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 2, 0, -1);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color);
-            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1);
+            this.drawNegativeYCamel(newXCoord, newYCoord, camel);
         }
         else if (movingInNegativeX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1.5, -2, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 0, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 2, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 0, 1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, 1, -1.5);
+            this.drawNegativeXCamel(newXCoord, newYCoord, camel);
         }
         else if (movingInPositiveY) {
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1.5, 0);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 0, 0, -3);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -3);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 2, 0, -2);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 0, 0, -1);
-            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -1);
+            this.drawPositiveYCamel(newXCoord, newYCoord, camel);
         }
         else if (movingInPositiveX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 0, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 2, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 0, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1.5, 1.5, -1.5);
+            this.drawPositiveXCamel(newXCoord, newYCoord, camel);
         }
+    };
+    RaceDrawing.prototype.drawNegativeYCamel = function (newXCoord, newYCoord, camel) {
+        var xCoord = newXCoord - 0.25;
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight);
+    };
+    RaceDrawing.prototype.drawNegativeXCamel = function (newXCoord, newYCoord, camel) {
+        var xCoord = newXCoord;
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 0 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 1 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 1 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 2 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord - 0.5, 10, camel.color, 1 + camel.jumpHeight, 1, -1.5);
+    };
+    RaceDrawing.prototype.drawPositiveYCamel = function (newXCoord, newYCoord, camel) {
+        var xCoord = newXCoord + 0.25;
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
+    };
+    RaceDrawing.prototype.drawPositiveXCamel = function (newXCoord, newYCoord, camel) {
+        var xCoord = newXCoord;
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, newYCoord + 0.5, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
     };
     return RaceDrawing;
 }());
@@ -459,6 +551,7 @@ var RaceSimulation = /** @class */ (function () {
             throw new Error('Tried to start a race with no camels');
         }
         race.inProgress = true;
+        race.racingCamels.forEach(function (x) { return x.startJump(); });
     };
     RaceSimulation.prototype.simulateRaceStep = function (race) {
         race.racingCamels.forEach(function (racingCamel) {
@@ -492,7 +585,38 @@ var RacingCamel = /** @class */ (function () {
         this.completionPercentage = 0;
         this.raceSpeedPerSecond = 0;
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+        this._jumpHeight = 0;
+        this._gravityAcceleration = 9.81;
+        this._initialVelocity = 10;
+        this._scaleFactor = 10;
+        this._currentVelocity = 0;
     }
+    Object.defineProperty(RacingCamel.prototype, "jumpHeight", {
+        get: function () {
+            return this._jumpHeight;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    RacingCamel.prototype.startJump = function () {
+        this._currentVelocity = this._initialVelocity;
+    };
+    RacingCamel.prototype.handleJumpTick = function () {
+        if (this._currentVelocity == 0) {
+            // Have to start the jump
+            return;
+        }
+        this._jumpHeight += this._currentVelocity / this._scaleFactor;
+        this._currentVelocity += -(this._gravityAcceleration) / this._scaleFactor;
+        if (this._jumpHeight < 0) {
+            this._jumpHeight = 0;
+            this._currentVelocity = 0;
+        }
+        // Remove
+        if (this._jumpHeight == 0) {
+            this.startJump();
+        }
+    };
     return RacingCamel;
 }());
 var CamelSkill = /** @class */ (function () {
@@ -501,8 +625,10 @@ var CamelSkill = /** @class */ (function () {
         this._minSkillLevel = 1;
         this._maxSkillLevel = 99;
         this._currentXp = 0;
+        this._skillValue = 0;
         var xp = this.getXpRequiredForVirtualLevel(1);
         this._currentXp = xp;
+        this._skillValue = this.level;
     }
     Object.defineProperty(CamelSkill.prototype, "name", {
         get: function () {
@@ -534,8 +660,21 @@ var CamelSkill = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    CamelSkill.prototype.addSkillValue = function (value) {
+        this._skillValue += value;
+    };
+    Object.defineProperty(CamelSkill.prototype, "skillValue", {
+        get: function () {
+            return this._skillValue;
+        },
+        enumerable: false,
+        configurable: true
+    });
     CamelSkill.prototype.addXp = function (value) {
         this._currentXp += value;
+        if (this.getVirtualLevelWithXp(this._currentXp) > this.getVirtualLevelWithXp(this._currentXp - value)) {
+            this._skillValue = this.level;
+        }
     };
     return CamelSkill;
 }());
