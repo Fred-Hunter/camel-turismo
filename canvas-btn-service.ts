@@ -20,7 +20,9 @@ class CanvasBtnService {
         yStart: number,
         width: number,
         height: number,
+        radius: number,
         backgroundColour: string,
+        borderColour: string,
         fontColour: string,
         onclickFunction: any,
         text: string) {
@@ -43,15 +45,16 @@ class CanvasBtnService {
         }, false);
 
         context.beginPath();
-        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 2;
-        context.strokeStyle = '#000000';
+        context.lineWidth = 5;
+        context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Kremlin Pro Web';
         context.fillStyle = fontColour;
-        context.fillText(text, rect.x + rect.width / 8, rect.y + 3*rect.height/4, rect.x + 7*rect.width / 8);
+        context.textAlign = "center";
+        context.fillText(text, rect.x + rect.width / 2, rect.y + 3*rect.height/4, rect.x + rect.width);
     }  
 }

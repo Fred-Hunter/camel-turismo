@@ -1,18 +1,26 @@
 class RaceDrawing {
     constructor(
-        private readonly _backgroundCanvas: HTMLCanvasElement,
-        private readonly _camelCanvas: HTMLCanvasElement,
     ) {
-        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d")!);
-        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d")!);
+        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
+        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
+        this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d")!);
+        this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d")!);
     }
 
+    private _backgroundCanvas: HTMLCanvasElement;
+    private _camelCanvas: HTMLCanvasElement;
     private backgroundCubeService: CubeService;
     private camelCubeService: CubeService;
 
     private raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
     [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
-    [10, 9], [10, 8], [10, 7]];
+    [10, 9], [10, 8], [10, 7],
+    [9, 7], [8, 7], [7, 7], [6, 7], [5, 7], [4, 7],
+    [4, 6], [4, 5], [4, 4], [4, 3], [4, 2], [4, 1],
+    [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
+    [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [12, 13],
+    [11, 13], [10, 13], [9, 13], [8, 13], [7, 13], [6, 13], [5, 13], [4, 13]
+    ];
 
     public drawRaceCourse() {
         const ctx = this._backgroundCanvas.getContext("2d")!;
@@ -41,6 +49,8 @@ class RaceDrawing {
     }
 
     public drawCamel(camel: RacingCamel) {
+        camel.handleJumpTick();
+
         const numberOfRaceTrackCoords = this.raceTrackCoords.length;
         const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
 
@@ -51,12 +61,13 @@ class RaceDrawing {
             (nextCoordPercentage - currentCoordPercentage);
 
         const currentCoord = this.raceTrackCoords[currectCoordIndex];
-        const previousCoord = currectCoordIndex > 0 ? this.raceTrackCoords[currectCoordIndex - 1] : currentCoord;
 
-        const movingInPositiveX = currentCoord[0] > previousCoord[0];
-        const movingInNegativeX = currentCoord[0] < previousCoord[0];
-        const movingInPositiveY = currentCoord[1] > previousCoord[1];
-        const movingInNegativeY = currentCoord[1] < previousCoord[1];
+        const nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? this.raceTrackCoords[currectCoordIndex + 1] : currentCoord;
+
+        const movingInPositiveX = currentCoord[0] < nextCoord[0];
+        const movingInNegativeX = currentCoord[0] > nextCoord[0];
+        const movingInPositiveY = currentCoord[1] < nextCoord[1];
+        const movingInNegativeY = currentCoord[1] > nextCoord[1];
 
         const offset = percentageTowardsNextCoord;
 
@@ -69,37 +80,63 @@ class RaceDrawing {
                 currentCoord[1];
 
         if (movingInNegativeY) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1);
+            this.drawNegativeYCamel(newXCoord, newYCoord, camel);
         } else if (movingInNegativeX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, -2, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 1, -1.5);
+            this.drawNegativeXCamel(newXCoord, newYCoord, camel);
         } else if (movingInPositiveY) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 0);
+            this.drawPositiveYCamel(newXCoord, newYCoord, camel);
         } else if (movingInPositiveX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 1.5, -1.5);
+            this.drawPositiveXCamel(newXCoord, newYCoord, camel);
         }
+    }
+
+    private drawNegativeYCamel(newXCoord: number, newYCoord: number, camel: RacingCamel) {
+        const xCoord = newXCoord + 0.25;
+
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight);
+    }
+
+    private drawNegativeXCamel(newXCoord: number, newYCoord: number, camel: RacingCamel) {
+        const xCoord = newXCoord;
+        const yCoord = newYCoord + 0.5;
+
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 1, -1.5);
+    }
+
+    private drawPositiveYCamel(newXCoord: number, newYCoord: number, camel: RacingCamel) {
+        const xCoord = newXCoord + 0.25;
+
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1.5 + camel.jumpHeight, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 2 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.color, 1 + camel.jumpHeight, 0, -1);
+    }
+
+    private drawPositiveXCamel(newXCoord: number, newYCoord: number, camel: RacingCamel) {
+        const xCoord = newXCoord;
+        const yCoord = newYCoord + 0.5;
+
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
