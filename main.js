@@ -116,6 +116,24 @@ var CanvasService = /** @class */ (function () {
     };
     return CanvasService;
 }());
+var CashMoneyService = /** @class */ (function () {
+    function CashMoneyService() {
+    }
+    CashMoneyService.drawCashMoney = function (ctx) {
+        var img = new Image();
+        img.src = './egyptian-pound.jpg';
+        img.onload = function () {
+            ctx.drawImage(img, window.innerWidth - 450, window.innerHeight - 150, 400, 125);
+            ctx.fillStyle = '#e8be9e';
+            ctx.fillRect(window.innerWidth - 375, window.innerHeight - 125, 250, 25);
+            ctx.font = '30pt Kremlin Pro Web';
+            ctx.fillStyle = '#000';
+            ctx.textAlign = "center";
+            ctx.fillText('Cash money: ' + cashMoney, window.innerWidth - 250, window.innerHeight - 102, 250);
+        };
+    };
+    return CashMoneyService;
+}());
 var CubeService = /** @class */ (function () {
     function CubeService(ctx) {
         this.ctx = ctx;
@@ -332,6 +350,7 @@ var RecruitmentService = /** @class */ (function () {
         this.drawCamel(2.75, -1.75, '#debb49');
         btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
         this.drawCamel(7.75, 9.25, '#509124');
+        CashMoneyService.drawCashMoney(this._ctx);
     };
     return RecruitmentService;
 }());
