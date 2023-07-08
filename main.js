@@ -346,7 +346,48 @@ var RaceDrawing = /** @class */ (function () {
     RaceDrawing.prototype.drawCamel = function (camel) {
         var xCoord = 1;
         var yCoord = 1 + 9 * camel.completionPercentage;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, '#fff');
+        /// OLLIE CHANGE THE DIRECTIONS
+        // if (this.containsW) {
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0, -3);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -2);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1);
+        // } else if (this.containsA) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, -2, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, -1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 1, -1.5);
+        // } else if (this.containsS) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0);
+        // } else if (this.containsD) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, -1.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -1.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, -0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 1.5, -1.5);
+        // } else {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1);
+        // }
     };
     return RaceDrawing;
 }());
@@ -402,6 +443,7 @@ var RacingCamel = /** @class */ (function () {
         this.camel = camel;
         this.completionPercentage = 0;
         this.raceSpeedPerSecond = 0;
+        this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     }
     return RacingCamel;
 }());
