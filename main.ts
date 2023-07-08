@@ -4,6 +4,7 @@ let oldTimeStamp: number;
 let racingService: RaceService;
 let camel: Camel;
 let lastUsedId = 0;
+let race: Race;
 
 function init() {
     racingService = new RaceService();
@@ -14,6 +15,8 @@ function init() {
 function gameLoop(timeStamp: number) {
     secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
     oldTimeStamp = timeStamp;
+
+    
 
     window.requestAnimationFrame(gameLoop);
 }

@@ -234,6 +234,7 @@ var oldTimeStamp;
 var racingService;
 var camel;
 var lastUsedId = 0;
+var race;
 function init() {
     racingService = new RaceService();
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
@@ -262,28 +263,26 @@ var Camel = /** @class */ (function () {
 var RaceService = /** @class */ (function () {
     function RaceService() {
     }
-    RaceService.prototype.createRace = function (length, camels) {
-        if (camels.length <= 0) {
-            throw new Error('Tried to create a race with no camels');
+    RaceService.prototype.createRace = function (enteringCamel, raceLength) {
+        var camelsInRace = [enteringCamel];
+        for (var i = 0; i < 4; i++) {
+            // TODO randomise quality and allow quality about init camel quality
+            var competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            camelsInRace.push(competitorCamel);
         }
-        var raceCamels = [];
-        camels.forEach(function (camel) {
-        });
-        raceCamels.push();
-        var race = new Race(length);
-        return race;
+        return new Race(raceLength, camelsInRace);
     };
     RaceService.prototype.startRace = function (race) {
         if (race.length <= 0) {
             throw new Error('Tried to start a race with bad length');
         }
-        if (race.camels.length === 0) {
-            throw new Error('Tried to start a race with bad number of camels');
+        if (race.racingCamels.length === 0) {
+            throw new Error('Tried to start a race with no camels');
         }
         race.inProgress = true;
     };
     RaceService.prototype.simulateRaceStep = function (race) {
-        race.camels.forEach(function (racingCamel) {
+        race.racingCamels.forEach(function (racingCamel) {
             racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
             var completedDistance = race.length * racingCamel.completionPercentage;
             var newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
@@ -296,10 +295,15 @@ var RaceService = /** @class */ (function () {
     return RaceService;
 }());
 var Race = /** @class */ (function () {
-    function Race(length) {
+    function Race(length, camels) {
+        var _this = this;
         this.length = length;
-        this.camels = [];
+        this.racingCamels = [];
         this.inProgress = false;
+        camels.forEach(function (camel) {
+            var racingCamel = new RacingCamel(camel);
+            _this.racingCamels.push(racingCamel);
+        });
     }
     return Race;
 }());
