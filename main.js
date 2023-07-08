@@ -179,7 +179,8 @@ var startRace = new Event("startRace");
 var map;
 function init() {
     // Camel
-    recruitmentService = new RecruitmentService(3);
+    raceBackgroundCanvas = CanvasService.createCanvas('3', 'recruitmentCanvas');
+    recruitmentService = new RecruitmentService();
     // Race
     raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
     raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
@@ -213,8 +214,7 @@ var MapOverview = /** @class */ (function () {
     return MapOverview;
 }());
 var RecruitmentService = /** @class */ (function () {
-    function RecruitmentService(zIndex) {
-        if (zIndex === void 0) { zIndex = -1; }
+    function RecruitmentService() {
         var _this = this;
         this._canvasId = 'recruitmentCanvas';
         this._recruitedCamel = false;
@@ -249,7 +249,7 @@ var RecruitmentService = /** @class */ (function () {
             _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour);
             _this._camelCubeService.drawCube(xCoord, yCoord, 10, colour, 1);
         };
-        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
+        this._canvas = CanvasService.getCanvasByName(this._canvasId);
         this._ctx = this._canvas.getContext('2d');
         this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
