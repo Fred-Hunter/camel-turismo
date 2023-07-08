@@ -36,14 +36,16 @@ function init() {
     raceSimulation = new RaceSimulation();
 
     // Map
-    MapOverview.hideMap();
+    CanvasService.hideAllCanvas();
+    MapOverview.showMap();
+    MapOverview.renderMap();
     
     document.addEventListener(
         "startRace",
         (_: any) => {
             race = raceSimulation.createRace(camel, 5000);
             raceSimulation.startRace(race);
-            raceDrawing.drawRaceCourse();
+            raceDrawing.drawRaceCourse(race);
             window.requestAnimationFrame(gameLoop);
         },
         false

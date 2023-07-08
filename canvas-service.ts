@@ -52,6 +52,16 @@ class CanvasService {
         this.getCanvasByName(canvasName).style.display = "none";
     }
 
+    public static hideAllCanvas(): void{
+        const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(c => c.style.display = "none");
+    }
+
+    public static showAllCanvas(): void{
+        const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(c => c.style.display = "initial");
+    }
+
     public static showCanvas(canvasName:string): void {
         this.getCanvasByName(canvasName).style.display = "initial";
     }

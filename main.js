@@ -96,6 +96,14 @@ var CanvasService = /** @class */ (function () {
     CanvasService.hideCanvas = function (canvasName) {
         this.getCanvasByName(canvasName).style.display = "none";
     };
+    CanvasService.hideAllCanvas = function () {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return c.style.display = "none"; });
+    };
+    CanvasService.showAllCanvas = function () {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return c.style.display = "initial"; });
+    };
     CanvasService.showCanvas = function (canvasName) {
         this.getCanvasByName(canvasName).style.display = "initial";
     };
@@ -200,11 +208,13 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     // Map
-    MapOverview.hideMap();
+    CanvasService.hideAllCanvas();
+    MapOverview.showMap();
+    MapOverview.renderMap();
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 5000);
         raceSimulation.startRace(race);
-        raceDrawing.drawRaceCourse();
+        raceDrawing.drawRaceCourse(race);
         window.requestAnimationFrame(gameLoop);
     }, false);
 }
@@ -227,6 +237,20 @@ var MapOverview = /** @class */ (function () {
     };
     MapOverview.hideMap = function () {
         CanvasService.hideCanvas(CanvasNames.MapOverview);
+    };
+    MapOverview.renderMap = function () {
+        var _this = this;
+        var canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
+        if (!ctx)
+            return;
+        var img = new Image();
+        img.src = './graphics/camelmap-nobreed.svg';
+        ctx.drawImage(img, 100, 100);
+        canvas.addEventListener("click", function () {
+            CanvasService.showAllCanvas();
+            _this.hideMap();
+        });
     };
     return MapOverview;
 }());
