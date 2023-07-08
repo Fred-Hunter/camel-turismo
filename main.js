@@ -964,7 +964,7 @@ class RacingCamel {
         return this._jumpHeight;
     }
     _gravityAcceleration = 9.81;
-    _scaleFactor = 10;
+    _scaleFactor = 20;
     _initialVelocity = 0;
     _currentVelocity = 0;
     startJump() {
