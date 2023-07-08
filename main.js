@@ -262,19 +262,54 @@ class MapOverview {
     static hideMap() {
         CanvasService.hideCanvas(CanvasNames.MapOverview);
     }
+    static getMousePosition(event) {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    }
     static renderMap() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
         const ctx = canvas?.getContext("2d");
         if (!ctx)
             return;
+        const scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
+        let rect = {
+            x: 0,
+            y: 0,
+            width: window.innerHeight / 0.815,
+            height: window.innerHeight
+        };
+        if (scaleToWidth) {
+            rect = {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: 0.815 * window.innerWidth
+            };
+        }
         const img = new Image();
         img.src = './graphics/camelmap-nobreed.svg';
-        img.width = 10; //window.innerWidth;
-        ctx.drawImage(img, 0, 0, window.innerWidth, 0.815 * window.innerWidth);
-        canvas.addEventListener("click", () => {
-            CanvasService.showAllCanvas();
-            this.hideMap();
-        });
+        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
+        canvas.addEventListener('click', (event) => {
+            const mousePosition = this.getMousePosition(event);
+            if (mousePosition.x < rect.width / 2 && mousePosition.y < rect.height / 2) {
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
+            }
+            else if (mousePosition.x > rect.width / 2 && mousePosition.y < rect.height / 2) {
+                console.log("Gym");
+            }
+            else if (mousePosition.x > rect.width / 2 && mousePosition.y > rect.height / 2) {
+                console.log("xxx");
+            }
+            else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
+                console.log("race");
+            }
+        }, false);
     }
 }
 class RecruitmentService {
