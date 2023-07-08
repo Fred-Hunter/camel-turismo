@@ -231,13 +231,16 @@ function init() {
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     });
-    document.addEventListener("startRace", (_) => {
+    document.addEventListener("startRace", async (_) => {
         race = raceSimulation.createRace(camel, 30);
-        raceSimulation.startRace(race);
-        raceDrawing.drawRaceCourse(race);
-        window.requestAnimationFrame(gameLoop);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
+        const delay = (ms) => new Promise(res => setTimeout(res, ms));
+        raceDrawing.drawRaceCourse(race);
+        window.requestAnimationFrame(gameLoop);
+        await delay(8500).then(_ => {
+            raceSimulation.startRace(race);
+        });
     }, false);
     document.addEventListener("goToGym", (_) => {
         gymDrawing.drawGym();
