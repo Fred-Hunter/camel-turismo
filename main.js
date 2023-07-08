@@ -231,7 +231,9 @@ var CubeService = /** @class */ (function () {
 }());
 var secondsPassed;
 var oldTimeStamp;
+var racingService;
 function init() {
+    racingService = new RaceService();
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
@@ -239,4 +241,56 @@ function gameLoop(timeStamp) {
     oldTimeStamp = timeStamp;
     window.requestAnimationFrame(gameLoop);
 }
-init();
+window.onload = function () { init(); };
+var RaceService = /** @class */ (function () {
+    function RaceService() {
+    }
+    RaceService.prototype.createRace = function (length, camels) {
+        if (camels.length <= 0) {
+            throw new Error('Tried to create a race with no camels');
+        }
+        var raceCamels = [];
+        camels.forEach(function (camel) {
+        });
+        raceCamels.push();
+        var race = new Race(length);
+        return race;
+    };
+    RaceService.prototype.startRace = function (race) {
+        if (race.length <= 0) {
+            throw new Error('Tried to start a race with bad length');
+        }
+        if (race.camels.length === 0) {
+            throw new Error('Tried to start a race with bad number of camels');
+        }
+        race.inProgress = true;
+    };
+    RaceService.prototype.simulateRaceStep = function (race) {
+        race.camels.forEach(function (racingCamel) {
+            racingCamel.raceSpeedPerSecond = racingCamel.camel.sprintSpeed * 20 * Math.random();
+            var completedDistance = race.length * racingCamel.completionPercentage;
+            var newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
+            racingCamel.completionPercentage = newCompletedDistance / race.length;
+            if (racingCamel.completionPercentage >= 1) {
+                race.inProgress = false;
+            }
+        });
+    };
+    return RaceService;
+}());
+var Race = /** @class */ (function () {
+    function Race(length) {
+        this.length = length;
+        this.camels = [];
+        this.inProgress = false;
+    }
+    return Race;
+}());
+var RacingCamel = /** @class */ (function () {
+    function RacingCamel(camel) {
+        this.camel = camel;
+        this.completionPercentage = 0;
+        this.raceSpeedPerSecond = 0;
+    }
+    return RacingCamel;
+}());

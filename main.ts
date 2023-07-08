@@ -1,7 +1,10 @@
 let secondsPassed: number;
 let oldTimeStamp: number;
 
+let racingService: RaceService;
+
 function init() {
+    racingService = new RaceService();
     window.requestAnimationFrame(gameLoop);
 }
 
@@ -12,4 +15,4 @@ function gameLoop(timeStamp: number) {
     window.requestAnimationFrame(gameLoop);
 }
 
-init();
+window.onload = () => { init() };
