@@ -538,12 +538,14 @@ class RecruitmentService {
     _ctx;
     _camelCubeService;
     _recruitedCamel = false;
+    handleEvent = () => {
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+        document.removeEventListener("redirectToMap", this.handleEvent);
+    };
     leaveRecruitmentArea = () => {
-        document.addEventListener("redirectToMap", (_) => {
-            CanvasService.hideAllCanvas();
-            MapOverview.showMap();
-            MapOverview.renderMap();
-        }, false);
+        document.addEventListener("redirectToMap", this.handleEvent, false);
     };
     validateEnoughCashMoney(cost) {
         return cashMoney - cost >= 0;

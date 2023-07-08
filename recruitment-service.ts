@@ -14,14 +14,17 @@ class RecruitmentService {
 
     private _recruitedCamel = false;
 
+    handleEvent = () => {
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+        document.removeEventListener("redirectToMap", this.handleEvent);
+    }
+
     leaveRecruitmentArea = () => {
         document.addEventListener(
             "redirectToMap",
-            (_) => {
-                CanvasService.hideAllCanvas();
-                MapOverview.showMap();
-                MapOverview.renderMap();
-            },
+            this.handleEvent,
             false,
           );
     }
