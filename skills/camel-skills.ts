@@ -1,3 +1,3 @@
 class CamelSkills {
-    public sprintSpeed = new CamelSkill("Sprint Speed");
+    public sprintSpeed = new CamelSkill("Sprint Speed", 1);
 }

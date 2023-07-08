@@ -1,7 +1,7 @@
 class CamelSkill {
     constructor(
         private readonly _name: string, 
-        private readonly _level: number) 
+        _level: number) 
     {
         const xp = this.getXpRequiredForVirtualLevel(_level);
         this._currentXp = xp;
@@ -35,7 +35,7 @@ class CamelSkill {
         return virtualLevel;
     }
 
-    public set addXp(value: number) {
+    public addXp(value: number) {
         this._currentXp += value;
     }
 }
