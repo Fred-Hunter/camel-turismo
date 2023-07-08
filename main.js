@@ -46,11 +46,27 @@ var CanvasBtnService = /** @class */ (function () {
 var CanvasServiceService = /** @class */ (function () {
     function CanvasServiceService() {
     }
-    CanvasServiceService.prototype.getCurrentCanvas = function () {
-        return;
+    CanvasServiceService.getCurrentCanvas = function () {
+        return Array.from(document.querySelectorAll("canvas")).sort(function (c) { return +c.style.zIndex; })[0];
     };
-    CanvasServiceService.prototype.setCanvasZIndex = function (canvasName) {
-        return;
+    CanvasServiceService.setCanvasZIndex = function (canvasName, zIndex) {
+        var canvas = document.querySelector("#canvas-".concat(canvasName));
+        if (!canvas) {
+            console.error("No canvas found with name: ".concat(canvasName));
+            return;
+        }
+        canvas.style.zIndex = "".concat(zIndex);
+    };
+    CanvasServiceService.bringCanvasToTop = function (canvasName) {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        var getMax = function (a, b) { return Math.max(a, b); };
+        var maxZIndex = allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.map(function (c) { return +c.style.zIndex; }).reduce(getMax, 0);
+        this.setCanvasZIndex(canvasName, maxZIndex + 1);
+    };
+    CanvasServiceService.resetCanvases = function () {
+        var _this = this;
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return _this.setCanvasZIndex(c.id, 0); });
     };
     return CanvasServiceService;
 }());
@@ -167,7 +183,8 @@ var lastUsedId = 0;
 var recruitmentService;
 var cashMoney = 100;
 // Race
-var raceCanvas;
+var raceCamelCanvas;
+var raceBackgroundCanvas;
 var raceSimulation;
 var raceDrawing;
 var race;
@@ -179,8 +196,9 @@ function init() {
     canvasService = new CanvasService();
     recruitmentService = new RecruitmentService(canvasService, 99);
     // Race
-    raceCanvas = canvasService.getCanvas('1');
-    raceDrawing = new RaceDrawing(raceCanvas);
+    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 1000);
@@ -339,12 +357,14 @@ var Camel = /** @class */ (function () {
     return Camel;
 }());
 var RaceDrawing = /** @class */ (function () {
-    function RaceDrawing(_canvas) {
-        this._canvas = _canvas;
-        this.cubeService = new CubeService(_canvas.getContext("2d"));
+    function RaceDrawing(_backgroundCanvas, _camelCanvas) {
+        this._backgroundCanvas = _backgroundCanvas;
+        this._camelCanvas = _camelCanvas;
+        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d"));
+        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d"));
     }
     RaceDrawing.prototype.drawRaceCourse = function () {
-        var ctx = this._canvas.getContext("2d");
+        var ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = '#e8d7a7';
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var canvasColour = '#C2B280';
@@ -352,10 +372,10 @@ var RaceDrawing = /** @class */ (function () {
         var _loop_1 = function (i) {
             var _loop_2 = function (j) {
                 if (raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
-                    this_1.cubeService.drawCube(i, j, 50, '#5892a1', -0.2);
+                    this_1.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 }
                 else {
-                    this_1.cubeService.drawCube(i, j, 50, canvasColour);
+                    this_1.backgroundCubeService.drawCube(i, j, 50, canvasColour);
                 }
             };
             for (var j = 0; j < 15; j++) {
@@ -369,14 +389,55 @@ var RaceDrawing = /** @class */ (function () {
     };
     RaceDrawing.prototype.drawCamels = function (race) {
         var _this = this;
-        var ctx = this._canvas.getContext("2d");
+        var ctx = this._camelCanvas.getContext("2d");
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
     };
     RaceDrawing.prototype.drawCamel = function (camel) {
         var xCoord = 1;
         var yCoord = 1 + 9 * camel.completionPercentage;
-        this.cubeService.drawCube(xCoord, yCoord, 10, '#fff');
+        /// OLLIE CHANGE THE DIRECTIONS
+        // if (this.containsW) {
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0, -3);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -2);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color);
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1);
+        // } else if (this.containsA) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, -2, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, -1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 1, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 1, -1.5);
+        // } else if (this.containsS) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0);
+        // } else if (this.containsD) {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, -1.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -1.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, -0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, -0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0.5, -1.5);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 1.5, -1.5);
+        // } else {
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0, -3);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color);
+        //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1);
+        // }
     };
     return RaceDrawing;
 }());
@@ -432,6 +493,7 @@ var RacingCamel = /** @class */ (function () {
         this.camel = camel;
         this.completionPercentage = 0;
         this.raceSpeedPerSecond = 0;
+        this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
     }
     return RacingCamel;
 }());

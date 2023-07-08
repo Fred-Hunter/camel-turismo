@@ -12,7 +12,8 @@ let recruitmentService: RecruitmentService;
 let cashMoney = 100;
 
 // Race
-let raceCanvas: HTMLCanvasElement;
+let raceCamelCanvas: HTMLCanvasElement;
+let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
 let race: Race;
@@ -27,8 +28,9 @@ function init() {
     recruitmentService = new RecruitmentService(canvasService, 99);
     
     // Race
-    raceCanvas = canvasService.getCanvas('1');
-    raceDrawing = new RaceDrawing(raceCanvas);
+    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     
     document.addEventListener(
