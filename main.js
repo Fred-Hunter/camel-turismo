@@ -229,20 +229,39 @@ var CubeService = /** @class */ (function () {
     };
     return CubeService;
 }());
+// Time
 var secondsPassed;
-var oldTimeStamp;
-var racingService;
+var oldTimeStamp = 0;
+// Canvas
+var canvasService;
+// Recruitment
 var camel;
 var lastUsedId = 0;
+// Race
+var raceCanvas;
+var racingService;
 var race;
 function init() {
-    racingService = new RaceService();
+    // Canvas
+    canvasService = new CanvasService();
+    // Camel
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
+    // Race
+    raceCanvas = canvasService.getCanvas('1');
+    racingService = new RaceService();
+    race = racingService.createRace(camel, 1000);
+    racingService.startRace(race);
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
     secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
     oldTimeStamp = timeStamp;
+    if (!!race && race.inProgress) {
+        racingService.simulateRaceStep(race);
+        race.racingCamels.forEach(function (camel) {
+            console.log("".concat(camel.camel.id, " - ").concat(camel.completionPercentage));
+        });
+    }
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
