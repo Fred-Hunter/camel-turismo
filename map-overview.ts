@@ -29,6 +29,7 @@ class MapOverview {
             y: 0,
             width: window.innerHeight / 0.815,
             height: window.innerHeight};
+
         if (scaleToWidth) {
             rect = {
                 x: 0,
@@ -53,7 +54,11 @@ class MapOverview {
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
             else if (mousePosition.x > rect.width/2 && mousePosition.y < rect.height/2) {
-                console.log("Gym");
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
+                CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
+                (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width/2 && mousePosition.y > rect.height/2) {
                 console.log("xxx");

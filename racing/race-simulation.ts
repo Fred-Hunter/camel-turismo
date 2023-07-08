@@ -22,7 +22,7 @@ class RaceSimulation {
         if (race.racingCamels.length === 0) {
             throw new Error('Tried to start a race with no camels');
         }
-
+        
         race.inProgress = true;
         race.racingCamels.forEach(x => x.startJump());
     }

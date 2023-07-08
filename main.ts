@@ -29,6 +29,8 @@ function init() {
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
     CanvasService.createCanvas('2', CanvasNames.RaceCamel);
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
+    CanvasService.createCanvas('1', CanvasNames.GymCamel);
+    CanvasService.createCanvas('0', CanvasNames.GymBackground);
 
     recruitmentService = new RecruitmentService();
     
@@ -52,25 +54,30 @@ function init() {
     
     document.addEventListener(
         "startRace",
-        (_: any) => {
+        async (_: any) => {
             race = raceSimulation.createRace(camel, 60);
-            raceSimulation.startRace(race);
-            raceDrawing.drawRaceCourse(race);
-            window.requestAnimationFrame(gameLoop);
             musicService.setAudio("RaceAudio");
             musicService.startAudio()
+
+            const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+            raceDrawing.drawRaceCourse(race);
+            window.requestAnimationFrame(gameLoop);
+            await delay(8500).then(_ => {
+                raceSimulation.startRace(race);
+            })
         },
         false
     );
 
-    document.addEventListener(
-        "goToGym",
-        (_: any) => {
-            gymDrawing.drawGym();
-            window.requestAnimationFrame(gameLoop);
-        },
-        false
-    );
+    // document.addEventListener(
+    //     "goToGym",
+    //     (_: any) => {
+    //         gymDrawing.drawGym();
+    //         window.requestAnimationFrame(gameLoop);
+    //     },
+    //     false
+    // );
 }
 
 function gameLoop(timeStamp: number) {

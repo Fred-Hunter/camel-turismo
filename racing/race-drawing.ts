@@ -42,6 +42,14 @@ class RaceDrawing {
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }
 
+    private isCamelUserOwned(racingCamel: Camel): boolean {
+        return racingCamel == camel;
+    }
+
+    private drawUserCamelIndicator(x: number, y: number, camel: RacingCamel): void {
+        this.camelCubeService.drawCube(x - 1, y - 1.5, 5, '#41e87b', camel.jumpHeight);
+    }
+
     public drawCamel(camel: RacingCamel, race: Race) {
         camel.handleJumpTick();
 
@@ -72,6 +80,13 @@ class RaceDrawing {
         const newYCoord = movingInPositiveY ? currentCoord[1] + offset :
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
+
+        const isUsersCamel = this.isCamelUserOwned(camel.camel);
+
+        if (isUsersCamel) {
+            const x = movingInNegativeX || movingInPositiveX ? newXCoord - 0.5 : newXCoord;
+            this.drawUserCamelIndicator(x, newYCoord, camel);
+        }
 
         if (movingInNegativeY) {
             this.drawNegativeYCamel(newXCoord, newYCoord, camel);
