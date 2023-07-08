@@ -274,41 +274,67 @@ var RecruitmentService = /** @class */ (function () {
     };
     return RecruitmentService;
 }());
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var GymSession = /** @class */ (function () {
-    function GymSession(_skill, _maxStamina, _xpChangeOnSuccessfulAction, _staminaChangeOnSuccessfulAction, _staminaChangeOnFailedAction) {
-        if (_xpChangeOnSuccessfulAction === void 0) { _xpChangeOnSuccessfulAction = 9; }
-        if (_staminaChangeOnSuccessfulAction === void 0) { _staminaChangeOnSuccessfulAction = -3; }
-        if (_staminaChangeOnFailedAction === void 0) { _staminaChangeOnFailedAction = -10; }
-        this._skill = _skill;
-        this._xpChangeOnSuccessfulAction = _xpChangeOnSuccessfulAction;
-        this._staminaChangeOnSuccessfulAction = _staminaChangeOnSuccessfulAction;
-        this._staminaChangeOnFailedAction = _staminaChangeOnFailedAction;
+    function GymSession() {
         this._sessionActive = false;
-        this._xpGained = 0;
-        this._staminaRemaining = 0;
-        this._staminaRemaining = _maxStamina;
     }
     GymSession.prototype.startSession = function () {
         this._sessionActive = true;
-        this._xpGained = 0;
     };
-    GymSession.prototype.onSuccessfulAction = function () {
+    GymSession.prototype.endSession = function () {
+        if (!this._sessionActive) {
+            return;
+        }
+        this._sessionActive = false;
+    };
+    return GymSession;
+}());
+var TrainSession = /** @class */ (function (_super) {
+    __extends(TrainSession, _super);
+    function TrainSession(_skill, _maxStamina) {
+        var _this = _super.call(this) || this;
+        _this._skill = _skill;
+        _this._xpGained = 0;
+        _this._staminaRemaining = 0;
+        _this._staminaRemaining = _maxStamina;
+        return _this;
+    }
+    TrainSession.prototype.startSession = function () {
+        this._xpGained = 0;
+        _super.prototype.startSession.call(this);
+    };
+    TrainSession.prototype.onSuccessfulAction = function () {
         // Review
         if (!this._sessionActive) {
             return;
         }
-        this._xpGained += this._xpChangeOnSuccessfulAction;
-        this._staminaRemaining += this._staminaChangeOnSuccessfulAction; // TODO: range of values
+        this._xpGained += 9;
+        this._staminaRemaining += -3; // TODO: range of values
         this.postAction();
     };
-    GymSession.prototype.onFailedAction = function () {
+    TrainSession.prototype.onFailedAction = function () {
         if (!this._sessionActive) {
             return;
         }
-        this._staminaRemaining += this._staminaChangeOnFailedAction;
+        this._staminaRemaining += -10;
         return this.postAction();
     };
-    GymSession.prototype.postAction = function () {
+    TrainSession.prototype.postAction = function () {
         if (!this._sessionActive) {
             return;
         }
@@ -317,22 +343,46 @@ var GymSession = /** @class */ (function () {
             this.endSession();
         }
     };
-    GymSession.prototype.endSession = function () {
-        if (!this._sessionActive) {
-            return;
-        }
+    TrainSession.prototype.endSession = function () {
+        _super.prototype.endSession.call(this);
         this._skill.addXp(this._xpGained);
-        this._sessionActive = false;
     };
-    return GymSession;
-}());
+    return TrainSession;
+}(GymSession));
+var SpaSession = /** @class */ (function (_super) {
+    __extends(SpaSession, _super);
+    function SpaSession(_skill) {
+        var _this = _super.call(this) || this;
+        _this._skill = _skill;
+        _this._startTime = 0;
+        _this._staiminaGained = 0;
+        return _this;
+    }
+    SpaSession.prototype.startSession = function () {
+        this._startTime = secondsPassed;
+        _super.prototype.startSession.call(this);
+    };
+    SpaSession.prototype.endSession = function () {
+        _super.prototype.endSession.call(this);
+        this._staiminaGained = secondsPassed - this._startTime;
+        if (this._staiminaGained < this._skill.level) {
+            this._skill.addSkillValue(this._staiminaGained);
+        }
+        else {
+            this._skill.addSkillValue(this._skill.level);
+        }
+    };
+    return SpaSession;
+}(GymSession));
 var Gym = /** @class */ (function () {
     function Gym() {
     }
     Gym.prototype.getTreadmillSession = function (camel) {
-        return new GymSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.level);
+        return new TrainSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.skillValue);
     };
     Gym.prototype.getSpaSession = function (camel) {
+        // Take Away Money
+        return new SpaSession(camel.camelSkills.stamina);
     };
     return Gym;
 }());
@@ -512,8 +562,10 @@ var CamelSkill = /** @class */ (function () {
         this._minSkillLevel = 1;
         this._maxSkillLevel = 99;
         this._currentXp = 0;
+        this._skillValue = 0;
         var xp = this.getXpRequiredForVirtualLevel(1);
         this._currentXp = xp;
+        this._skillValue = this.level;
     }
     Object.defineProperty(CamelSkill.prototype, "name", {
         get: function () {
@@ -545,8 +597,21 @@ var CamelSkill = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    CamelSkill.prototype.addSkillValue = function (value) {
+        this._skillValue += value;
+    };
+    Object.defineProperty(CamelSkill.prototype, "skillValue", {
+        get: function () {
+            return this._skillValue;
+        },
+        enumerable: false,
+        configurable: true
+    });
     CamelSkill.prototype.addXp = function (value) {
         this._currentXp += value;
+        if (this.getVirtualLevelWithXp(this._currentXp) > this.getVirtualLevelWithXp(this._currentXp - value)) {
+            this._skillValue = this.level;
+        }
     };
     return CamelSkill;
 }());
