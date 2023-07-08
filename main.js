@@ -340,8 +340,8 @@ function gameLoop(timeStamp) {
                 raceDrawing.drawCamels(race);
                 race.initialised = true;
             }
-            countdown.displayCountdown(9000 - (timeStamp - raceTriggeredTimestamp));
-            if (timeStamp - raceTriggeredTimestamp >= 8500) {
+            countdown.displayCountdown(8000 - (timeStamp - raceTriggeredTimestamp));
+            if (timeStamp - raceTriggeredTimestamp >= 7500) {
                 CanvasService.hideCanvas(CanvasNames.Countdown);
                 race.triggered = false;
                 raceSimulation.startRace(race);
