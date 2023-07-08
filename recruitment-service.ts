@@ -19,8 +19,9 @@ class RecruitmentService {
     }
 
     leaveRecruitmentArea = () => {
-        this._canvas.style.zIndex = '-1';
-        document.dispatchEvent(startRace);
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     }
 
     validateEnoughCashMoney(cost: number): boolean {
@@ -65,7 +66,7 @@ class RecruitmentService {
     }
 
     drawInitCanvas(): void {
-        this._ctx.fillStyle = '#e8d7a7';
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         let btnService = new CanvasBtnService(this._canvas);
