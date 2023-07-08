@@ -64,7 +64,9 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
-                document.dispatchEvent(enterRaceSelection);
+                if(!!camel) {
+                    document.dispatchEvent(enterRaceSelection);
+                }
             }
         }, false);
 
