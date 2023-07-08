@@ -188,6 +188,7 @@ function init() {
     // Map
     var mapCanvas = CanvasService.createCanvas('4', 'map-overview');
     map = new MapOverview(mapCanvas);
+    CanvasService.hideCanvas('map-overview');
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 1000);
         raceSimulation.startRace(race);

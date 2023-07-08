@@ -32,6 +32,7 @@ function init() {
     // Map
     const mapCanvas = CanvasService.createCanvas('4','map-overview');
     map = new MapOverview(mapCanvas);
+    CanvasService.hideCanvas('map-overview');
     
     document.addEventListener(
         "startRace",
