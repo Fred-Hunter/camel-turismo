@@ -1,4 +1,7 @@
 "use strict";
+class GlobalStaticConstants {
+    static backgroundColour = "#e8d7a7";
+}
 class CanvasBtnService {
     canvas;
     constructor(canvas) {
@@ -382,7 +385,7 @@ class RecruitmentService {
         this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     };
     drawInitCanvas() {
-        this._ctx.fillStyle = '#e8d7a7';
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         let btnService = new CanvasBtnService(this._canvas);
         const radius = 25;
@@ -445,7 +448,7 @@ class GymDrawing {
     camelCubeService;
     drawGym() {
         const ctx = this._backgroundCanvas.getContext("2d");
-        ctx.fillStyle = '#e8d7a7';
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const canvasColour = '#C2B280';
         this.drawFloor();
@@ -709,7 +712,7 @@ class RaceDrawing {
     camelCubeService;
     drawRaceCourse(race) {
         const ctx = this._backgroundCanvas.getContext("2d");
-        ctx.fillStyle = '#e8d7a7';
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
