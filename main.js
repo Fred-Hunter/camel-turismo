@@ -906,7 +906,7 @@ class RaceDrawing {
                     const height = Math.random() / 3;
                     const colour = height < 0.1 ? canvasColour : lighterColour;
                     this.backgroundCubeService.drawCube(i, j, 50, colour, height);
-                    const shouldIncludeObject = Math.floor(Math.random() * 10) == 4;
+                    const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
                     if (shouldIncludeObject) {
                         // Randomize object
                         const random = Math.floor(Math.random() * 10);
@@ -1066,7 +1066,7 @@ class RaceSelection {
         const radius = 25;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
-        const enterWorldCup = () => this.selectRace(120, 10000, 300, 15);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15);
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
         btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
@@ -1075,6 +1075,9 @@ class RaceSelection {
         CashMoneyService.drawCashMoney(this._ctx);
     }
     selectRace(raceLength, prizeMoney, entryFee, raceSize) {
+        if (cashMoney < entryFee) {
+            return;
+        }
         if (cashMoney >= entryFee) {
             cashMoney -= entryFee;
         }

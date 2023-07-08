@@ -19,7 +19,7 @@ class RaceSelection {
 
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8);
-        const enterWorldCup = () => this.selectRace(120, 10000, 300, 15);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15);
 
         const middleX = this._canvas.width / window.devicePixelRatio / 2;
         const middleY = this._canvas.height / window.devicePixelRatio / 2;
@@ -38,6 +38,11 @@ class RaceSelection {
         prizeMoney: number, 
         entryFee: number,
         raceSize: number) {
+
+        if(cashMoney < entryFee){
+            return;
+        }
+        
         if (cashMoney >= entryFee) {
             cashMoney -= entryFee;
         }
