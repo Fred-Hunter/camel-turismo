@@ -2,7 +2,8 @@ class Race {
     constructor(
         public length: number,
         camels: Camel[],
-        public track: number[][]) { 
+        public track: number[][],
+        public prizeCashMoney: number) { 
             camels.forEach(camel => {
                 const racingCamel = new RacingCamel(camel);
                 this.racingCamels.push(racingCamel);

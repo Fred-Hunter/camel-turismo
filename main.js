@@ -1,4 +1,7 @@
 "use strict";
+class GlobalStaticConstants {
+    static backgroundColour = "#e8d7a7";
+}
 class CanvasBtnService {
     canvas;
     constructor(canvas) {
@@ -62,6 +65,7 @@ class CanvasNames {
     static Recruitment = 'recruitmentCanvas';
     static RaceBackground = 'race-background';
     static RaceCamel = 'race-camel';
+    static RaceSelection = 'race-selection';
     static MapOverview = 'map-overview';
     static GymCamel = 'gym-camel';
     static GymBackground = 'gym-background';
@@ -263,11 +267,13 @@ let cashMoney = 100;
 let raceCamelCanvas;
 let raceBackgroundCanvas;
 let raceSimulation;
+let raceSelection;
 let raceDrawing;
 let gymDrawing;
 let race;
 let startRace = new Event("startRace");
 let leaderboardService;
+let enterRaceSelection = new Event("enterRaceSelection");
 // Map
 let map;
 // Audio
@@ -280,10 +286,12 @@ function init() {
     CanvasService.createCanvas('4', CanvasNames.MapOverview);
     CanvasService.createCanvas('1', CanvasNames.GymCamel);
     CanvasService.createCanvas('0', CanvasNames.GymBackground);
+    CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
+    raceSelection = new RaceSelection();
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
@@ -296,8 +304,18 @@ function init() {
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     });
+    document.addEventListener("enterRaceSelection", async (_) => {
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceSelection);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+        raceSelection.drawSelectionScreen();
+    }, false);
     document.addEventListener("startRace", async (_) => {
-        race = raceSimulation.createRace(camel, 60);
+        CanvasService.hideAllCanvas();
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
         const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -384,9 +402,10 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
-                console.log("race");
+                document.dispatchEvent(enterRaceSelection);
             }
         }, false);
+        CashMoneyService.drawCashMoney(ctx);
     }
 }
 class RecruitmentService {
@@ -404,8 +423,9 @@ class RecruitmentService {
         this._canvas.style.zIndex = '99';
     }
     leaveRecruitmentArea = () => {
-        this._canvas.style.zIndex = '-1';
-        document.dispatchEvent(startRace);
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     };
     validateEnoughCashMoney(cost) {
         return cashMoney - cost >= 0;
@@ -443,15 +463,15 @@ class RecruitmentService {
         this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     };
     drawInitCanvas() {
-        this._ctx.fillStyle = '#e8d7a7';
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         let btnService = new CanvasBtnService(this._canvas);
         const radius = 25;
-        btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
         this.drawCamel(-3.25, 4.25, '#cc807a');
-        btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
         this.drawCamel(2.75, -1.75, '#debb49');
-        btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
         this.drawCamel(7.75, 9.25, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
     }
@@ -478,15 +498,19 @@ class MusicService {
     startAudio() {
         if (this.currentAudio == "HomeScreenAudio") {
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
             this.HomeScreenAudio.play();
         }
         else if (this.currentAudio == "RaceAudio") {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.play();
         }
         else {
             this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
             this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
         }
     }
     setAudio(audioName) {
@@ -506,7 +530,7 @@ class GymDrawing {
     camelCubeService;
     drawGym() {
         const ctx = this._backgroundCanvas.getContext("2d");
-        ctx.fillStyle = '#e8d7a7';
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const canvasColour = '#C2B280';
         this.drawFloor();
@@ -770,7 +794,7 @@ class RaceDrawing {
     camelCubeService;
     drawRaceCourse(race) {
         const ctx = this._backgroundCanvas.getContext("2d");
-        ctx.fillStyle = '#e8d7a7';
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
@@ -869,8 +893,36 @@ class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
+class RaceSelection {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    drawSelectionScreen() {
+        const btnService = new CanvasBtnService(this._canvas);
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
+        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        const radius = 25;
+        const enterStreetRace = () => this.selectRace(40, 100, 0);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200);
+        const enterWorldCup = () => this.selectRace(120, 10000, 300);
+        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race - $0');
+        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby - $200');
+        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup - $300');
+        CashMoneyService.drawCashMoney(this._ctx);
+    }
+    selectRace(raceLength, prizeMoney, entryFee) {
+        if (cashMoney >= entryFee) {
+            cashMoney -= prizeMoney;
+        }
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney);
+        document.dispatchEvent(startRace);
+    }
+}
 class RaceSimulation {
-    createRace(enteringCamel, raceLength) {
+    createRace(enteringCamel, raceLength, prizeCashMoney) {
         const camelsInRace = [enteringCamel];
         for (let i = 0; i < 4; i++) {
             // TODO randomise quality and allow quality about init camel quality
@@ -879,7 +931,7 @@ class RaceSimulation {
         }
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.CreateTrack(raceLength);
-        return new Race(raceLength, camelsInRace, track);
+        return new Race(raceLength, camelsInRace, track, prizeCashMoney);
     }
     startRace(race) {
         if (race.length <= 0) {
@@ -894,18 +946,45 @@ class RaceSimulation {
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
-            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
+            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
             if (racingCamel.completionPercentage >= 1) {
-                race.inProgress = false;
+                this.handleFinishedRace(race);
             }
             if (hasSprint) {
-                racingCamel.stamina -= 0.06;
+                racingCamel.stamina -= 0.1; //0.06
             }
         });
+    }
+    handleFinishedRace(race) {
+        race.inProgress = false;
+        const position = race.racingCamels
+            .sort((a, b) => b.completionPercentage - a.completionPercentage)
+            .map(o => o.camel)
+            .indexOf(camel);
+        const prizeCashMoney = this.getPrizeMoney(race, position);
+        cashMoney += prizeCashMoney;
+        musicService.setAudio('HomeScreenAudio');
+        musicService.startAudio();
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+    }
+    getPrizeMoney(race, position) {
+        const prizePool = race.prizeCashMoney;
+        if (position === 0) {
+            return prizePool * 0.75;
+        }
+        if (position === 1) {
+            return prizePool * 0.2;
+        }
+        if (position === 1) {
+            return prizePool * 0.05;
+        }
+        return 0;
     }
 }
 class RaceTrackCreator {
@@ -949,9 +1028,11 @@ class RaceTrackCreator {
 class Race {
     length;
     track;
-    constructor(length, camels, track) {
+    prizeCashMoney;
+    constructor(length, camels, track, prizeCashMoney) {
         this.length = length;
         this.track = track;
+        this.prizeCashMoney = prizeCashMoney;
         camels.forEach(camel => {
             const racingCamel = new RacingCamel(camel);
             this.racingCamels.push(racingCamel);
@@ -977,7 +1058,7 @@ class RacingCamel {
         return this._jumpHeight;
     }
     _gravityAcceleration = 9.81;
-    _scaleFactor = 10;
+    _scaleFactor = 20;
     _initialVelocity = 0;
     _currentVelocity = 0;
     startJump() {

@@ -17,7 +17,7 @@ class RacingCamel {
     }
 
     private readonly _gravityAcceleration = 9.81;
-    private readonly _scaleFactor = 10;
+    private readonly _scaleFactor = 20;
     private readonly _initialVelocity: number = 0;
     private _currentVelocity = 0;
 
