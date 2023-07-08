@@ -1,14 +1,14 @@
 class GymDrawing {
     constructor(
     ) {
-        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
-        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
+        this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.GymCamel);
+        this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.GymBackground);
         this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d")!);
         this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d")!);
     }
 
-    private _backgroundCanvas: HTMLCanvasElement;
     private _camelCanvas: HTMLCanvasElement;
+    private _backgroundCanvas: HTMLCanvasElement;
     private backgroundCubeService: CubeService;
     private camelCubeService: CubeService;
 
