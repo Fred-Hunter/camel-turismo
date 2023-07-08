@@ -1,12 +1,10 @@
 class RecruitmentService {
     constructor() {
-        this._canvas = CanvasService.getCanvasByName(this._canvasId);
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d')!;
         this._camelCubeService = new CubeService(this._ctx);
         this.drawInitCanvas();
     }
-
-    private readonly _canvasId = 'recruitmentCanvas';
 
     private readonly _canvas: HTMLCanvasElement;
 
