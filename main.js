@@ -192,7 +192,6 @@ var race;
 var startRace = new Event("startRace");
 function init() {
     // Camel
-    camel = new Camel(++lastUsedId, InitCamelQuality.High);
     recruitmentService = new RecruitmentService(3);
     // Race
     raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');

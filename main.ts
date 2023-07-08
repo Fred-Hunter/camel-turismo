@@ -18,7 +18,6 @@ let startRace = new Event("startRace");
 
 function init() {
     // Camel
-    camel = new Camel(++lastUsedId, InitCamelQuality.High);
     recruitmentService = new RecruitmentService(3);
     
     // Race
