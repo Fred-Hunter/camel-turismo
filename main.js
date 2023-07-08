@@ -265,7 +265,7 @@ let oldTimeStamp = 0;
 let camel;
 let lastUsedId = 0;
 let recruitmentService;
-let cashMoney = 100;
+let cashMoney;
 // Race
 let raceCamelCanvas;
 let raceBackgroundCanvas;
@@ -283,6 +283,7 @@ let map;
 // Audio
 let musicService;
 function init() {
+    cashMoney = 100;
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
@@ -407,6 +408,7 @@ class MapOverview {
             if (mousePosition.x < rect.width / 2 && mousePosition.y < rect.height / 2) {
                 CanvasService.showAllCanvas();
                 this.hideMap();
+                CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d"));
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
             else if (mousePosition.x > rect.width / 2 && mousePosition.y < rect.height / 2) {

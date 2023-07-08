@@ -51,6 +51,7 @@ class MapOverview {
             if (mousePosition.x < rect.width/2 && mousePosition.y < rect.height/2) {
                 CanvasService.showAllCanvas();
                 this.hideMap();
+                CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d")!);
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
             else if (mousePosition.x > rect.width/2 && mousePosition.y < rect.height/2) {

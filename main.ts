@@ -6,7 +6,7 @@ let oldTimeStamp: number = 0;
 let camel: Camel;
 let lastUsedId = 0;
 let recruitmentService: RecruitmentService;
-let cashMoney = 100;
+let cashMoney: number;
 
 // Race
 let raceCamelCanvas: HTMLCanvasElement;
@@ -29,6 +29,8 @@ let map: MapOverview;
 let musicService: MusicService;
 
 function init() {
+    cashMoney = 100;
+
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
