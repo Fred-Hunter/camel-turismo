@@ -568,6 +568,12 @@ var RaceDrawing = /** @class */ (function () {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel, race); });
     };
+    RaceDrawing.prototype.isCamelUserOwned = function (racingCamel) {
+        return racingCamel == camel;
+    };
+    RaceDrawing.prototype.drawUserCamelIndicator = function (x, y, camel) {
+        this.camelCubeService.drawCube(x - 1, y - 1.5, 5, '#41e87b', camel.jumpHeight);
+    };
     RaceDrawing.prototype.drawCamel = function (camel, race) {
         camel.handleJumpTick();
         var numberOfRaceTrackCoords = race.track.length;
@@ -589,6 +595,11 @@ var RaceDrawing = /** @class */ (function () {
         var newYCoord = movingInPositiveY ? currentCoord[1] + offset :
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
+        var isUsersCamel = this.isCamelUserOwned(camel.camel);
+        if (isUsersCamel) {
+            var x = movingInNegativeX || movingInPositiveX ? newXCoord - 0.5 : newXCoord;
+            this.drawUserCamelIndicator(x, newYCoord, camel);
+        }
         if (movingInNegativeY) {
             this.drawNegativeYCamel(newXCoord, newYCoord, camel);
         }
