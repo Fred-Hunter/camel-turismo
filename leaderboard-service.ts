@@ -37,13 +37,13 @@ class LeaderboardService {
     private drawCamel(camel: RacingCamel, heightOffset: number): void {
         const x = 5.5;
         const y = -6.5;
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 1.5 + heightOffset, 0, -3);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 0 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 2 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, heightOffset);
-        this._camelCubeService.drawCube(x, y, 10, camel.color, 1 + heightOffset);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1.5 + heightOffset, 0, -3);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 0 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset, 0, -2);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 2 + heightOffset, 0, -1);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, heightOffset);
+        this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset);
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillText('Your camel', window.innerWidth - 260, 70 - heightOffset * 10);
