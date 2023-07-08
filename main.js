@@ -236,7 +236,7 @@ function init() {
         musicService.startAudio();
     });
     document.addEventListener("startRace", async (_) => {
-        race = raceSimulation.createRace(camel, 60);
+        race = raceSimulation.createRace(camel, 5, 100);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
         const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -386,11 +386,11 @@ class RecruitmentService {
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         let btnService = new CanvasBtnService(this._canvas);
         const radius = 25;
-        btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
         this.drawCamel(-3.25, 4.25, '#cc807a');
-        btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
         this.drawCamel(2.75, -1.75, '#debb49');
-        btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
         this.drawCamel(7.75, 9.25, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
     }
@@ -820,7 +820,7 @@ class RaceDrawing {
     }
 }
 class RaceSimulation {
-    createRace(enteringCamel, raceLength) {
+    createRace(enteringCamel, raceLength, prizeCashMoney) {
         const camelsInRace = [enteringCamel];
         for (let i = 0; i < 4; i++) {
             // TODO randomise quality and allow quality about init camel quality
@@ -829,7 +829,7 @@ class RaceSimulation {
         }
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.CreateTrack(raceLength);
-        return new Race(raceLength, camelsInRace, track);
+        return new Race(raceLength, camelsInRace, track, prizeCashMoney);
     }
     startRace(race) {
         if (race.length <= 0) {
@@ -850,12 +850,39 @@ class RaceSimulation {
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
             if (racingCamel.completionPercentage >= 1) {
-                race.inProgress = false;
+                this.handleFinishedRace(race);
             }
             if (hasSprint) {
                 racingCamel.stamina -= 0.06;
             }
         });
+    }
+    handleFinishedRace(race) {
+        race.inProgress = false;
+        const position = race.racingCamels
+            .sort((a, b) => b.completionPercentage - a.completionPercentage)
+            .map(o => o.camel)
+            .indexOf(camel);
+        const prizeCashMoney = this.getPrizeMoney(race, position);
+        cashMoney += prizeCashMoney;
+        musicService.setAudio('HomeScreenAudio');
+        musicService.startAudio();
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+    }
+    getPrizeMoney(race, position) {
+        const prizePool = race.prizeCashMoney;
+        if (position === 0) {
+            return prizePool * 0.75;
+        }
+        if (position === 1) {
+            return prizePool * 0.2;
+        }
+        if (position === 1) {
+            return prizePool * 0.05;
+        }
+        return 0;
     }
 }
 class RaceTrackCreator {
@@ -899,9 +926,11 @@ class RaceTrackCreator {
 class Race {
     length;
     track;
-    constructor(length, camels, track) {
+    prizeCashMoney;
+    constructor(length, camels, track, prizeCashMoney) {
         this.length = length;
         this.track = track;
+        this.prizeCashMoney = prizeCashMoney;
         camels.forEach(camel => {
             const racingCamel = new RacingCamel(camel);
             this.racingCamels.push(racingCamel);
