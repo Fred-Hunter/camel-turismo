@@ -33,9 +33,7 @@ function init() {
     raceSimulation = new RaceSimulation();
 
     // Map
-    //map = new MapOverview();
-
-    CanvasService.hideCanvas('map-overview');
+    MapOverview.hideMap();
     
     document.addEventListener(
         "startRace",

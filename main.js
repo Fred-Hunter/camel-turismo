@@ -197,8 +197,7 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     // Map
-    //map = new MapOverview();
-    CanvasService.hideCanvas('map-overview');
+    MapOverview.hideMap();
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 2000);
         raceSimulation.startRace(race);
@@ -217,9 +216,15 @@ function gameLoop(timeStamp) {
 }
 window.onload = function () { init(); };
 var MapOverview = /** @class */ (function () {
-    function MapOverview(canvas) {
-        this.canvas = canvas;
+    function MapOverview() {
     }
+    MapOverview.showMap = function () {
+        CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
+        CanvasService.showCanvas(CanvasNames.MapOverview);
+    };
+    MapOverview.hideMap = function () {
+        CanvasService.hideCanvas(CanvasNames.MapOverview);
+    };
     return MapOverview;
 }());
 var RecruitmentService = /** @class */ (function () {
