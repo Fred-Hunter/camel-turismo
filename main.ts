@@ -16,15 +16,22 @@ let raceDrawing: RaceDrawing;
 let race: Race;
 let startRace = new Event("startRace");
 
+// Map
+let map: MapOverview;
+
 function init() {
     // Camel
     recruitmentService = new RecruitmentService(3);
     
     // Race
-    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
+
+    // Map
+    const mapCanvas = CanvasService.createCanvas('4','map-overview');
+    map = new MapOverview(mapCanvas);
     
     document.addEventListener(
         "startRace",

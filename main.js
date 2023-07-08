@@ -46,7 +46,7 @@ var CanvasBtnService = /** @class */ (function () {
 var CanvasService = /** @class */ (function () {
     function CanvasService() {
     }
-    CanvasService.getCanvas = function (zIndex, name) {
+    CanvasService.createCanvas = function (zIndex, name) {
         if (name === void 0) { name = "default"; }
         var canvas = document.createElement('canvas');
         canvas.setAttribute("id", "canvas-".concat(name));
@@ -175,14 +175,19 @@ var raceSimulation;
 var raceDrawing;
 var race;
 var startRace = new Event("startRace");
+// Map
+var map;
 function init() {
     // Camel
     recruitmentService = new RecruitmentService(3);
     // Race
-    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
+    // Map
+    var mapCanvas = CanvasService.createCanvas('4', 'map-overview');
+    map = new MapOverview(mapCanvas);
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 1000);
         raceSimulation.startRace(race);
@@ -200,6 +205,12 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
+var MapOverview = /** @class */ (function () {
+    function MapOverview(canvas) {
+        this.canvas = canvas;
+    }
+    return MapOverview;
+}());
 var RecruitmentService = /** @class */ (function () {
     function RecruitmentService(zIndex) {
         if (zIndex === void 0) { zIndex = -1; }
@@ -228,7 +239,7 @@ var RecruitmentService = /** @class */ (function () {
             _this.tryBuyCamel(100);
             _this.leaveRecruitmentAreaIfSuccessfulRecruitment();
         };
-        this._canvas = CanvasService.getCanvas(zIndex.toString(), this._canvasId);
+        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d');
         this.drawInitCanvas();
     }
