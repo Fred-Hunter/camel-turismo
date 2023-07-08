@@ -187,6 +187,8 @@ var race;
 var startRace = new Event("startRace");
 // Map
 var map;
+// Audio
+var musicService;
 function init() {
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
@@ -202,7 +204,7 @@ function init() {
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 5000);
         raceSimulation.startRace(race);
-        raceDrawing.drawRaceCourse();
+        raceDrawing.drawRaceCourse(race);
         window.requestAnimationFrame(gameLoop);
     }, false);
 }
@@ -301,6 +303,22 @@ var RecruitmentService = /** @class */ (function () {
         this.drawCamel(7.75, 9.25, '#509124');
     };
     return RecruitmentService;
+}());
+var MusicService = /** @class */ (function () {
+    function MusicService() {
+        this.HomeScreenAudio = new Audio("audio/Mii Camel.mp3");
+        this.RaceAudio = new Audio("Music/Camel Mall.mp3");
+        this.HomeScreenAudio.loop = true;
+    }
+    MusicService.prototype.startRaceAudio = function () {
+        this.HomeScreenAudio.pause();
+        this.RaceAudio.loop = true;
+    };
+    MusicService.prototype.startHomeScreenAudio = function () {
+        this.RaceAudio.pause();
+        this.HomeScreenAudio.play();
+    };
+    return MusicService;
 }());
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -409,8 +427,10 @@ var Gym = /** @class */ (function () {
         return new TrainSession(camel.camelSkills.sprintSpeed, camel.camelSkills.stamina.skillValue);
     };
     Gym.prototype.getSpaSession = function (camel) {
-        // Take Away Money
-        return new SpaSession(camel.camelSkills.stamina);
+        if (cashMoney >= 50) {
+            cashMoney += -50;
+            return new SpaSession(camel.camelSkills.stamina);
+        }
     };
     return Gym;
 }());
@@ -434,28 +454,19 @@ var Camel = /** @class */ (function () {
 }());
 var RaceDrawing = /** @class */ (function () {
     function RaceDrawing() {
-        this.raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
-            [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
-            [10, 9], [10, 8], [10, 7],
-            [9, 7], [8, 7], [7, 7], [6, 7], [5, 7], [4, 7],
-            [4, 6], [4, 5], [4, 4], [4, 3], [4, 2], [4, 1],
-            [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
-            [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [12, 13],
-            [11, 13], [10, 13], [9, 13], [8, 13], [7, 13], [6, 13], [5, 13], [4, 13]
-        ];
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
         this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.RaceCamel);
         this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d"));
         this.camelCubeService = new CubeService(this._camelCanvas.getContext("2d"));
     }
-    RaceDrawing.prototype.drawRaceCourse = function () {
+    RaceDrawing.prototype.drawRaceCourse = function (race) {
         var ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = '#e8d7a7';
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         var canvasColour = '#C2B280';
         var _loop_1 = function (i) {
             var _loop_2 = function (j) {
-                if (this_1.raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
+                if (race.track.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
                     this_1.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 }
                 else {
@@ -475,18 +486,18 @@ var RaceDrawing = /** @class */ (function () {
         var _this = this;
         var ctx = this._camelCanvas.getContext("2d");
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
+        race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel, race); });
     };
-    RaceDrawing.prototype.drawCamel = function (camel) {
+    RaceDrawing.prototype.drawCamel = function (camel, race) {
         camel.handleJumpTick();
-        var numberOfRaceTrackCoords = this.raceTrackCoords.length;
+        var numberOfRaceTrackCoords = race.track.length;
         var currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
         var currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
         var nextCoordPercentage = (currectCoordIndex + 1) / numberOfRaceTrackCoords;
         var percentageTowardsNextCoord = (camel.completionPercentage - currentCoordPercentage) /
             (nextCoordPercentage - currentCoordPercentage);
-        var currentCoord = this.raceTrackCoords[currectCoordIndex];
-        var nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? this.raceTrackCoords[currectCoordIndex + 1] : currentCoord;
+        var currentCoord = race.track[currectCoordIndex];
+        var nextCoord = currectCoordIndex < numberOfRaceTrackCoords - 1 ? race.track[currectCoordIndex + 1] : currentCoord;
         var movingInPositiveX = currentCoord[0] < nextCoord[0];
         var movingInNegativeX = currentCoord[0] > nextCoord[0];
         var movingInPositiveY = currentCoord[1] < nextCoord[1];
@@ -557,6 +568,15 @@ var RaceDrawing = /** @class */ (function () {
 }());
 var RaceSimulation = /** @class */ (function () {
     function RaceSimulation() {
+        this.raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
+            [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
+            [10, 9], [10, 8], [10, 7],
+            [9, 7], [8, 7], [7, 7], [6, 7], [5, 7], [4, 7],
+            [4, 6], [4, 5], [4, 4], [4, 3], [4, 2], [4, 1],
+            [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
+            [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [12, 13],
+            [11, 13], [10, 13], [9, 13], [8, 13], [7, 13], [6, 13], [5, 13], [4, 13]
+        ];
     }
     RaceSimulation.prototype.createRace = function (enteringCamel, raceLength) {
         var camelsInRace = [enteringCamel];
@@ -565,7 +585,7 @@ var RaceSimulation = /** @class */ (function () {
             var competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
             camelsInRace.push(competitorCamel);
         }
-        return new Race(raceLength, camelsInRace);
+        return new Race(raceLength, camelsInRace, this.raceTrackCoords);
     };
     RaceSimulation.prototype.startRace = function (race) {
         if (race.length <= 0) {
@@ -591,9 +611,10 @@ var RaceSimulation = /** @class */ (function () {
     return RaceSimulation;
 }());
 var Race = /** @class */ (function () {
-    function Race(length, camels) {
+    function Race(length, camels, track) {
         var _this = this;
         this.length = length;
+        this.track = track;
         this.racingCamels = [];
         this.inProgress = false;
         camels.forEach(function (camel) {

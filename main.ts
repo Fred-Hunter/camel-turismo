@@ -43,7 +43,7 @@ function init() {
         (_: any) => {
             race = raceSimulation.createRace(camel, 5000);
             raceSimulation.startRace(race);
-            raceDrawing.drawRaceCourse();
+            raceDrawing.drawRaceCourse(race);
             window.requestAnimationFrame(gameLoop);
         },
         false
