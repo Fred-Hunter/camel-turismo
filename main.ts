@@ -36,7 +36,9 @@ function init() {
     raceSimulation = new RaceSimulation();
 
     // Map
-    MapOverview.hideMap();
+    CanvasService.hideAllCanvas();
+    MapOverview.showMap();
+    MapOverview.renderMap();
 
     // Audio
     musicService = new MusicService();
