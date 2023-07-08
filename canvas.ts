@@ -10,5 +10,5 @@ class Game {
         return this._canvas.getContext("2d")!;
     }
 
-    public draw = () => {}
+    public draw = () => {} //test please ignore
 }
