@@ -19,13 +19,17 @@ class RaceDrawing {
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         const canvasColour = '#C2B280';
+        const lighterColour = '#d8c380';
 
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
-                    this.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
+                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', -0.2);
                 } else {
-                    this.backgroundCubeService.drawCube(i, j, 50, canvasColour);
+                    const height = Math.random() / 2;
+
+                    const colour = height < 0.1 ? canvasColour : lighterColour;
+                    this.backgroundCubeService.drawCube(i, j, 50, colour, height);
                 }
             }
         }
