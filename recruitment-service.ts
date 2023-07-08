@@ -72,14 +72,14 @@ class RecruitmentService {
 
         const radius = 25;
 
-        btnService.createBtn(100, 250, 475, 100, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
-        this.drawCamel(-4, 5, '#cc807a');
+        btnService.createBtn(200, 250, 475, 100, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        this.drawCamel(-3, 4, '#cc807a');
 
-        btnService.createBtn(700, 250, 475, 100, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
-        this.drawCamel(2, -1, '#debb49');
+        btnService.createBtn(800, 250, 475, 100, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        this.drawCamel(3, -2, '#debb49');
 
-        btnService.createBtn(375, 650, 475, 100, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
-        this.drawCamel(6.75, 10.25, '#509124');
+        btnService.createBtn(475, 650, 475, 100, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        this.drawCamel(7.75, 9.25, '#509124');
     }
 
     drawCamel = (xCoord: number, yCoord: number, colour: string) => {
