@@ -53,7 +53,7 @@ function init() {
     document.addEventListener(
         "startRace",
         async (_: any) => {
-            race = raceSimulation.createRace(camel, 5000);
+            race = raceSimulation.createRace(camel, 30);
             musicService.setAudio("RaceAudio");
             musicService.startAudio()
 

@@ -8,7 +8,10 @@ class RaceSimulation {
             camelsInRace.push(competitorCamel);
         }
 
-        return new Race(raceLength, camelsInRace, this.raceTrackCoords);
+        const trackCreator = new RaceTrackCreator();
+        const track = trackCreator.CreateTrack(raceLength);
+
+        return new Race(raceLength, camelsInRace, track);
     }
 
     startRace(race: Race): void {
@@ -28,7 +31,7 @@ class RaceSimulation {
         race.racingCamels.forEach(racingCamel => {
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
-            racingCamel.raceSpeedPerSecond = baseMovementSpeed * 20 * Math.random();
+            racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
 
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
@@ -44,14 +47,4 @@ class RaceSimulation {
             }
         });
     }
-
-    private raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
-    [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
-    [10, 9], [10, 8], [10, 7],
-    [9, 7], [8, 7], [7, 7], [6, 7], [5, 7], [4, 7],
-    [4, 6], [4, 5], [4, 4], [4, 3], [4, 2], [4, 1],
-    [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
-    [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [12, 13],
-    [11, 13], [10, 13], [9, 13], [8, 13], [7, 13], [6, 13], [5, 13], [4, 13]
-    ];
 }
