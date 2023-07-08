@@ -1,4 +1,48 @@
 "use strict";
+var CanvasBtnService = /** @class */ (function () {
+    function CanvasBtnService(canvas) {
+        this.canvas = canvas;
+    }
+    CanvasBtnService.prototype.getMousePosition = function (event) {
+        var rect = this.canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    };
+    CanvasBtnService.prototype.isInside = function (pos, rect) {
+        return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
+    };
+    CanvasBtnService.prototype.createBtn = function (xStart, yStart, width, height, backgroundColour, fontColour, onclickFunction, text) {
+        var _this = this;
+        var rect = {
+            x: xStart,
+            y: yStart,
+            width: width,
+            height: height
+        };
+        // Binding the click event on the canvas
+        var context = this.canvas.getContext('2d');
+        this.canvas.addEventListener('click', function (event) {
+            var mousePos = _this.getMousePosition(event);
+            if (_this.isInside(mousePos, rect)) {
+                onclickFunction();
+            }
+        }, false);
+        context.beginPath();
+        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.fillStyle = backgroundColour;
+        context.fill();
+        context.lineWidth = 2;
+        context.strokeStyle = '#000000';
+        context.stroke();
+        context.closePath();
+        context.font = '40pt Kremlin Pro Web';
+        context.fillStyle = fontColour;
+        context.fillText(text, rect.x + rect.width / 8, rect.y + 3 * rect.height / 4, rect.x + 7 * rect.width / 8);
+    };
+    return CanvasBtnService;
+}());
 var CanvasServiceService = /** @class */ (function () {
     function CanvasServiceService() {
     }
@@ -120,6 +164,7 @@ var canvasService;
 // Recruitment
 var camel;
 var lastUsedId = 0;
+var recruitmentService;
 // Race
 var raceCamelCanvas;
 var raceBackgroundCanvas;
@@ -131,6 +176,8 @@ function init() {
     canvasService = new CanvasService();
     // Camel
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
+    canvasService = new CanvasService();
+    recruitmentService = new RecruitmentService(canvasService, 0);
     // Race
     raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
     raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
@@ -155,6 +202,33 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 window.onload = function () { init(); };
+var RecruitmentService = /** @class */ (function () {
+    function RecruitmentService(canvasService, zIndex) {
+        if (zIndex === void 0) { zIndex = -1; }
+        this.canvasService = canvasService;
+        this._canvasId = 'recruitmentCanvas';
+        this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);
+        this._ctx = this._canvas.getContext('2d');
+        this.drawInitCanvas();
+    }
+    RecruitmentService.prototype.goToRecruitmentArea = function () {
+        this._canvas.style.zIndex = '99';
+    };
+    RecruitmentService.prototype.leaveRecruitmentArea = function () {
+        this._canvas.style.zIndex = '-1';
+    };
+    RecruitmentService.prototype.onclickFn = function () {
+        alert('camel recruited');
+    };
+    RecruitmentService.prototype.drawInitCanvas = function () {
+        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.fillStyle = '#e8d7a7';
+        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        var btnService = new CanvasBtnService(this._canvas);
+        btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.onclickFn, 'Recruit camel');
+    };
+    return RecruitmentService;
+}());
 var GymSession = /** @class */ (function () {
     function GymSession(_skill, _maxStamina, _xpChangeOnSuccessfulAction, _staminaChangeOnSuccessfulAction, _staminaChangeOnFailedAction) {
         if (_xpChangeOnSuccessfulAction === void 0) { _xpChangeOnSuccessfulAction = 9; }

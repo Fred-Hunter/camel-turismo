@@ -9,6 +9,7 @@ let canvasService: CanvasService;
 let camel: Camel;
 let lastUsedId = 0;
 
+let recruitmentService: RecruitmentService;
 // Race
 let raceCamelCanvas: HTMLCanvasElement;
 let raceBackgroundCanvas: HTMLCanvasElement;
@@ -22,6 +23,9 @@ function init() {
 
     // Camel
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
+
+    canvasService = new CanvasService();
+    recruitmentService = new RecruitmentService(canvasService, 0);
     
     // Race
     raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
