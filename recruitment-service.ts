@@ -73,13 +73,13 @@ class RecruitmentService {
 
         const radius = 25;
 
-        btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
         this.drawCamel(-3.25, 4.25, '#cc807a');
 
-        btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
         this.drawCamel(2.75, -1.75, '#debb49');
 
-        btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
+        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
         this.drawCamel(7.75, 9.25, '#509124');
 
         CashMoneyService.drawCashMoney(this._ctx);
