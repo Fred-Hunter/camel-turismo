@@ -325,7 +325,11 @@ class MapOverview {
                 console.log("xxx");
             }
             else if (mousePosition.x < rect.width / 2 && mousePosition.y > rect.height / 2) {
-                console.log("race");
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+                CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+                document.dispatchEvent(startRace);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -346,8 +350,9 @@ class RecruitmentService {
         this._canvas.style.zIndex = '99';
     }
     leaveRecruitmentArea = () => {
-        this._canvas.style.zIndex = '-1';
-        document.dispatchEvent(startRace);
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
     };
     validateEnoughCashMoney(cost) {
         return cashMoney - cost >= 0;
