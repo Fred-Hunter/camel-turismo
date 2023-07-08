@@ -1,4 +1,4 @@
 interface Camel {
     id: number,
-    sprintSpeed: number
+    camelSkills: CamelSkills
 }
