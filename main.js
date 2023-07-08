@@ -325,6 +325,7 @@ class MapOverview {
                 console.log("race");
             }
         }, false);
+        CashMoneyService.drawCashMoney(ctx);
     }
 }
 class RecruitmentService {
