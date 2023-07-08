@@ -52,13 +52,18 @@ function init() {
     
     document.addEventListener(
         "startRace",
-        (_: any) => {
+        async (_: any) => {
             race = raceSimulation.createRace(camel, 5000);
-            raceSimulation.startRace(race);
-            raceDrawing.drawRaceCourse(race);
-            window.requestAnimationFrame(gameLoop);
             musicService.setAudio("RaceAudio");
             musicService.startAudio()
+
+            const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+            raceDrawing.drawRaceCourse(race);
+            window.requestAnimationFrame(gameLoop);
+            await delay(8500).then(_ => {
+                raceSimulation.startRace(race);
+            })
         },
         false
     );
