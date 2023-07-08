@@ -12,7 +12,8 @@ class RaceDrawing {
 
     private raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10],
     [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
-    [10, 9], [10, 8], [10, 7]];
+    [10, 9], [10, 8], [10, 7],
+    [9, 7], [9, 6], [9, 5], [9, 4], [9, 3], [9, 2]];
 
     public drawRaceCourse() {
         const ctx = this._backgroundCanvas.getContext("2d")!;
@@ -69,37 +70,37 @@ class RaceDrawing {
                 currentCoord[1];
 
         if (movingInNegativeY) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1.5, 0, -3);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 0, 0, -2);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1, 0, -2);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1, 0, -1);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 2, 0, -1);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color);
+            this.camelCubeService.drawCube(newXCoord - 0.25, newYCoord, 10, camel.color, 1);
         } else if (movingInNegativeX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, -2, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 1, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 1, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1.5, -2, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 0, -1, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, -1, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, 0, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 2, 0, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 0, 1, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord - 0.5, 10, camel.color, 1, 1, -1.5);
         } else if (movingInPositiveY) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -3);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -2);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 0);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1.5, 0);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 0, 0, -3);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -3);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -2);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 2, 0, -2);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 0, 0, -1);
+            this.camelCubeService.drawCube(newXCoord + 0.25, newYCoord, 10, camel.color, 1, 0, -1);
         } else if (movingInPositiveX) {
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -1.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, -0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0.5, -1.5);
-            this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 1.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 0, -1.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, -1.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, -0.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 2, -0.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 0, 0.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1, 0.5, -1.5);
+            this.camelCubeService.drawCube(newXCoord, newYCoord + 0.5, 10, camel.color, 1.5, 1.5, -1.5);
         }
     }
 }
