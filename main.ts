@@ -13,6 +13,7 @@ let raceCamelCanvas: HTMLCanvasElement;
 let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
+let gymDrawing: GymDrawing;
 let race: Race;
 let startRace = new Event("startRace");
 
@@ -35,8 +36,19 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
 
+    // Gym
+    gymDrawing = new GymDrawing();
+
     // Map
-    MapOverview.hideMap();
+    CanvasService.hideAllCanvas();
+    MapOverview.showMap();
+    MapOverview.renderMap();
+
+    // Audio
+    musicService = new MusicService();
+    window.addEventListener('keydown', () => {
+        musicService.startAudio();
+    })
     
     document.addEventListener(
         "startRace",
@@ -44,6 +56,17 @@ function init() {
             race = raceSimulation.createRace(camel, 2000);
             raceSimulation.startRace(race);
             raceDrawing.drawRaceCourse(race);
+            window.requestAnimationFrame(gameLoop);
+            musicService.setAudio("RaceAudio");
+            musicService.startAudio()
+        },
+        false
+    );
+
+    document.addEventListener(
+        "goToGym",
+        (_: any) => {
+            gymDrawing.drawGym();
             window.requestAnimationFrame(gameLoop);
         },
         false

@@ -29,7 +29,9 @@ class RaceSimulation {
 
     simulateRaceStep(race: Race) {
         race.racingCamels.forEach(racingCamel => {
-            racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
+            const hasSprint = racingCamel.stamina > 0;
+            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
+            racingCamel.raceSpeedPerSecond = baseMovementSpeed * 20 * Math.random();
 
             const completedDistance = race.length * racingCamel.completionPercentage;
             const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
@@ -38,6 +40,10 @@ class RaceSimulation {
 
             if (racingCamel.completionPercentage >= 1) {
                 race.inProgress = false;
+            }
+
+            if (hasSprint) {
+                racingCamel.stamina -= 0.06;
             }
         });
     }
