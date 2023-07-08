@@ -294,9 +294,9 @@ var RecruitmentService = /** @class */ (function () {
         var btnService = new CanvasBtnService(this._canvas);
         var radius = 25;
         btnService.createBtn(240, 250, 395, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit low camel');
-        this.drawCamel(-3, 4, '#cc807a');
+        this.drawCamel(-3.25, 4.25, '#cc807a');
         btnService.createBtn(840, 250, 395, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit medium camel');
-        this.drawCamel(3, -2, '#debb49');
+        this.drawCamel(2.75, -1.75, '#debb49');
         btnService.createBtn(540, 650, 395, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel');
         this.drawCamel(7.75, 9.25, '#509124');
     };
