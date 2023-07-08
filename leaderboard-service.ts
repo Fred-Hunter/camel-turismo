@@ -46,7 +46,8 @@ class LeaderboardService {
         this._camelCubeService.drawCube(x, y, 10, camel.camel.color, 1 + heightOffset);
 
         if (this.isCamelUserOwned(camel.camel)) {
-            this.ctx.fillText('Your camel', window.innerWidth - 260, 70 - heightOffset * 10);
+            this.ctx.fillStyle = '#96876e';
+            this.ctx.fillText('Your camel', window.innerWidth - 100, 59 - heightOffset * 10);
         }
 
         this.ctx.fillStyle = '#000';
