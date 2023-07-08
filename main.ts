@@ -19,6 +19,9 @@ let startRace = new Event("startRace");
 // Map
 let map: MapOverview;
 
+// Audio
+let musicService: MusicService;
+
 function init() {
     // Camel
     recruitmentService = new RecruitmentService(3);
