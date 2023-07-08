@@ -61,7 +61,8 @@ class MapOverview {
                 (new GymDrawing).drawGym();
             }
             else if (mousePosition.x > rect.width/2 && mousePosition.y > rect.height/2) {
-                console.log("xxx");
+                cashMoney += 1000;
+                CashMoneyService.drawCashMoney(ctx);
             }
             else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
                 if(!!camel) {
