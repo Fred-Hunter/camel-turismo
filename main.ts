@@ -16,16 +16,22 @@ let raceDrawing: RaceDrawing;
 let race: Race;
 let startRace = new Event("startRace");
 
+// Map
+let map: MapOverview;
+
 function init() {
     // Camel
-    camel = new Camel(++lastUsedId, InitCamelQuality.High);
-    recruitmentService = new RecruitmentService(0);
+    recruitmentService = new RecruitmentService(3);
     
     // Race
-    raceBackgroundCanvas = CanvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = CanvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
+
+    // Map
+    const mapCanvas = CanvasService.createCanvas('4','map-overview');
+    map = new MapOverview(mapCanvas);
     
     document.addEventListener(
         "startRace",
@@ -45,9 +51,6 @@ function gameLoop(timeStamp: number) {
 
     if (!!race && race.inProgress) {
         raceSimulation.simulateRaceStep(race);
-        race.racingCamels.forEach(camel => {
-            console.log(`${camel.camel.id} - ${camel.completionPercentage}`);
-        });
     }
 
     raceDrawing.drawCamels(race);

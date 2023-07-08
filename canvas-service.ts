@@ -1,5 +1,5 @@
 class CanvasService {
-    public static getCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
+    public static createCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
         canvas.setAttribute("id", `canvas-${name}`);
 
