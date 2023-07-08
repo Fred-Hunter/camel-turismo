@@ -96,6 +96,14 @@ var CanvasService = /** @class */ (function () {
     CanvasService.hideCanvas = function (canvasName) {
         this.getCanvasByName(canvasName).style.display = "none";
     };
+    CanvasService.hideAllCanvas = function () {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return c.style.display = "none"; });
+    };
+    CanvasService.showAllCanvas = function () {
+        var allCanvases = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(function (c) { return c.style.display = "initial"; });
+    };
     CanvasService.showCanvas = function (canvasName) {
         this.getCanvasByName(canvasName).style.display = "initial";
     };
@@ -218,7 +226,9 @@ function init() {
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     // Map
-    MapOverview.hideMap();
+    CanvasService.hideAllCanvas();
+    MapOverview.showMap();
+    MapOverview.renderMap();
     document.addEventListener("startRace", function (_) {
         race = raceSimulation.createRace(camel, 5000);
         raceSimulation.startRace(race);
@@ -245,6 +255,20 @@ var MapOverview = /** @class */ (function () {
     };
     MapOverview.hideMap = function () {
         CanvasService.hideCanvas(CanvasNames.MapOverview);
+    };
+    MapOverview.renderMap = function () {
+        var _this = this;
+        var canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
+        if (!ctx)
+            return;
+        var img = new Image();
+        img.src = './graphics/camelmap-nobreed.svg';
+        ctx.drawImage(img, 100, 100);
+        canvas.addEventListener("click", function () {
+            CanvasService.showAllCanvas();
+            _this.hideMap();
+        });
     };
     return MapOverview;
 }());
@@ -464,9 +488,11 @@ var Camel = /** @class */ (function () {
         this.id = id;
         var sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
         var agility = Math.ceil(Math.random() * 10 * (quality + 1));
+        var stamina = Math.ceil(Math.random() * 10 * (quality + 1));
         this.camelSkills = new CamelSkillsBuilder()
             .withSprintSpeed(sprintSpeed)
             .withAgility(agility)
+            .withStamina(stamina)
             .build();
     }
     return Camel;
@@ -618,12 +644,17 @@ var RaceSimulation = /** @class */ (function () {
     };
     RaceSimulation.prototype.simulateRaceStep = function (race) {
         race.racingCamels.forEach(function (racingCamel) {
-            racingCamel.raceSpeedPerSecond = racingCamel.camel.camelSkills.sprintSpeed.level * 20 * Math.random();
+            var hasSprint = racingCamel.stamina > 0;
+            var baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level / 2) : 5;
+            racingCamel.raceSpeedPerSecond = baseMovementSpeed * 20 * Math.random();
             var completedDistance = race.length * racingCamel.completionPercentage;
             var newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
             if (racingCamel.completionPercentage >= 1) {
                 race.inProgress = false;
+            }
+            if (hasSprint) {
+                racingCamel.stamina -= 0.06;
             }
         });
     };
@@ -649,12 +680,14 @@ var RacingCamel = /** @class */ (function () {
         this.completionPercentage = 0;
         this.raceSpeedPerSecond = 0;
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+        this.stamina = 0;
         this._jumpHeight = 0;
         this._gravityAcceleration = 9.81;
         this._scaleFactor = 10;
         this._initialVelocity = 0;
         this._currentVelocity = 0;
         this._initialVelocity = 5 + (this.camel.camelSkills.agility.level / 10);
+        this.stamina = this.camel.camelSkills.stamina.level;
     }
     Object.defineProperty(RacingCamel.prototype, "jumpHeight", {
         get: function () {
