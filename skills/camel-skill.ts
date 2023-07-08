@@ -35,7 +35,7 @@ class CamelSkill {
         return virtualLevel;
     }
 
-    public set addXp(value: number) {
+    public addXp(value: number) {
         this._currentXp += value;
     }
 }
