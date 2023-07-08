@@ -15,7 +15,7 @@ class RaceDrawing {
     public drawRaceCourse(race: Race) {
         const ctx = this._backgroundCanvas.getContext("2d")!;
 
-        ctx.fillStyle = '#e8d7a7';
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         const canvasColour = '#C2B280';
