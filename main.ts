@@ -2,43 +2,47 @@
 let secondsPassed: number;
 let oldTimeStamp: number = 0;
 
-// Canvas
-let canvasService: CanvasService;
-
 // Recruitment
 let camel: Camel;
 let lastUsedId = 0;
-
 let recruitmentService: RecruitmentService;
+let cashMoney = 100;
+
 // Race
 let raceCamelCanvas: HTMLCanvasElement;
 let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
 let race: Race;
+let startRace = new Event("startRace");
+
+// Map
+let map: MapOverview;
 
 function init() {
-    // Canvas
-    canvasService = new CanvasService();
-
     // Camel
-    camel = new Camel(++lastUsedId, InitCamelQuality.High);
-
-    canvasService = new CanvasService();
-    recruitmentService = new RecruitmentService(canvasService, 0);
+    recruitmentService = new RecruitmentService(3);
     
     // Race
-    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
-    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceBackgroundCanvas = CanvasService.createCanvas('1', 'race-background');
+    raceCamelCanvas = CanvasService.createCanvas('2', 'race-camel');
     raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
-    
-    // TODO make triggered
-    race = raceSimulation.createRace(camel, 1000);
-    raceSimulation.startRace(race);
-    raceDrawing.drawRaceCourse();
 
-    window.requestAnimationFrame(gameLoop);
+    // Map
+    const mapCanvas = CanvasService.createCanvas('4','map-overview');
+    map = new MapOverview(mapCanvas);
+    
+    document.addEventListener(
+        "startRace",
+        (_: any) => {
+            race = raceSimulation.createRace(camel, 1000);
+            raceSimulation.startRace(race);
+            raceDrawing.drawRaceCourse();
+            window.requestAnimationFrame(gameLoop);
+        },
+        false
+    );
 }
 
 function gameLoop(timeStamp: number) {
@@ -47,9 +51,6 @@ function gameLoop(timeStamp: number) {
 
     if (!!race && race.inProgress) {
         raceSimulation.simulateRaceStep(race);
-        race.racingCamels.forEach(camel => {
-            console.log(`${camel.camel.id} - ${camel.completionPercentage}`);
-        });
     }
 
     raceDrawing.drawCamels(race);

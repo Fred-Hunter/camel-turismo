@@ -1,6 +1,6 @@
 class RecruitmentService {
-    constructor(public canvasService: CanvasService, zIndex: number = -1) {
-        this._canvas = canvasService.getCanvas(zIndex.toString(), this._canvasId);
+    constructor(zIndex: number = -1) {
+        this._canvas = CanvasService.createCanvas(zIndex.toString(), this._canvasId);
         this._ctx = this._canvas.getContext('2d')!;
         this.drawInitCanvas();
     }
@@ -11,25 +11,66 @@ class RecruitmentService {
 
     private readonly _ctx: CanvasRenderingContext2D;
 
+    private _recruitedCamel = false;
+
     goToRecruitmentArea(): void {
         this._canvas.style.zIndex = '99';
     }
 
-    leaveRecruitmentArea(): void {
+    leaveRecruitmentArea = () => {
         this._canvas.style.zIndex = '-1';
+        document.dispatchEvent(startRace);
     }
 
-    onclickFn(): void {
-        alert('camel recruited');
+    validateEnoughCashMoney(cost: number): boolean {
+        return cashMoney - cost >= 0;
+    }
+
+    leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
+        if (this._recruitedCamel) {
+            camel = new Camel(++lastUsedId, InitCamelQuality.High);
+            this.leaveRecruitmentArea();
+        }
+    }
+
+    tryBuyCamel(cost: number) {
+        if (camel !== undefined && camel !== null) {
+            // todo: change camels/allow more than one
+            alert ('Already recruited a camel!');
+            return;
+        }
+        if (!this.validateEnoughCashMoney(cost)) {
+            alert('Not enough cash money!');
+            return;
+        }
+        cashMoney = cashMoney - cost;
+        alert('Recruited camel!');
+        this._recruitedCamel = true;
+    }
+
+    spendHighCashMoney = () => {
+        this.tryBuyCamel(300);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
+    }
+
+    spendMediumCashMoney = () => {
+        this.tryBuyCamel(200);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
+    }
+
+    spendLowCashMoney = () => {
+        this.tryBuyCamel(100);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
     }
 
     drawInitCanvas(): void {
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this._ctx.fillStyle = '#e8d7a7';
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
         let btnService = new CanvasBtnService(this._canvas);
 
-        btnService.createBtn(100,100,400,100,'#fff','#246',this.onclickFn,'Recruit camel');
+        btnService.createBtn(100, 100, 400, 100, '#fff', '#246', this.spendLowCashMoney, 'Recruit low camel');
+        btnService.createBtn(600, 100, 400, 100, '#fff', '#246', this.spendMediumCashMoney, 'Recruit medium camel');
+        btnService.createBtn(350, 400, 400, 100, '#fff', '#246', this.spendHighCashMoney, 'Recruit high camel');
     }
 }

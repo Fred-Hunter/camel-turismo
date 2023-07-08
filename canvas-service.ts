@@ -1,5 +1,5 @@
 class CanvasService {
-    getCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
+    public static createCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
         canvas.setAttribute("id", `canvas-${name}`);
 
@@ -22,6 +22,46 @@ class CanvasService {
 
         // Normalize coordinate system to use css pixels.
         ctx.scale(scale, scale);
+
+        return canvas;
+    }
+
+    public static getCurrentCanvas(): HTMLCanvasElement{
+        return Array.from(document.querySelectorAll("canvas")).sort(c => +c.style.zIndex)[0];
+    }
+
+    public static setCanvasZIndex(canvasName:string, zIndex: number): void{
+        this.getCanvasByName(canvasName).style.zIndex = `${zIndex}`;
+    }
+
+    public static bringCanvasToTop(canvasName:string): void{
+        const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
+
+        const getMax = (a: number, b: number) => Math.max(a, b);
+        const maxZIndex = allCanvases?.map(c => +c.style.zIndex).reduce(getMax, 0);
+
+        this.setCanvasZIndex(canvasName, maxZIndex + 1);
+    }
+
+    public static resetCanvases(): void{
+        const allCanvases: HTMLCanvasElement[] | null = Array.from(document.querySelectorAll("canvas"));
+        allCanvases.forEach(c => this.setCanvasZIndex(c.id, 0));
+    }
+
+    public static hideCanvas(canvasName:string): void{
+        this.getCanvasByName(canvasName).style.display = "none";
+    }
+
+    public static showCanvas(canvasName:string): void {
+        this.getCanvasByName(canvasName).style.display = "initial";
+    }
+
+    public static getCanvasByName(canvasName:string): HTMLCanvasElement{
+        const canvas: HTMLCanvasElement | null  = document.querySelector(`#canvas-${canvasName}`);
+
+        if (!canvas) {
+            throw "`No canvas found with name: ${canvasName}`";
+        }
 
         return canvas;
     }

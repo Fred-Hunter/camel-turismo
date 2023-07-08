@@ -50,7 +50,7 @@ class CanvasBtnService {
         context.strokeStyle = '#000000';
         context.stroke();
         context.closePath();
-        context.font = '40pt Kremlin Pro Web';
+        context.font = '30pt Kremlin Pro Web';
         context.fillStyle = fontColour;
         context.fillText(text, rect.x + rect.width / 8, rect.y + 3*rect.height/4, rect.x + 7*rect.width / 8);
     }  
