@@ -379,17 +379,29 @@ var RaceDrawing = /** @class */ (function () {
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
     };
     RaceDrawing.prototype.drawCamel = function (camel) {
-        var xCoord = 1;
-        var yCoord = 1 + 9 * camel.completionPercentage;
+        var numberOfRaceTrackCoords = this.raceTrackCoords.length;
+        var currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
+        var currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
+        var nextCoordPercentage = (currectCoordIndex + 1) / numberOfRaceTrackCoords;
+        var percentageTowardsNextCoord = (camel.completionPercentage - currentCoordPercentage) /
+            (nextCoordPercentage - currentCoordPercentage);
+        var currentCoord = this.raceTrackCoords[currectCoordIndex];
+        var previousCoord = currectCoordIndex > 0 ? this.raceTrackCoords[currectCoordIndex - 1] : currentCoord;
+        var movingInX = currentCoord[0] !== previousCoord[0];
+        var movingInY = currentCoord[1] !== previousCoord[1];
+        var offset = percentageTowardsNextCoord;
+        var newXCoord = movingInX ? currentCoord[0] + offset : currentCoord[0];
+        var newYCoord = movingInY ? currentCoord[1] + offset : currentCoord[1];
+        // this.camelCubeService.drawCube(newXCoord, newYCoord, 10, '#fff');
         /// OLLIE CHANGE THE DIRECTIONS
         // if (this.containsW) {
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, 0, -3);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, 0, -2);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -2);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1, 0, -1);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 2, 0, -1);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1.5, 0, -3);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 0, 0, -2);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -2);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1, 0, -1);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 2, 0, -1);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color);
+        this.camelCubeService.drawCube(newXCoord, newYCoord, 10, camel.color, 1);
         // } else if (this.containsA) {
         //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 1.5, -2, -1.5);
         //     this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.color, 0, -1, -1.5);
@@ -431,11 +443,11 @@ var RaceSimulation = /** @class */ (function () {
     }
     RaceSimulation.prototype.createRace = function (enteringCamel, raceLength) {
         var camelsInRace = [enteringCamel];
-        // for (let i = 0; i < 4; i++) {
-        //     // TODO randomise quality and allow quality about init camel quality
-        //     const competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
-        //     camelsInRace.push(competitorCamel);
-        // }
+        for (var i = 0; i < 4; i++) {
+            // TODO randomise quality and allow quality about init camel quality
+            var competitorCamel = new Camel(++lastUsedId, InitCamelQuality.High);
+            camelsInRace.push(competitorCamel);
+        }
         return new Race(raceLength, camelsInRace);
     };
     RaceSimulation.prototype.startRace = function (race) {
