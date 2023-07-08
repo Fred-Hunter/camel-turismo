@@ -8,7 +8,9 @@ class Camel {
     constructor(public id: number, quality: InitCamelQuality) {
         let sprintSpeed: number = Math.ceil(Math.random() * 10 * (quality + 1));
         
-        this.camelSkills = new CamelSkills(sprintSpeed);
+        this.camelSkills = new CamelSkillsBuilder()
+            .withSprintSpeed(sprintSpeed)
+            .build();
     }
     
     public camelSkills: CamelSkills;

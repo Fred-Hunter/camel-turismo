@@ -1,6 +1,7 @@
 class CanvasService {
-    getCanvas(zIndex: string, id: string = ''): HTMLCanvasElement {
+    getCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
+        canvas.setAttribute("id", `canvas-${name}`);
 
         document.body.appendChild(canvas);
 
@@ -21,8 +22,6 @@ class CanvasService {
 
         // Normalize coordinate system to use css pixels.
         ctx.scale(scale, scale);
-
-        canvas.id = id;
 
         return canvas;
     }
