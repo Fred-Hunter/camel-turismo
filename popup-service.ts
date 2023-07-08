@@ -66,6 +66,7 @@ class PopupService {
             {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
+                document.dispatchEvent(redirectToMap);
             }
         });
     }

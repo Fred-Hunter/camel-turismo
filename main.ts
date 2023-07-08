@@ -24,6 +24,7 @@ let leaderboardService: LeaderboardService;
 
 // Map
 let map: MapOverview;
+let redirectToMap = new Event("redirectToMap");
 
 // Audio
 let musicService: MusicService;

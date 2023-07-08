@@ -14,14 +14,16 @@ class RecruitmentService {
 
     private _recruitedCamel = false;
 
-    goToRecruitmentArea(): void {
-        this._canvas.style.zIndex = '99';
-    }
-
     leaveRecruitmentArea = () => {
-        CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
+        document.addEventListener(
+            "redirectToMap",
+            (_) => {
+                CanvasService.hideAllCanvas();
+                MapOverview.showMap();
+                MapOverview.renderMap();
+            },
+            false,
+          );
     }
 
     validateEnoughCashMoney(cost: number): boolean {

@@ -282,6 +282,7 @@ let countdown;
 let leaderboardService;
 // Map
 let map;
+let redirectToMap = new Event("redirectToMap");
 // Audio
 let musicService;
 function init() {
@@ -498,6 +499,7 @@ class PopupService {
                 mouseY <= backgroundRect[1] + backgroundRect[3]) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
+                document.dispatchEvent(redirectToMap);
             }
         });
     }
@@ -536,13 +538,12 @@ class RecruitmentService {
     _ctx;
     _camelCubeService;
     _recruitedCamel = false;
-    goToRecruitmentArea() {
-        this._canvas.style.zIndex = '99';
-    }
     leaveRecruitmentArea = () => {
-        CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
+        document.addEventListener("redirectToMap", (_) => {
+            CanvasService.hideAllCanvas();
+            MapOverview.showMap();
+            MapOverview.renderMap();
+        }, false);
     };
     validateEnoughCashMoney(cost) {
         return cashMoney - cost >= 0;
