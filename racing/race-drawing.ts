@@ -43,8 +43,6 @@ class RaceDrawing {
     }
 
     public drawCamel(camel: RacingCamel, race: Race) {
-        camel.handleJumpTick();
-
         const numberOfRaceTrackCoords = race.track.length;
         const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
 

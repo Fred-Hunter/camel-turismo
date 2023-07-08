@@ -819,7 +819,6 @@ class RaceDrawing {
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }
     drawCamel(camel, race) {
-        camel.handleJumpTick();
         const numberOfRaceTrackCoords = race.track.length;
         const currectCoordIndex = Math.floor(camel.completionPercentage * numberOfRaceTrackCoords);
         const currentCoordPercentage = currectCoordIndex / numberOfRaceTrackCoords;
@@ -949,6 +948,7 @@ class RaceSimulation {
     }
     simulateRaceStep(race) {
         race.racingCamels.forEach(racingCamel => {
+            racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;

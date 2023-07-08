@@ -33,6 +33,7 @@ class RaceSimulation {
 
     simulateRaceStep(race: Race) {
         race.racingCamels.forEach(racingCamel => {
+            racingCamel.handleJumpTick();
             const hasSprint = racingCamel.stamina > 0;
             const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
             racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
