@@ -1,9 +1,22 @@
 "use strict";
+var CanvasServiceService = /** @class */ (function () {
+    function CanvasServiceService() {
+    }
+    CanvasServiceService.prototype.getCurrentCanvas = function () {
+        return;
+    };
+    CanvasServiceService.prototype.setCanvasZIndex = function (canvasName) {
+        return;
+    };
+    return CanvasServiceService;
+}());
 var CanvasService = /** @class */ (function () {
     function CanvasService() {
     }
-    CanvasService.prototype.getCanvas = function (zIndex) {
+    CanvasService.prototype.getCanvas = function (zIndex, name) {
+        if (name === void 0) { name = "default"; }
         var canvas = document.createElement('canvas');
+        canvas.setAttribute("id", "canvas-".concat(name));
         document.body.appendChild(canvas);
         var width = window.innerWidth;
         var height = window.innerHeight;
@@ -108,7 +121,8 @@ var canvasService;
 var camel;
 var lastUsedId = 0;
 // Race
-var raceCanvas;
+var raceCamelCanvas;
+var raceBackgroundCanvas;
 var raceSimulation;
 var raceDrawing;
 var race;
@@ -118,8 +132,9 @@ function init() {
     // Camel
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
     // Race
-    raceCanvas = canvasService.getCanvas('1');
-    raceDrawing = new RaceDrawing(raceCanvas);
+    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     // TODO make triggered
     race = raceSimulation.createRace(camel, 1000);
@@ -219,22 +234,24 @@ var Camel = /** @class */ (function () {
     return Camel;
 }());
 var RaceDrawing = /** @class */ (function () {
-    function RaceDrawing(_canvas) {
-        this._canvas = _canvas;
-        this.cubeService = new CubeService(_canvas.getContext("2d"));
+    function RaceDrawing(_backgroundCanvas, _camelCanvas) {
+        this._backgroundCanvas = _backgroundCanvas;
+        this._camelCanvas = _camelCanvas;
+        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d"));
+        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d"));
     }
     RaceDrawing.prototype.drawRaceCourse = function () {
-        var ctx = this._canvas.getContext("2d");
+        var ctx = this._backgroundCanvas.getContext("2d");
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         var canvasColour = '#C2B280';
         var raceTrackCoords = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10]];
         var _loop_1 = function (i) {
             var _loop_2 = function (j) {
                 if (raceTrackCoords.filter(function (o) { return o[0] === i && o[1] === j; }).length > 0) {
-                    this_1.cubeService.drawCube(i, j, 50, '#5892a1', -0.2);
+                    this_1.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 }
                 else {
-                    this_1.cubeService.drawCube(i, j, 50, canvasColour);
+                    this_1.backgroundCubeService.drawCube(i, j, 50, canvasColour);
                 }
             };
             for (var j = 0; j < 15; j++) {
@@ -248,14 +265,14 @@ var RaceDrawing = /** @class */ (function () {
     };
     RaceDrawing.prototype.drawCamels = function (race) {
         var _this = this;
-        var ctx = this._canvas.getContext("2d");
+        var ctx = this._camelCanvas.getContext("2d");
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         race.racingCamels.forEach(function (camel) { return _this.drawCamel(camel); });
     };
     RaceDrawing.prototype.drawCamel = function (camel) {
         var xCoord = 1;
         var yCoord = 1 + 9 * camel.completionPercentage;
-        this.cubeService.drawCube(xCoord, yCoord, 10, '#fff');
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, '#fff');
     };
     return RaceDrawing;
 }());

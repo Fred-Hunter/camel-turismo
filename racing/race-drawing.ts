@@ -1,14 +1,17 @@
 class RaceDrawing {
     constructor(
-        private readonly _canvas: HTMLCanvasElement
+        private readonly _backgroundCanvas: HTMLCanvasElement,
+        private readonly _camelCanvas: HTMLCanvasElement,
     ) {
-        this.cubeService = new CubeService(_canvas.getContext("2d")!);
+        this.backgroundCubeService = new CubeService(_backgroundCanvas.getContext("2d")!);
+        this.camelCubeService = new CubeService(_camelCanvas.getContext("2d")!);
     }
 
-    private cubeService: CubeService;
+    private backgroundCubeService: CubeService;
+    private camelCubeService: CubeService;
 
     public drawRaceCourse() {
-        const ctx = this._canvas.getContext("2d")!;
+        const ctx = this._backgroundCanvas.getContext("2d")!;
 
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -19,24 +22,24 @@ class RaceDrawing {
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (raceTrackCoords.filter(o => o[0] === i && o[1] === j).length > 0) {
-                    this.cubeService.drawCube(i, j, 50, '#5892a1', -0.2);
+                    this.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 } else {
-                    this.cubeService.drawCube(i, j, 50, canvasColour);
+                    this.backgroundCubeService.drawCube(i, j, 50, canvasColour);
                 }
             }
         }
     }
 
     public drawCamels(race: Race) {
-        const ctx = this._canvas.getContext("2d")!;
+        const ctx = this._camelCanvas.getContext("2d")!;
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        
+
         race.racingCamels.forEach(camel => this.drawCamel(camel));
     }
 
     public drawCamel(camel: RacingCamel) {
         const xCoord = 1;
         const yCoord = 1 + 9 * camel.completionPercentage;
-        this.cubeService.drawCube(xCoord, yCoord, 10, '#fff');
+        this.camelCubeService.drawCube(xCoord, yCoord, 10, '#fff');
     }
 }

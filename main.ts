@@ -10,7 +10,8 @@ let camel: Camel;
 let lastUsedId = 0;
 
 // Race
-let raceCanvas: HTMLCanvasElement;
+let raceCamelCanvas: HTMLCanvasElement;
+let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceDrawing: RaceDrawing;
 let race: Race;
@@ -23,8 +24,9 @@ function init() {
     camel = new Camel(++lastUsedId, InitCamelQuality.High);
     
     // Race
-    raceCanvas = canvasService.getCanvas('1');
-    raceDrawing = new RaceDrawing(raceCanvas);
+    raceBackgroundCanvas = canvasService.getCanvas('1', 'race-background');
+    raceCamelCanvas = canvasService.getCanvas('2', 'race-camel');
+    raceDrawing = new RaceDrawing(raceBackgroundCanvas, raceCamelCanvas);
     raceSimulation = new RaceSimulation();
     
     // TODO make triggered
