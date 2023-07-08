@@ -6,8 +6,10 @@ class Gym {
     }
 
     getSpaSession(camel: Camel) {
-        // Take Away Money
-        return new SpaSession(
-            camel.camelSkills.stamina);
+        if (cashMoney >= 50) {
+            cashMoney += -50;
+            return new SpaSession(
+                camel.camelSkills.stamina);
+        }
     }
 }
