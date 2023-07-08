@@ -17,9 +17,9 @@ class RaceSelection {
 
         const radius = 25;
 
-        const enterStreetRace = () => this.selectRace(40, 100);
-        const enterLocalDerby = () => this.selectRace(80, 500);
-        const enterWorldCup = () => this.selectRace(120, 10000);
+        const enterStreetRace = () => this.selectRace(40, 100, 0);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200);
+        const enterWorldCup = () => this.selectRace(120, 10000, 300);
 
         btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race - $0');
 
@@ -30,7 +30,11 @@ class RaceSelection {
         CashMoneyService.drawCashMoney(this._ctx);
     }
 
-    private selectRace(raceLength: number, prizeMoney: number) {
+    private selectRace(raceLength: number, prizeMoney: number, entryFee: number) {
+        if (cashMoney >= entryFee) {
+            cashMoney -= prizeMoney;
+        }
+
         race = raceSimulation.createRace(camel, raceLength, prizeMoney);
         document.dispatchEvent(startRace);
     }
