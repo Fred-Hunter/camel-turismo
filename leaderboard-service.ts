@@ -59,7 +59,7 @@ class LeaderboardService {
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
-            this.ctx.fillText('Your camel', window.innerWidth - 100, 59 - heightOffset * 10);
+            this.ctx.fillText(camel.camel.name, window.innerWidth - 100, 59 - heightOffset * 10);
         }
 
         this.ctx.fillStyle = '#000';
