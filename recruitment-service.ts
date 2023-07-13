@@ -35,23 +35,20 @@ class RecruitmentService {
 
     leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
         if (this._recruitedCamel) {
-            camel = new Camel(++lastUsedId, InitCamelQuality.High);
+            this._recruitedCamel = false;
             this.leaveRecruitmentArea();
         }
     }
 
     tryBuyCamel(cost: number) {
-        const camelAlreadyExists = camel !== undefined && camel !== null;
-        // if (camelAlreadyExists) {
-            // PopupService.drawAlertPopup('Already recruited a camel!');
-            // return;
-        // }
         if (!this.validateEnoughCashMoney(cost)) {
             PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
         cashMoney = cashMoney - cost;
-        PopupService.drawAlertPopup(camelAlreadyExists ? 'Recruited a new replacement camel!' : 'Recruited a camel!');
+        const quality: InitCamelQuality = cost/100 - 1;
+        camel = new Camel(++lastUsedId, quality);
+        PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
         this._recruitedCamel = true;
     }
 
@@ -77,6 +74,8 @@ class RecruitmentService {
         let btnService = new CanvasBtnService(this._canvas);
 
         const radius = 25;
+
+        btnService.drawBackButton();
 
         btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
         this.drawCamel(-3.25, 4.25, '#cc807a');

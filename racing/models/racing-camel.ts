@@ -1,12 +1,12 @@
 class RacingCamel {
     constructor(
         public camel: Camel) { 
-            this._initialVelocity = 5 + (this.camel.camelSkills.agility.level / 10);
-            this.stamina = this.camel.camelSkills.stamina.level;
+            this._initialVelocity = 5 + (this.camel.agility.level / 10);
+            this.stamina = this.camel.stamina.level;
         }
 
+    finalPosition: number | undefined;
     completionPercentage: number = 0;
-    raceSpeedPerSecond: number = 0;
     stamina: number = 0;
 
     private _jumpHeight = 0;

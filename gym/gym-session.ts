@@ -29,7 +29,6 @@ class TrainSession extends GymSession {
                 return;
             }
             this.onSuccessfulAction();
-            console.log(camel.camelSkills)
         }, false);
     }
     
@@ -70,7 +69,7 @@ class TrainSession extends GymSession {
 
     public endSession() {
         super.endSession()
-        this._skill.addXp(this._xpGained);
+        camel.unspentXp += this._xpGained;
     }
 }
 
@@ -93,9 +92,9 @@ class SpaSession extends GymSession {
         super.endSession()
         this._staiminaGained = secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
-            this._skill.addSkillValue(this._staiminaGained);
+            camel.unspentXp += this._staiminaGained;
         } else {
-            this._skill.addSkillValue(this._skill.level);
+            camel.unspentXp += this._skill.level;
         }
     }
 }

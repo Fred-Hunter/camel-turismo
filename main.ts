@@ -9,8 +9,6 @@ let recruitmentService: RecruitmentService;
 let cashMoney: number;
 
 // Race
-let raceCamelCanvas: HTMLCanvasElement;
-let raceBackgroundCanvas: HTMLCanvasElement;
 let raceSimulation: RaceSimulation;
 let raceSelection: RaceSelection;
 let raceDrawing: RaceDrawing;
@@ -19,6 +17,8 @@ let race: Race;
 let startRace = new Event("startRace");
 let enterRaceSelection = new Event("enterRaceSelection");
 let countdown: Countdown;
+let raceTriggeredTimestamp: number;
+let enterRequestSelectionRequested: boolean = false;
 
 let leaderboardService: LeaderboardService;
 
@@ -28,6 +28,15 @@ let redirectToMap = new Event("redirectToMap");
 
 // Audio
 let musicService: MusicService;
+
+// Camel management
+let camelSkillDrawing: CamelSkillDrawing;
+let camelSkillCommands: CamelSkillCommands;
+let camelSkillComponent: CamelSkillComponent;
+
+// Navigation
+let skillNavigationRequested = false;
+let mapNavigationRequested = false;
 
 function init() {
     cashMoney = 100;
@@ -42,6 +51,7 @@ function init() {
     CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     CanvasService.createCanvas('6', CanvasNames.Countdown);
+    CanvasService.createCanvas('7', CanvasNames.CamelManagement);
 
     recruitmentService = new RecruitmentService();
 
@@ -68,25 +78,49 @@ function init() {
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     })
-    
-    window.requestAnimationFrame(gameLoop);
-    // document.addEventListener(
-    //     "goToGym",
-    //     (_: any) => {
-    //         gymDrawing.drawGym();
-    //         window.requestAnimationFrame(gameLoop);
-    //     },
-    //     false
-    // );
-}
 
-let raceTriggeredTimestamp: number;
-let enterRequestSelectionRequested: boolean = false;
+    // Camel management
+    camelSkillDrawing = new CamelSkillDrawing();
+    camelSkillCommands = new CamelSkillCommands();
+    camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+
+    window.requestAnimationFrame(gameLoop);
+}
 
 function gameLoop(timeStamp: number) {
     try {
         secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
         oldTimeStamp = timeStamp;
+
+        // Navigation
+        if (skillNavigationRequested) {
+            if (!!camel) {
+                CanvasService.hideAllCanvas();
+                CanvasService.showCanvas(CanvasNames.CamelManagement);
+
+                camelSkillComponent.load(camel);
+            }
+
+            skillNavigationRequested = false;
+        }
+
+        if (enterRequestSelectionRequested) {
+            CanvasService.hideAllCanvas();
+            CanvasService.showCanvas(CanvasNames.RaceSelection);
+            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
+
+            raceSelection.drawSelectionScreen();
+
+            enterRequestSelectionRequested = false;
+        }
+
+        if (mapNavigationRequested) {
+            CanvasService.hideAllCanvas();
+            MapOverview.showMap();
+            MapOverview.renderMap();
+
+            mapNavigationRequested = false;
+        }
 
         if (!!race && race.inProgress) {
             raceSimulation.simulateRaceStep(race);
@@ -101,7 +135,7 @@ function gameLoop(timeStamp: number) {
                 raceDrawing.drawCamels(race);
                 race.initialised = true;
             }
-            
+
             countdown.displayCountdown(8000 - (timeStamp - raceTriggeredTimestamp));
 
             if (timeStamp - raceTriggeredTimestamp >= 7500) {
@@ -110,17 +144,6 @@ function gameLoop(timeStamp: number) {
                 raceSimulation.startRace(race);
             }
         }
-
-        if (enterRequestSelectionRequested) {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceSelection);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-
-            raceSelection.drawSelectionScreen();
-
-            enterRequestSelectionRequested = false;
-        }
-
     } catch {
         console.log('error')
     } finally {

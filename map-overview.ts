@@ -40,7 +40,7 @@ class MapOverview {
         }
 
         const img = new Image();
-        img.src = './graphics/camelmap-nobreed.svg';
+        img.src = './graphics/camelmap-nobreed-v2.jpg';
         ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
 
         canvas.addEventListener('click', (event) => {
@@ -48,14 +48,14 @@ class MapOverview {
             const mousePosition = this.getMousePosition(event);
             
             // Hire
-            if (mousePosition.x < rect.width/2 && mousePosition.y < rect.height/2) {
+            if (mousePosition.x < rect.width/3 && mousePosition.y < 7*rect.height/16) {
                 CanvasService.showAllCanvas();
                 this.hideMap();
                 CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d")!);
                 CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
             }
             // Gym
-            else if (mousePosition.x > rect.width/2 && mousePosition.y < rect.height/2) {
+            else if (mousePosition.x > 11*rect.width/32 && mousePosition.x < 19*rect.width/32 && mousePosition.y < 3*rect.height/8) {
                 if (!camel) {
                     PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
                     return;
@@ -66,17 +66,26 @@ class MapOverview {
                 CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
                 (new GymDrawing).drawGym();
             }
-            else if (mousePosition.x > rect.width/2 && mousePosition.y > rect.height/2) {
-                if (!!camel && camel.camelSkills.agility.skillValue > 20) {
+            else if (mousePosition.x > 3*rect.width/8 && mousePosition.x < 19*rect.width/32 && mousePosition.y > 7*rect.height/16) {
+                if (!!camel && camel.agility.level > 20) {
                     cashMoney += 1000;
                     CashMoneyService.drawCashMoney(ctx);
                 }
             }
             // Race
-            else if (mousePosition.x < rect.width/2 && mousePosition.y > rect.height/2) {
-                if(!!camel) {
-                    enterRequestSelectionRequested = true;
+            else if (mousePosition.x < rect.width/3 && mousePosition.y > rect.height/2) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
+                    return;
                 }
+                enterRequestSelectionRequested = true;
+            }
+            // Management
+            else if (mousePosition.x > 19*rect.width/32 && mousePosition.x < rect.width && mousePosition.y > 3*rect.height/16 && mousePosition.y < 9*rect.height/16) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
+                }
+                skillNavigationRequested = true;
             }
         }, false);
 

@@ -8,4 +8,5 @@ class CanvasNames {
     public static GymBackground: string = 'gym-background';
     public static PopupCanvas: string = 'popup';
     public static Countdown: string = 'countdown';
+    public static CamelManagement: string = 'camel-management';
 }

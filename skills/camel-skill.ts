@@ -1,57 +1,60 @@
 class CamelSkill {
     constructor(
-        private readonly _name: string) 
-    {
-        const xp = this.getXpRequiredForVirtualLevel(1);
-        this._currentXp = xp;
-        this._skillValue = this.level;
+        private readonly _name: string,
+        private readonly _initialXP = 0) {
+        if (_initialXP < 0) {
+            throw Error('Cannot create camel skill with negative xp')
+        }
+
+        this._currentXp = _initialXP;
+        this._level = this.getLevelFromXp(_initialXP);
     }
 
     private readonly _minSkillLevel = 1;
     private readonly _maxSkillLevel = 99;
     private _currentXp = 0;
-    private _skillValue = 0;
+    private _level = 0;
 
     public get name() {
         return this._name;
     }
 
-    private getXpRequiredForVirtualLevel(level: number) {
+    private getXpRequiredForLevel(level: number) {
         return (level - 1) * 100;
     }
 
-    private getVirtualLevelWithXp(xp: number) {
-        return Math.floor(xp / 100) + 1;
+    private getLevelFromXp(xp: number) {
+        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
     }
 
-    public setLevel(value: number) {
-        this._currentXp = this.getXpRequiredForVirtualLevel(value);
+    public set level(level: number) {
+        let flooredLevel = Math.floor(level);
+
+        flooredLevel = Math.max(level, this._minSkillLevel);
+        flooredLevel = Math.min(level, this._maxSkillLevel);
+
+        this._level = flooredLevel;
+        this._currentXp = this.getXpRequiredForLevel(flooredLevel);
     }
-    
+
     public get level(): number {
-        const virtualLevel = this.getVirtualLevelWithXp(this._currentXp);
-        if (virtualLevel <= this._minSkillLevel) {
-            return this._minSkillLevel;
-        }
-        if (virtualLevel >= this._maxSkillLevel) {
-            return this._maxSkillLevel;
-        }
-
-        return virtualLevel;
+        return this._level;
     }
 
-    public addSkillValue(value: number) {
-        this._skillValue += value
-    }
+    public getXpToNextLevel(): number {
+        if (this._level === this._maxSkillLevel) {
+            return 0;
+        }
 
-    public get skillValue():number {
-        return this._skillValue
+        return this.getXpRequiredForLevel(this.level + 1) - this._currentXp;
     }
 
     public addXp(value: number) {
-        this._currentXp += value;
-        if (this.getVirtualLevelWithXp(this._currentXp) > this.getVirtualLevelWithXp(this._currentXp - value)) {
-            this._skillValue = this.level
+        if (value <= 0) {
+            throw Error('Cannot add negative or 0 xp');
         }
+
+        this._currentXp += value;
+        this._level = this.getLevelFromXp(this._currentXp);
     }
 }

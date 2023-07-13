@@ -1,5 +1,5 @@
 class RaceSimulation {
-    private _finishedCamels: RacingCamel[] = [];
+    private _nextPosition: number = 1;
 
     createRace(
         enteringCamel: Camel,
@@ -45,48 +45,83 @@ class RaceSimulation {
 
     simulateRaceStep(race: Race) {
         race.racingCamels.forEach(racingCamel => {
-            if (this._finishedCamels.indexOf(racingCamel) > -1) {
+            if (racingCamel.finalPosition) {
                 return;
             }
 
             racingCamel.handleJumpTick();
-            const hasSprint = racingCamel.stamina > 0;
-            const baseMovementSpeed = hasSprint ? 5 + (racingCamel.camel.camelSkills.sprintSpeed.level) : 0.5 * racingCamel.camel.camelSkills.sprintSpeed.level;
-            racingCamel.raceSpeedPerSecond = baseMovementSpeed * Math.random() / 5;
+
+            const remainingDistance = race.length * (1 - racingCamel.completionPercentage);
+
+            const distancePerSecondWhileSprinting = racingCamel.camel.sprintSpeed.level / 5;
+            const distancePerSecondWhileWalking = 0.25 * racingCamel.camel.sprintSpeed.level / 5;
+            const staminaDecreasePerSecond = 6;
+
+            let tryToSprint = false;
+
+            if (racingCamel.camel.temperament === CamelTemperament.Aggressive) {
+                tryToSprint = true;
+            } else if (racingCamel.camel.temperament === CamelTemperament.Temperamental) {
+                tryToSprint = Math.random() < 0.5;
+            } else {
+                const secondsToFinish = remainingDistance / distancePerSecondWhileSprinting;
+                const canSprintToEnd = racingCamel.stamina - secondsToFinish * staminaDecreasePerSecond >= -2;
+
+                tryToSprint = canSprintToEnd;
+            }
+
+            const hasSprint = racingCamel.stamina - secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
+            const baseDistancePerSecond = hasSprint ? distancePerSecondWhileSprinting : distancePerSecondWhileWalking;
+            const distancePerSecond = baseDistancePerSecond + (Math.random() - 0.5);
 
             const completedDistance = race.length * racingCamel.completionPercentage;
-            const newCompletedDistance = completedDistance + secondsPassed * racingCamel.raceSpeedPerSecond;
+            const newCompletedDistance = completedDistance + secondsPassed * distancePerSecond;
 
             racingCamel.completionPercentage = newCompletedDistance / race.length;
 
             if (racingCamel.completionPercentage >= 1) {
-                this._finishedCamels.push(racingCamel);
-                if (this._finishedCamels.length >= 3) {
+                racingCamel.finalPosition = this._nextPosition++;
+                if (race.racingCamels.filter(o => o.finalPosition).length >= 3) {
                     this.handleFinishedRace(race);
                 }
             }
 
             if (hasSprint) {
-                racingCamel.stamina -= 0.1; //0.06
+                racingCamel.stamina -= secondsPassed * staminaDecreasePerSecond;
             }
         });
+    }
+
+    getPositionDisplay(position: number) {
+        switch (position) {
+            case 1:
+                return '1st';
+            case 2:
+                return '2nd';
+            case 3:
+                return '3rd';
+            default:
+                return `${position}th`;
+        }
     }
 
     handleFinishedRace(race: Race) {
         race.inProgress = false;
 
-        let position = this._finishedCamels.map(o => o.camel).indexOf(camel);
+        let position = race.racingCamels.filter(o => o.camel == camel)[0].finalPosition;
 
-        position = position > -1 ?
-            position :
-            position + 1 +
-            race.racingCamels.sort((a,b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
+        position = position ??
+            1 +
+            race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
 
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
         cashMoney += prizeCashMoney;
 
-        this._finishedCamels = [];
+        this._nextPosition = 1;
+
+        const xpGained = (race.racingCamels.length - position + 1) * 100;
+        camel.unspentXp += xpGained;
 
         musicService.setAudio('HomeScreenAudio');
         musicService.startAudio();
@@ -95,21 +130,21 @@ class RaceSimulation {
         MapOverview.showMap();
         MapOverview.renderMap();
 
-        PopupService.drawAlertPopup(`Congratulations, your postion was ${position + 1}, and you won $${prizeCashMoney}!`);
+        PopupService.drawAlertPopup(`Congratulations, ${camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
     }
 
     getPrizeMoney(race: Race, position: number) {
         const prizePool = race.prizeCashMoney;
 
-        if (position === 0) {
+        if (position === 1) {
             return prizePool * 0.75;
         }
 
-        if (position === 1) {
+        if (position === 2) {
             return prizePool * 0.2;
         }
 
-        if (position === 2) {
+        if (position === 3) {
             return prizePool * 0.05;
         }
 
