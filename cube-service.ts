@@ -49,6 +49,46 @@ class CubeService {
         // this.ctx.fillText(coordX + ',' + coordY, x, y);
     }
 
+    public drawDebugGrid(
+        sideLength: number,
+        height: number = 0,
+        xStart: number = 0,
+        yStart: number = 0,): void {
+
+
+        this.ctx.strokeStyle = 'red';
+        this.ctx.lineWidth = 1;
+        const gridExtent = Array.from(Array(15).fill(1).map((x,i) => i));
+
+        this.ctx.beginPath();
+        gridExtent.forEach(x => {
+            const start = ImportantService.ConvertCoordToReal(x, 0, sideLength, height, xStart, yStart);
+            this.ctx.moveTo(start.x, start.y);
+
+            this.ctx.fillText(`(${x},${0})`, start.x, start.y);
+            this.ctx.fillText(`(${start.x}, ${start.y})`, start.x, start.y + 8);
+
+            const end = ImportantService.ConvertCoordToReal(x, 15, sideLength, height, xStart, yStart);
+            this.ctx.lineTo(end.x, end.y);
+        })
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        gridExtent.forEach(y => {
+            const start = ImportantService.ConvertCoordToReal(0, y, sideLength, height, xStart, yStart);
+            this.ctx.moveTo(start.x, start.y);
+            
+            this.ctx.fillText(`(${0},${y})`, start.x, start.y);
+            this.ctx.fillText(`(${start.x}, ${start.y})`, start.x, start.y + 8);
+
+            const end = ImportantService.ConvertCoordToReal(15, y, sideLength, height, xStart, yStart);
+            this.ctx.lineTo(end.x, end.y);
+        })
+
+        this.ctx.stroke();
+
+    }
+
     public shadeColor(colour: string, percent: number) {
         colour = colour.substring(1);
         const num = parseInt(colour, 16),

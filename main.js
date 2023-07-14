@@ -201,6 +201,31 @@ class CubeService {
         this.ctx.fillStyle = '#000000';
         // this.ctx.fillText(coordX + ',' + coordY, x, y);
     }
+    drawDebugGrid(sideLength, height = 0, xStart = 0, yStart = 0) {
+        this.ctx.strokeStyle = 'red';
+        this.ctx.lineWidth = 1;
+        const gridExtent = Array.from(Array(15).fill(1).map((x, i) => i));
+        this.ctx.beginPath();
+        gridExtent.forEach(x => {
+            const start = ImportantService.ConvertCoordToReal(x, 0, sideLength, height, xStart, yStart);
+            this.ctx.moveTo(start.x, start.y);
+            this.ctx.fillText(`(${x},${0})`, start.x, start.y);
+            this.ctx.fillText(`(${start.x}, ${start.y})`, start.x, start.y + 8);
+            const end = ImportantService.ConvertCoordToReal(x, 15, sideLength, height, xStart, yStart);
+            this.ctx.lineTo(end.x, end.y);
+        });
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        gridExtent.forEach(y => {
+            const start = ImportantService.ConvertCoordToReal(0, y, sideLength, height, xStart, yStart);
+            this.ctx.moveTo(start.x, start.y);
+            this.ctx.fillText(`(${0},${y})`, start.x, start.y);
+            this.ctx.fillText(`(${start.x}, ${start.y})`, start.x, start.y + 8);
+            const end = ImportantService.ConvertCoordToReal(15, y, sideLength, height, xStart, yStart);
+            this.ctx.lineTo(end.x, end.y);
+        });
+        this.ctx.stroke();
+    }
     shadeColor(colour, percent) {
         colour = colour.substring(1);
         const num = parseInt(colour, 16), amt = Math.round(2.55 * percent), R = (num >> 16) + amt, G = (num >> 8 & 0x00FF) + amt, B = (num & 0x0000FF) + amt;
@@ -215,6 +240,14 @@ class ImportantService {
         const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
         const y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
         return { x, y };
+    }
+    static ConvertRealToCoord(x, y, sideLength, height = 0, xStart = 0, yStart = 0) {
+        const xOffset = window.innerWidth / 2;
+        const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2 * y - 200) / (2 * sideLength);
+        const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2 * y - 200) / (2 * sideLength);
+        const x2 = coordX * sideLength / 50;
+        const y2 = coordY * sideLength / 50;
+        return { x2, y2 };
     }
 }
 class LeaderboardService {

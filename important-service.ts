@@ -17,4 +17,23 @@ class ImportantService {
 
         return {x, y};
     }
+
+    static ConvertRealToCoord(
+        x: number,
+        y: number,
+        sideLength: number,
+        height: number = 0,
+        xStart: number = 0,
+        yStart: number = 0) {
+            
+        const xOffset = window.innerWidth / 2;
+      
+        const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2*y -200)/(2*sideLength);
+        const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2*y -200)/(2*sideLength);
+
+        const x2 = coordX * sideLength / 50;
+        const y2 = coordY * sideLength / 50;
+      
+        return {x2, y2};
+    }      
 }
