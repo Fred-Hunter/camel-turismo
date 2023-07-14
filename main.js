@@ -450,7 +450,7 @@ class MapOverview {
             };
         }
         const img = new Image();
-        img.src = './graphics/camelmap-nobreed-v2.jpg';
+        img.src = './graphics/camelmap-nobreed-v3.svg';
         ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
         canvas.addEventListener('click', (event) => {
             const mousePosition = this.getMousePosition(event);
