@@ -55,16 +55,8 @@ class RaceDrawing {
     }
 
     private drawStaticCamel(newXCoord: number, newYCoord: number, height: number) {
-        const xCoord = newXCoord;
-        const yCoord = newYCoord + 0.5;
-
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, -1.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -1.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 2 + height, -0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, 0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, 0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1.5 + height, 1.5, -1.5);
+        new CanvasCamelService(this._backgroundCanvas.getContext("2d")!)
+            .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, 10, '#d8843b', height);
     }
 
     public drawRocks(i: number, j: number, height: number) {

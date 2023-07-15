@@ -5,14 +5,14 @@ class CanvasCamelService {
 
     private _cubeService: CubeService;
     
-    public drawCamelIsoCoords(xCoord: number, yCoord: number, size: number, colour: string): void {
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1.5, 0, Math.round(-10 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 2, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(2 * size / 40));
+    public drawCamelIsoCoords(xCoord: number, yCoord: number, size: number, colour: string, height = 0): void {
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / 40));
     }
 
     public drawCamelScreenCoords(xCoord: number, yCoord: number, size: number, colour: string): void {

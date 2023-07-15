@@ -86,14 +86,14 @@ class CanvasCamelService {
         this._cubeService = new CubeService(ctx);
     }
     _cubeService;
-    drawCamelIsoCoords(xCoord, yCoord, size, colour) {
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1.5, 0, Math.round(-10 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 2, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(2 * size / 40));
+    drawCamelIsoCoords(xCoord, yCoord, size, colour, height = 0) {
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / 40));
     }
     drawCamelScreenCoords(xCoord, yCoord, size, colour) {
         const isoCoords = ImportantService.ConvertRealToCoord(xCoord, yCoord, size);
@@ -1208,15 +1208,8 @@ class RaceDrawing {
         }
     }
     drawStaticCamel(newXCoord, newYCoord, height) {
-        const xCoord = newXCoord;
-        const yCoord = newYCoord + 0.5;
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, -1.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -1.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, -0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 2 + height, -0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 0 + height, 0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1 + height, 0.5, -1.5);
-        this.backgroundCubeService.drawCube(xCoord, yCoord, 10, '#d8843b', 1.5 + height, 1.5, -1.5);
+        new CanvasCamelService(this._backgroundCanvas.getContext("2d"))
+            .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, 10, '#d8843b', height);
     }
     drawRocks(i, j, height) {
         var xOffset = (Math.random() - 0.5) * 0.5;
