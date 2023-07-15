@@ -76,15 +76,27 @@ class RecruitmentService {
         const radius = 25;
 
         btnService.drawBackButton();
+        const btnWidth = 550;
+        const btnHeight = 50;
+        const camelCoords = (x: number, y: number) => ImportantService.ConvertRealToCoord(x + btnWidth / 2, y - btnHeight - 60, 40);
 
-        btnService.createBtn(240, 250, 550, 50, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        this.drawCamel(-3.25, 4.25, '#cc807a');
+        let btnX = 240;
+        let btnY = 250;
+        let camel = camelCoords(btnX, btnY);
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
+        this.drawCamel(camel.x2, camel.y2, '#cc807a');
 
-        btnService.createBtn(840, 250, 550, 50, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        this.drawCamel(2.75, -1.75, '#debb49');
+        btnX = 840;
+        btnY = 250;
+        camel = camelCoords(btnX, btnY);
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
+        this.drawCamel(camel.x2, camel.y2,'#debb49');
 
-        btnService.createBtn(540, 650, 550, 50, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        this.drawCamel(7.75, 9.25, '#509124');
+        btnX = 540;
+        btnY = 650;
+        camel = camelCoords(btnX, btnY);
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
+        this.drawCamel(camel.x2, camel.y2, '#509124');
 
         CashMoneyService.drawCashMoney(this._ctx);
     }
