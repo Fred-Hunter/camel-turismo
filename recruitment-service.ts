@@ -71,43 +71,31 @@ class RecruitmentService {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-        let btnService = new CanvasBtnService(this._canvas);
+        const btnService = new CanvasBtnService(this._canvas);
+        const camelService = new CanvasCamelService(this._ctx);
 
         const radius = 25;
 
         btnService.drawBackButton();
+
         const btnWidth = 550;
         const btnHeight = 50;
-        const camelCoords = (x: number, y: number) => ImportantService.ConvertRealToCoord(x + btnWidth / 2, y - btnHeight - 60, 40);
 
         let btnX = 240;
         let btnY = 250;
-        let camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        this.drawCamel(camel.x2, camel.y2, '#cc807a');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
 
         btnX = 840;
         btnY = 250;
-        camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        this.drawCamel(camel.x2, camel.y2,'#debb49');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40,'#debb49');
 
         btnX = 540;
         btnY = 650;
-        camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        this.drawCamel(camel.x2, camel.y2, '#509124');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
 
         CashMoneyService.drawCashMoney(this._ctx);
-    }
-
-    drawCamel = (xCoord: number, yCoord: number, colour: string) => {
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1.5, 0, -10);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, -6);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -6);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 2, 0, -2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, 2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, 2);
     }
 }

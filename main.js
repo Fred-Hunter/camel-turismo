@@ -79,6 +79,27 @@ class CanvasBtnService {
         this.eventListeners = [];
     }
 }
+class CanvasCamelService {
+    ctx;
+    constructor(ctx) {
+        this.ctx = ctx;
+        this._cubeService = new CubeService(ctx);
+    }
+    _cubeService;
+    drawCamelIsoCoords(xCoord, yCoord, size, colour) {
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1.5, 0, Math.round(-10 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-6 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 2, 0, Math.round(-2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 0, 0, Math.round(2 * size / 40));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, 1, 0, Math.round(2 * size / 40));
+    }
+    drawCamelScreenCoords(xCoord, yCoord, size, colour) {
+        const isoCoords = ImportantService.ConvertRealToCoord(xCoord, yCoord, size);
+        this.drawCamelIsoCoords(isoCoords.x2, isoCoords.y2, size, colour);
+    }
+}
 class CanvasNames {
     static Recruitment = 'recruitmentCanvas';
     static RaceBackground = 'race-background';
@@ -295,13 +316,8 @@ class LeaderboardService {
     drawCamel(camel, heightOffset) {
         const x = 5.5;
         const y = -6.5;
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1.5 + heightOffset, 0, -3);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 0 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 2 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, heightOffset);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset);
+        const camelService = new CanvasCamelService(this.ctx);
+        camelService.drawCamelScreenCoords(window.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
             this.ctx.fillText(camel.camel.name, window.innerWidth - 100, 59 - heightOffset * 10);
@@ -670,38 +686,26 @@ class RecruitmentService {
     drawInitCanvas() {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        let btnService = new CanvasBtnService(this._canvas);
+        const btnService = new CanvasBtnService(this._canvas);
+        const camelService = new CanvasCamelService(this._ctx);
         const radius = 25;
         btnService.drawBackButton();
         const btnWidth = 550;
         const btnHeight = 50;
-        const camelCoords = (x, y) => ImportantService.ConvertRealToCoord(x + btnWidth / 2, y - btnHeight - 60, 40);
         let btnX = 240;
         let btnY = 250;
-        let camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        this.drawCamel(camel.x2, camel.y2, '#cc807a');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
         btnX = 840;
         btnY = 250;
-        camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        this.drawCamel(camel.x2, camel.y2, '#debb49');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#debb49');
         btnX = 540;
         btnY = 650;
-        camel = camelCoords(btnX, btnY);
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        this.drawCamel(camel.x2, camel.y2, '#509124');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
     }
-    drawCamel = (xCoord, yCoord, colour) => {
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1.5, 0, -10);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, -6);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -6);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, -2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 2, 0, -2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 0, 0, 2);
-        this._camelCubeService.drawCube(xCoord, yCoord, 40, colour, 1, 0, 2);
-    };
 }
 class MusicService {
     HomeScreenAudio;

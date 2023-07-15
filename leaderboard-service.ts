@@ -49,13 +49,9 @@ class LeaderboardService {
     private drawCamel(camel: RacingCamel, heightOffset: number): void {
         const x = 5.5;
         const y = -6.5;
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1.5 + heightOffset, 0, -3);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 0 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset, 0, -2);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 2 + heightOffset, 0, -1);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, heightOffset);
-        this._camelCubeService.drawCube(x, y, 10, camel.camel.colour, 1 + heightOffset);
+        const camelService = new CanvasCamelService(this.ctx);
+
+        camelService.drawCamelScreenCoords(window.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
