@@ -54,7 +54,6 @@ class RaceSelection {
         }
 
         PopupService.showLoading();
-        debugger;
 
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
