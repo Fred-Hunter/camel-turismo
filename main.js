@@ -106,6 +106,7 @@ class CanvasNames {
     static PopupCanvas = 'popup';
     static Countdown = 'countdown';
     static CamelManagement = 'camel-management';
+    static LoadingScreen = 'loading-screen';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -269,6 +270,16 @@ class GameState {
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(GameState.name, gameStateString);
     }
+    static Reset() {
+        localStorage.removeItem(GameState.name);
+    }
+    static GetExists() {
+        const gameStateString = localStorage.getItem(GameState.name);
+        if (!gameStateString || gameStateString === undefined)
+            return;
+        const gameState = JSON.parse(gameStateString);
+        return !!gameState.camel;
+    }
     static LoadIfExists() {
         const gameStateString = localStorage.getItem(GameState.name);
         if (!gameStateString || gameStateString === undefined)
@@ -386,6 +397,39 @@ class LeaderboardService {
         this.ctx.closePath();
     }
 }
+class LoadingScreen {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
+        this._btnService = new CanvasBtnService(this._canvas);
+    }
+    _canvas;
+    _btnService;
+    startFreshGame() {
+        GameState.Reset();
+        initMapLoadRequested = true;
+    }
+    loadSavedGame() {
+        GameState.LoadIfExists();
+        initMapLoadRequested = true;
+    }
+    drawLoadingScreen() {
+        const ctx = this._canvas.getContext("2d");
+        const img = new Image();
+        img.src = './graphics/camel-oasis.jpg';
+        ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const radius = 50;
+        const backgroundColour = '#cc807a';
+        const borderColour = '#f2ada7';
+        const textColour = '#fff';
+        if (GameState.GetExists()) {
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.loadSavedGame, 'Load saved game');
+        }
+        else {
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+        }
+    }
+}
 // Recruitment
 let camel;
 let recruitmentService;
@@ -400,6 +444,7 @@ let enterRaceSelection = new Event("enterRaceSelection");
 let countdown;
 let raceTriggeredTimestamp;
 let enterRequestSelectionRequested = false;
+let initMapLoadRequested = false;
 let leaderboardService;
 // Map
 let redirectToMap = new Event("redirectToMap");
@@ -425,6 +470,7 @@ function init() {
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     CanvasService.createCanvas('6', CanvasNames.Countdown);
     CanvasService.createCanvas('7', CanvasNames.CamelManagement);
+    CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
     recruitmentService = new RecruitmentService();
     // Race
     raceDrawing = new RaceDrawing();
@@ -434,18 +480,9 @@ function init() {
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
-    // Load saved gameState
-    GameState.LoadIfExists();
-    // Map
-    CanvasService.hideAllCanvas();
-    MapOverview.showMap();
-    MapOverview.renderMap();
-    if (!camel) {
-        PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
-    }
-    else {
-        PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
-    }
+    CanvasService.bringCanvasToTop(CanvasNames.LoadingScreen);
+    const loadingScreen = new LoadingScreen();
+    loadingScreen.drawLoadingScreen();
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
@@ -461,6 +498,19 @@ function gameLoop(timeStamp) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
+        if (initMapLoadRequested) {
+            initMapLoadRequested = false;
+            // Map
+            CanvasService.hideAllCanvas();
+            MapOverview.showMap();
+            MapOverview.renderMap();
+            if (!camel) {
+                PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+            }
+            else {
+                PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
+            }
+        }
         // Navigation
         if (skillNavigationRequested) {
             if (!!camel) {
@@ -478,6 +528,9 @@ function gameLoop(timeStamp) {
             enterRequestSelectionRequested = false;
         }
         if (mapNavigationRequested) {
+            if (CanvasService.getCurrentCanvas() == CanvasService.getCanvasByName(CanvasNames.Recruitment)) {
+                recruitmentService.leaveRecruitmentArea();
+            }
             CanvasService.hideAllCanvas();
             MapOverview.showMap();
             MapOverview.renderMap();

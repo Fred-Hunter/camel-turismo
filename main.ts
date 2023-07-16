@@ -12,6 +12,7 @@ let enterRaceSelection = new Event("enterRaceSelection");
 let countdown: Countdown;
 let raceTriggeredTimestamp: number;
 let enterRequestSelectionRequested: boolean = false;
+let initMapLoadRequested = false;
 
 let leaderboardService: LeaderboardService;
 
@@ -44,6 +45,7 @@ function init() {
     CanvasService.createCanvas('5', CanvasNames.RaceSelection);
     CanvasService.createCanvas('6', CanvasNames.Countdown);
     CanvasService.createCanvas('7', CanvasNames.CamelManagement);
+    CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
 
     recruitmentService = new RecruitmentService();
 
@@ -58,21 +60,9 @@ function init() {
     // Gym
     gymDrawing = new GymDrawing();
 
-    
-    // Load saved gameState
-    GameState.LoadIfExists();
-
-    // Map
-    CanvasService.hideAllCanvas();
-    MapOverview.showMap();
-    MapOverview.renderMap();
-
-    if (!camel) {
-        PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
-    }
-    else {
-        PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
-    }
+    CanvasService.bringCanvasToTop(CanvasNames.LoadingScreen);
+    const loadingScreen = new LoadingScreen();
+    loadingScreen.drawLoadingScreen();
     
     // Audio
     musicService = new MusicService();
@@ -92,6 +82,22 @@ function gameLoop(timeStamp: number) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
+
+        if (initMapLoadRequested) {
+            initMapLoadRequested = false;
+            
+            // Map
+            CanvasService.hideAllCanvas();
+            MapOverview.showMap();
+            MapOverview.renderMap();
+
+            if (!camel) {
+                PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+            }
+            else {
+                PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
+            }
+        }
 
         // Navigation
         if (skillNavigationRequested) {
@@ -116,6 +122,10 @@ function gameLoop(timeStamp: number) {
         }
 
         if (mapNavigationRequested) {
+            if (CanvasService.getCurrentCanvas() == CanvasService.getCanvasByName(CanvasNames.Recruitment)) {
+                recruitmentService.leaveRecruitmentArea();
+            }
+
             CanvasService.hideAllCanvas();
             MapOverview.showMap();
             MapOverview.renderMap();

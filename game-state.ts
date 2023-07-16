@@ -19,7 +19,20 @@ class GameState {
             cashMoney: GameState.cashMoney
         }
         const gameStateString = JSON.stringify(gameStateObject);
-        localStorage.setItem(GameState.name, gameStateString)
+        localStorage.setItem(GameState.name, gameStateString);
+    }
+
+    public static Reset() {
+        localStorage.removeItem(GameState.name);
+    }
+
+    public static GetExists() {
+        const gameStateString = localStorage.getItem(GameState.name);
+        if (!gameStateString || gameStateString === undefined) return;
+
+        const gameState = JSON.parse(gameStateString);
+
+        return !!gameState.camel;
     }
 
     public static LoadIfExists() {

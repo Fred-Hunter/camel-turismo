@@ -9,4 +9,5 @@ class CanvasNames {
     public static PopupCanvas: string = 'popup';
     public static Countdown: string = 'countdown';
     public static CamelManagement: string = 'camel-management';
+    public static LoadingScreen: string = 'loading-screen';
 }
