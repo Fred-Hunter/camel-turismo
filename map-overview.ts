@@ -65,7 +65,7 @@ class MapOverview {
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                 CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                (new GymDrawing).drawGym();
+                (new GymDrawing(navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3*rect.width/8 && mousePosition.x < 19*rect.width/32 && mousePosition.y > 7*rect.height/16) {
                 if (!!camel && camel.agility.level > 20) {
@@ -79,14 +79,16 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
-                enterRequestSelectionRequested = true;
+                navigatorService.requestPageNavigation(Page.raceSelection);
             }
             // Management
             else if (mousePosition.x > 19*rect.width/32 && mousePosition.x < rect.width && mousePosition.y > 3*rect.height/16 && mousePosition.y < 9*rect.height/16) {
                 if (!camel) {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
+                    return;
                 }
-                skillNavigationRequested = true;
+                
+                navigatorService.requestPageNavigation(Page.management);
             }
         }, false);
 

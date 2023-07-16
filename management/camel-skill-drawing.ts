@@ -1,8 +1,8 @@
 class CamelSkillDrawing {
-    constructor(  ) {
+    constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.CamelManagement);
         this._ctx = this._canvas.getContext('2d')!;
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, _navigator);
     }
 
     private readonly _ctx: CanvasRenderingContext2D;
@@ -20,7 +20,7 @@ class CamelSkillDrawing {
 
         this.drawOverview(camel, maxX / 40, maxX / 40);
         this.drawSkills(camel, levelUpSkillFunc);
-        this._btnService.drawBackButton();
+        this._btnService.drawBackButton(Page.mapOverview);
 
         this._ctx.restore();
     }

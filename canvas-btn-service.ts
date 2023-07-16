@@ -1,7 +1,7 @@
 class CanvasBtnService {
-    constructor(public canvas: HTMLCanvasElement) {
-
-    }
+    constructor(
+        public canvas: HTMLCanvasElement,
+        private readonly _navigator: NavigatorService) { }
 
     eventListeners: Array<(event: MouseEvent) => void> = [];
 
@@ -17,7 +17,7 @@ class CanvasBtnService {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
     }
 
-    drawBackButton() {
+    drawBackButton(targetPage: Page) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
@@ -30,7 +30,7 @@ class CanvasBtnService {
             '#cc807a',
             '#f2ada7', 
             '#fff',
-            () => mapNavigationRequested = true,
+            () => this._navigator.requestPageNavigation(targetPage),
             'Back');
     }
 

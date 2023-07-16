@@ -1,23 +1,21 @@
 // Recruitment
 let camel: Camel;
 let recruitmentService: RecruitmentService;
+
+// Navigation
+let navigatorService: NavigatorService;
+
 // Race
 let raceSimulation: RaceSimulation;
 let raceSelection: RaceSelection;
 let raceDrawing: RaceDrawing;
 let gymDrawing: GymDrawing;
 let race: Race;
-let startRace = new Event("startRace");
-let enterRaceSelection = new Event("enterRaceSelection");
 let countdown: Countdown;
 let raceTriggeredTimestamp: number;
-let enterRequestSelectionRequested: boolean = false;
 let initMapLoadRequested = false;
 
 let leaderboardService: LeaderboardService;
-
-// Map
-let redirectToMap = new Event("redirectToMap");
 
 // Audio
 let musicService: MusicService;
@@ -27,12 +25,14 @@ let camelSkillDrawing: CamelSkillDrawing;
 let camelSkillCommands: CamelSkillCommands;
 let camelSkillComponent: CamelSkillComponent;
 
-// Navigation
-let skillNavigationRequested = false;
-let mapNavigationRequested = false;
+// Loading
+let loadingScreen: LoadingScreen;
+
 
 function init() {
     GameState.cashMoney = 100;
+
+    navigatorService = new NavigatorService();
 
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
@@ -47,22 +47,20 @@ function init() {
     CanvasService.createCanvas('7', CanvasNames.CamelManagement);
     CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
 
-    recruitmentService = new RecruitmentService();
-
+    recruitmentService = new RecruitmentService(navigatorService);
+    loadingScreen = new LoadingScreen(navigatorService);
+    
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
-    raceSelection = new RaceSelection();
+    raceSelection = new RaceSelection(navigatorService);
     countdown = new Countdown();
 
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d")!);
 
     // Gym
-    gymDrawing = new GymDrawing();
+    gymDrawing = new GymDrawing(navigatorService);
 
-    CanvasService.bringCanvasToTop(CanvasNames.LoadingScreen);
-    const loadingScreen = new LoadingScreen();
-    loadingScreen.drawLoadingScreen();
     
     // Audio
     musicService = new MusicService();
@@ -71,9 +69,11 @@ function init() {
     })
 
     // Camel management
-    camelSkillDrawing = new CamelSkillDrawing();
+    camelSkillDrawing = new CamelSkillDrawing(navigatorService);
     camelSkillCommands = new CamelSkillCommands();
     camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+
+    navigatorService.doNavigation();
 
     window.requestAnimationFrame(gameLoop);
 }
@@ -98,40 +98,8 @@ function gameLoop(timeStamp: number) {
                 PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
             }
         }
-
-        // Navigation
-        if (skillNavigationRequested) {
-            if (!!camel) {
-                CanvasService.hideAllCanvas();
-                CanvasService.showCanvas(CanvasNames.CamelManagement);
-
-                camelSkillComponent.load(camel);
-            }
-
-            skillNavigationRequested = false;
-        }
-
-        if (enterRequestSelectionRequested) {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceSelection);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-
-            raceSelection.drawSelectionScreen();
-
-            enterRequestSelectionRequested = false;
-        }
-
-        if (mapNavigationRequested) {
-            if (CanvasService.getCurrentCanvas() == CanvasService.getCanvasByName(CanvasNames.Recruitment)) {
-                recruitmentService.leaveRecruitmentArea();
-            }
-
-            CanvasService.hideAllCanvas();
-            MapOverview.showMap();
-            MapOverview.renderMap();
-
-            mapNavigationRequested = false;
-        }
+        
+        navigatorService.doNavigation();
 
         if (!!race && race.inProgress) {
             raceSimulation.simulateRaceStep(race);

@@ -1,8 +1,10 @@
 "use strict";
 class CanvasBtnService {
     canvas;
-    constructor(canvas) {
+    _navigator;
+    constructor(canvas, _navigator) {
         this.canvas = canvas;
+        this._navigator = _navigator;
     }
     eventListeners = [];
     getMousePosition(event) {
@@ -15,10 +17,10 @@ class CanvasBtnService {
     isInside(pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     }
-    drawBackButton() {
+    drawBackButton(targetPage) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, '#cc807a', '#f2ada7', '#fff', () => mapNavigationRequested = true, 'Back');
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), 'Back');
     }
     drawBtn = (context, rect, radius, backgroundColour, borderColour, fontColour, text) => {
         context.save();
@@ -398,9 +400,11 @@ class LeaderboardService {
     }
 }
 class LoadingScreen {
-    constructor() {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
     }
     _canvas;
     _btnService;
@@ -433,32 +437,29 @@ class LoadingScreen {
 // Recruitment
 let camel;
 let recruitmentService;
+// Navigation
+let navigatorService;
 // Race
 let raceSimulation;
 let raceSelection;
 let raceDrawing;
 let gymDrawing;
 let race;
-let startRace = new Event("startRace");
-let enterRaceSelection = new Event("enterRaceSelection");
 let countdown;
 let raceTriggeredTimestamp;
-let enterRequestSelectionRequested = false;
 let initMapLoadRequested = false;
 let leaderboardService;
-// Map
-let redirectToMap = new Event("redirectToMap");
 // Audio
 let musicService;
 // Camel management
 let camelSkillDrawing;
 let camelSkillCommands;
 let camelSkillComponent;
-// Navigation
-let skillNavigationRequested = false;
-let mapNavigationRequested = false;
+// Loading
+let loadingScreen;
 function init() {
     GameState.cashMoney = 100;
+    navigatorService = new NavigatorService();
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
@@ -471,27 +472,26 @@ function init() {
     CanvasService.createCanvas('6', CanvasNames.Countdown);
     CanvasService.createCanvas('7', CanvasNames.CamelManagement);
     CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
-    recruitmentService = new RecruitmentService();
+    recruitmentService = new RecruitmentService(navigatorService);
+    loadingScreen = new LoadingScreen(navigatorService);
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
-    raceSelection = new RaceSelection();
+    raceSelection = new RaceSelection(navigatorService);
     countdown = new Countdown();
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
-    gymDrawing = new GymDrawing();
-    CanvasService.bringCanvasToTop(CanvasNames.LoadingScreen);
-    const loadingScreen = new LoadingScreen();
-    loadingScreen.drawLoadingScreen();
+    gymDrawing = new GymDrawing(navigatorService);
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
         musicService.startAudio();
     });
     // Camel management
-    camelSkillDrawing = new CamelSkillDrawing();
+    camelSkillDrawing = new CamelSkillDrawing(navigatorService);
     camelSkillCommands = new CamelSkillCommands();
     camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+    navigatorService.doNavigation();
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
@@ -511,31 +511,7 @@ function gameLoop(timeStamp) {
                 PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
             }
         }
-        // Navigation
-        if (skillNavigationRequested) {
-            if (!!camel) {
-                CanvasService.hideAllCanvas();
-                CanvasService.showCanvas(CanvasNames.CamelManagement);
-                camelSkillComponent.load(camel);
-            }
-            skillNavigationRequested = false;
-        }
-        if (enterRequestSelectionRequested) {
-            CanvasService.hideAllCanvas();
-            CanvasService.showCanvas(CanvasNames.RaceSelection);
-            CanvasService.bringCanvasToTop(CanvasNames.RaceSelection);
-            raceSelection.drawSelectionScreen();
-            enterRequestSelectionRequested = false;
-        }
-        if (mapNavigationRequested) {
-            if (CanvasService.getCurrentCanvas() == CanvasService.getCanvasByName(CanvasNames.Recruitment)) {
-                recruitmentService.leaveRecruitmentArea();
-            }
-            CanvasService.hideAllCanvas();
-            MapOverview.showMap();
-            MapOverview.renderMap();
-            mapNavigationRequested = false;
-        }
+        navigatorService.doNavigation();
         if (!!race && race.inProgress) {
             raceSimulation.simulateRaceStep(race);
             raceDrawing.drawCamels(race);
@@ -623,7 +599,7 @@ class MapOverview {
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                 CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                (new GymDrawing).drawGym();
+                (new GymDrawing(navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
                 if (!!camel && camel.agility.level > 20) {
@@ -637,14 +613,15 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
-                enterRequestSelectionRequested = true;
+                navigatorService.requestPageNavigation(Page.raceSelection);
             }
             // Management
             else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
                 if (!camel) {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
+                    return;
                 }
-                skillNavigationRequested = true;
+                navigatorService.requestPageNavigation(Page.management);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -706,7 +683,7 @@ class PopupService {
                 mouseY <= backgroundRect[1] + backgroundRect[3]) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
-                document.dispatchEvent(redirectToMap);
+                navigatorService.requestPageNavigation(Page.mapOverview);
             }
         });
     }
@@ -735,7 +712,9 @@ class PopupService {
     }
 }
 class RecruitmentService {
-    constructor() {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d');
         this._camelCubeService = new CubeService(this._ctx);
@@ -789,10 +768,10 @@ class RecruitmentService {
     drawInitCanvas() {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const btnService = new CanvasBtnService(this._canvas);
+        const btnService = new CanvasBtnService(this._canvas, this._navigator);
         const camelService = new CanvasCamelService(this._ctx);
         const radius = 25;
-        btnService.drawBackButton();
+        btnService.drawBackButton(Page.mapOverview);
         const btnWidth = 550;
         const btnHeight = 50;
         let btnX = 240;
@@ -858,7 +837,9 @@ class Countdown {
     }
 }
 class GymDrawing {
-    constructor() {
+    _navigatorService;
+    constructor(_navigatorService) {
+        this._navigatorService = _navigatorService;
         this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.GymCamel);
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.GymBackground);
         this.backgroundCubeService = new CubeService(this._backgroundCanvas.getContext("2d"));
@@ -875,7 +856,7 @@ class GymDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.drawFloor();
         this.drawTreadmill();
-        const buttonService = new CanvasBtnService(this._camelCanvas);
+        const buttonService = new CanvasBtnService(this._camelCanvas, this._navigatorService);
         buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(camel), "Start session");
         buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
     }
@@ -1143,10 +1124,12 @@ class CamelSkillComponent {
     };
 }
 class CamelSkillDrawing {
-    constructor() {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.CamelManagement);
         this._ctx = this._canvas.getContext('2d');
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, _navigator);
     }
     _ctx;
     _canvas;
@@ -1159,7 +1142,7 @@ class CamelSkillDrawing {
         const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
         this.drawOverview(camel, maxX / 40, maxX / 40);
         this.drawSkills(camel, levelUpSkillFunc);
-        this._btnService.drawBackButton();
+        this._btnService.drawBackButton(Page.mapOverview);
         this._ctx.restore();
     }
     drawOverview(camel, x, y) {
@@ -1258,6 +1241,79 @@ class Camel {
         }
     }
 }
+class NavigatorService {
+    _pageLoaded = false;
+    _currentPage = Page.loading;
+    requestPageNavigation(page) {
+        if (!this.canNavigate(page)) {
+            return;
+        }
+        this._pageLoaded = false;
+        this._currentPage = page;
+    }
+    doNavigation() {
+        if (this._pageLoaded === false) {
+            CanvasService.hideAllCanvas();
+            switch (this._currentPage) {
+                case Page.loading:
+                    this.navigateToLoading();
+                    break;
+                case Page.mapOverview:
+                    this.navigateToOverview();
+                    break;
+                case Page.management:
+                    this.navigateToManagement();
+                    break;
+                case Page.raceSelection:
+                    this.navigateToRaceSelection();
+                    break;
+                case Page.race:
+                    this.navigateToRace();
+                    break;
+            }
+            this._pageLoaded = true;
+        }
+    }
+    canNavigate(requestedPage) {
+        switch (requestedPage) {
+            case Page.raceSelection:
+                return !!camel;
+        }
+        return true;
+    }
+    navigateToLoading() {
+        CanvasService.showCanvas(CanvasNames.LoadingScreen);
+        loadingScreen.drawLoadingScreen();
+    }
+    navigateToOverview() {
+        MapOverview.showMap();
+        MapOverview.renderMap();
+    }
+    navigateToManagement() {
+        CanvasService.showCanvas(CanvasNames.CamelManagement);
+        camelSkillComponent.load(camel);
+    }
+    navigateToRaceSelection() {
+        CanvasService.showCanvas(CanvasNames.RaceSelection);
+        raceSelection.drawSelectionScreen();
+    }
+    navigateToRace() {
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.showCanvas(CanvasNames.Countdown);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
+    }
+}
+var Page;
+(function (Page) {
+    Page[Page["loading"] = 0] = "loading";
+    Page[Page["mapOverview"] = 1] = "mapOverview";
+    Page[Page["management"] = 2] = "management";
+    Page[Page["raceSelection"] = 3] = "raceSelection";
+    Page[Page["race"] = 4] = "race";
+})(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
     Difficulty[Difficulty["Easy"] = 0] = "Easy";
@@ -1433,10 +1489,12 @@ class RaceDrawing {
     }
 }
 class RaceSelection {
-    constructor() {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d');
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
     }
     _ctx;
     _canvas;
@@ -1451,7 +1509,7 @@ class RaceSelection {
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
-        this._btnService.drawBackButton();
+        this._btnService.drawBackButton(Page.mapOverview);
         this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
         this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
         this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
@@ -1465,13 +1523,7 @@ class RaceSelection {
             GameState.cashMoney -= entryFee;
         }
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
-        CanvasService.hideAllCanvas();
-        CanvasService.showCanvas(CanvasNames.RaceBackground);
-        CanvasService.showCanvas(CanvasNames.RaceCamel);
-        CanvasService.showCanvas(CanvasNames.Countdown);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
+        this._navigator.requestPageNavigation(Page.race);
         musicService.setAudio("RaceAudio");
         musicService.startAudio();
         race.triggered = true;

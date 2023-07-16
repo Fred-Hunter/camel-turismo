@@ -1,5 +1,6 @@
 class GymDrawing {
     constructor(
+        private readonly _navigatorService: NavigatorService
     ) {
         this._camelCanvas = CanvasService.getCanvasByName(CanvasNames.GymCamel);
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.GymBackground);
@@ -22,10 +23,10 @@ class GymDrawing {
         this.drawFloor();
         this.drawTreadmill();
 
-        const buttonService = new CanvasBtnService(this._camelCanvas);
+        const buttonService = new CanvasBtnService(this._camelCanvas, this._navigatorService);
         buttonService.createBtn(
-            (this._camelCanvas.width/GlobalStaticConstants.devicePixelRatio)/2,
-            GlobalStaticConstants.innerHeight/2,
+            (this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2,
+            GlobalStaticConstants.innerHeight / 2,
             550,
             50,
             25,
@@ -36,19 +37,19 @@ class GymDrawing {
             "Start session");
 
         buttonService.createBtn(
-            (this._camelCanvas.width/GlobalStaticConstants.devicePixelRatio)/2,
-            GlobalStaticConstants.innerHeight/2 + 100,
+            (this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2,
+            GlobalStaticConstants.innerHeight / 2 + 100,
             550,
             50,
             25,
             GlobalStaticConstants.backgroundColour,
             GlobalStaticConstants.mediumColour,
             "black",
-            () => {this.exitGym(this._trainSession)},
+            () => { this.exitGym(this._trainSession) },
             "Back to map");
     }
 
-    private exitGym(trainSession :TrainSession|null) {
+    private exitGym(trainSession: TrainSession | null) {
         if (trainSession) {
             trainSession.endSession();
         }
@@ -63,8 +64,8 @@ class GymDrawing {
                 // if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
                 //     this.backgroundCubeService.drawCube(i, j, 50, '#5892a1', -0.2);
                 // } else {
-                    const canvasColour = '#C2B280';
-                    this.backgroundCubeService.drawCube(i, j, 50, canvasColour);
+                const canvasColour = '#C2B280';
+                this.backgroundCubeService.drawCube(i, j, 50, canvasColour);
                 // }
             }
         }
@@ -82,7 +83,7 @@ class GymDrawing {
         this.drawTreadmillHorizontalLine(7.7, '#999999');
         this.drawTreadmillHorizontalLine(7.8, '#999999');
         this.drawTreadmillHorizontalLine(7.9, '#444444');
-        
+
         // Left bar
         this.drawTreadmillVerticalLine(7.1, '#000000');
 
@@ -95,31 +96,31 @@ class GymDrawing {
         this.drawTreadmillUppyDownyLine(7.1, 7, '#000000')
         this.drawTreadmillTopBar('#000000');
         this.drawTreadmillUppyDownyLine(7.8, 7, '#000000')
-        
+
 
     }
 
     drawTreadmillUppyDownyLine(alongth: number, downth: number, colour: string) {
-        for (let i = 1; i< 10; i++) {
-            this.backgroundCubeService.drawCube(downth, alongth,5,colour, i);
+        for (let i = 1; i < 10; i++) {
+            this.backgroundCubeService.drawCube(downth, alongth, 5, colour, i);
         }
     }
 
     drawTreadmillVerticalLine(alongth: number, colour: string) {
-        for (let i = 0; i< 10; i++) {
-            this.backgroundCubeService.drawCube(7 + (i / 10), alongth,5,colour);
+        for (let i = 0; i < 10; i++) {
+            this.backgroundCubeService.drawCube(7 + (i / 10), alongth, 5, colour);
         }
     }
 
     drawTreadmillHorizontalLine(downth: number, colour: string) {
-        for (let i = 2; i< 8; i++) {
-            this.backgroundCubeService.drawCube(downth,7 + (i / 10),5,colour);
+        for (let i = 2; i < 8; i++) {
+            this.backgroundCubeService.drawCube(downth, 7 + (i / 10), 5, colour);
         }
     }
 
     drawTreadmillTopBar(colour: string) {
-        for (let i = 2; i< 8; i++) {
-            this.backgroundCubeService.drawCube(7,7 + (i / 10),5,colour, 9);
+        for (let i = 2; i < 8; i++) {
+            this.backgroundCubeService.drawCube(7, 7 + (i / 10), 5, colour, 9);
         }
     }
 

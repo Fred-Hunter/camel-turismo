@@ -1,7 +1,7 @@
 class LoadingScreen {
-    constructor() {
+    constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
     }
 
     private _canvas: HTMLCanvasElement;

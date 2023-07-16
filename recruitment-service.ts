@@ -1,5 +1,5 @@
 class RecruitmentService {
-    constructor() {
+    constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d')!;
         this._camelCubeService = new CubeService(this._ctx);
@@ -71,12 +71,12 @@ class RecruitmentService {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
-        const btnService = new CanvasBtnService(this._canvas);
+        const btnService = new CanvasBtnService(this._canvas, this._navigator);
         const camelService = new CanvasCamelService(this._ctx);
 
         const radius = 25;
 
-        btnService.drawBackButton();
+        btnService.drawBackButton(Page.mapOverview);
 
         const btnWidth = 550;
         const btnHeight = 50;

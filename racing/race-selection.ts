@@ -1,9 +1,10 @@
 class RaceSelection {
     constructor(
+        private readonly _navigator: NavigatorService
     ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d')!;
-        this._btnService = new CanvasBtnService(this._canvas);
+        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
     }
 
     private readonly _ctx: CanvasRenderingContext2D;
@@ -26,7 +27,7 @@ class RaceSelection {
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
 
-        this._btnService.drawBackButton();
+        this._btnService.drawBackButton(Page.mapOverview);
 
         this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
 
@@ -38,30 +39,23 @@ class RaceSelection {
     }
 
     private selectRace(
-        raceLength: number, 
-        prizeMoney: number, 
+        raceLength: number,
+        prizeMoney: number,
         entryFee: number,
         raceSize: number,
         difficulty: Difficulty) {
 
-        if(GameState.cashMoney < entryFee){
+        if (GameState.cashMoney < entryFee) {
             return;
         }
-        
+
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
         }
 
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+        this._navigator.requestPageNavigation(Page.race);
 
-        CanvasService.hideAllCanvas();
-        CanvasService.showCanvas(CanvasNames.RaceBackground);
-        CanvasService.showCanvas(CanvasNames.RaceCamel);
-        CanvasService.showCanvas(CanvasNames.Countdown);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
-        
         musicService.setAudio("RaceAudio");
         musicService.startAudio()
 
