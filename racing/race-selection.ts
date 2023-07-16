@@ -3,14 +3,16 @@ class RaceSelection {
     ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d')!;
+        this._btnService = new CanvasBtnService(this._canvas);
     }
 
     private readonly _ctx: CanvasRenderingContext2D;
     private _canvas: HTMLCanvasElement;
+    private _btnService: CanvasBtnService;
 
 
     drawSelectionScreen() {
-        const btnService = new CanvasBtnService(this._canvas);
+        this._btnService.removeEventListeners();
 
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
@@ -24,13 +26,13 @@ class RaceSelection {
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
 
-        btnService.drawBackButton();
+        this._btnService.drawBackButton();
 
-        btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
+        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
 
-        btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
+        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
 
-        btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
+        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
 
         CashMoneyService.drawCashMoney(this._ctx);
     }
