@@ -651,6 +651,7 @@ class PopupService {
             width,
             height
         ];
+        ctx.beginPath();
         ctx.strokeStyle = highlightColour;
         ctx.lineWidth = 3;
         ctx.fillStyle = bgColour;
@@ -658,7 +659,7 @@ class PopupService {
         ctx.fill();
         ctx.stroke();
         // Draw the popup content
-        const textLines = this.getLines(ctx, text, width / 2 - 20);
+        const textLines = this.getLines(ctx, text, width / 2 - 30);
         let textOffset = 0;
         ctx.fillStyle = textColour;
         ctx.font = 'bold 20px Arial';
@@ -686,6 +687,49 @@ class PopupService {
                 navigatorService.requestPageNavigation(Page.mapOverview);
             }
         });
+    }
+    static showLoading() {
+        this.clearPopups();
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        CanvasService.bringCanvasToTop(CanvasNames.PopupCanvas);
+        CanvasService.showCanvas(CanvasNames.PopupCanvas);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx)
+            return;
+        const width = 140;
+        const height = 40;
+        const x = (canvas.width / GlobalStaticConstants.devicePixelRatio) / 2 - width / 2;
+        const y = GlobalStaticConstants.innerHeight / 2 - height / 4;
+        const bgColour = GlobalStaticConstants.backgroundColour;
+        const textColour = GlobalStaticConstants.highlightColour;
+        const highlightColour = GlobalStaticConstants.highlightColour;
+        // Draw the background rectangle
+        const backgroundRect = [
+            x,
+            y,
+            width,
+            height
+        ];
+        ctx.strokeStyle = highlightColour;
+        ctx.lineWidth = 3;
+        ctx.fillStyle = bgColour;
+        ctx.beginPath();
+        ctx.rect(...backgroundRect);
+        ctx.fill();
+        ctx.stroke();
+        // Draw the popup content
+        ctx.fillStyle = textColour;
+        ctx.font = 'bold 20px Arial';
+        ctx.fillText("Loading...", x + 20, y + 25);
+    }
+    static clearPopups() {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx)
+            return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        CanvasService.hideCanvas(CanvasNames.PopupCanvas);
     }
     static drawTwoOptionPopup(canvas, x, y, option1Text, option2Text, option1Callback, option2Callback) {
         if (!canvas)
@@ -1522,11 +1566,17 @@ class RaceSelection {
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
         }
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
-        this._navigator.requestPageNavigation(Page.race);
-        musicService.setAudio("RaceAudio");
-        musicService.startAudio();
-        race.triggered = true;
+        PopupService.showLoading();
+        debugger;
+        // A few frames are needed to paint the loader
+        window.setTimeout(() => {
+            race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            this._navigator.requestPageNavigation(Page.race);
+            PopupService.clearPopups();
+            musicService.setAudio("RaceAudio");
+            musicService.startAudio();
+            race.triggered = true;
+        }, 100);
     }
 }
 class RaceSimulation {

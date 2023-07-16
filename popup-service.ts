@@ -27,6 +27,8 @@ class PopupService {
             width,
             height
         ];
+
+        ctx.beginPath();
         ctx.strokeStyle = highlightColour;
         ctx.lineWidth = 3;
         ctx.fillStyle = bgColour;
@@ -35,7 +37,7 @@ class PopupService {
         ctx.stroke();
 
         // Draw the popup content
-        const textLines = this.getLines(ctx, text, width / 2 - 20);
+        const textLines = this.getLines(ctx, text, width / 2 - 30);
         let textOffset = 0;
         ctx.fillStyle = textColour;
         ctx.font = 'bold 20px Arial';
@@ -70,7 +72,59 @@ class PopupService {
         });
     }
 
-    public static drawTwoOptionPopup(canvas: HTMLCanvasElement,
+    public static showLoading() {
+        this.clearPopups();
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        CanvasService.bringCanvasToTop(CanvasNames.PopupCanvas);
+        CanvasService.showCanvas(CanvasNames.PopupCanvas);
+
+        const ctx = canvas?.getContext('2d');
+        if (!ctx) return;
+
+        const width = 140;
+        const height = 40;
+
+        const x = (canvas.width / GlobalStaticConstants.devicePixelRatio) / 2 - width / 2; 
+        const y = GlobalStaticConstants.innerHeight/2 - height/4; 
+
+        const bgColour = GlobalStaticConstants.backgroundColour;
+        const textColour = GlobalStaticConstants.highlightColour;
+        const highlightColour = GlobalStaticConstants.highlightColour;
+
+        // Draw the background rectangle
+        const backgroundRect: [number, number, number, number] = [
+            x,
+            y,
+            width,
+            height
+        ];
+        ctx.strokeStyle = highlightColour;
+        ctx.lineWidth = 3;
+        ctx.fillStyle = bgColour;
+        
+        ctx.beginPath();
+        ctx.rect(...backgroundRect);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Draw the popup content
+        ctx.fillStyle = textColour;
+        ctx.font = 'bold 20px Arial';
+
+        ctx.fillText("Loading...", x + 20, y + 25);
+    }
+
+    public static clearPopups(){
+        const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        CanvasService.hideCanvas(CanvasNames.PopupCanvas);
+    }
+    
+    private static drawTwoOptionPopup(canvas: HTMLCanvasElement,
         x: number,
         y: number,
         option1Text: string,
