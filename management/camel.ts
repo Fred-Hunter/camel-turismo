@@ -11,9 +11,9 @@ enum InitCamelQuality {
 
 class Camel {
     constructor(public id: number, quality: InitCamelQuality) {
-        let sprintSpeed: number = Math.ceil(Math.random() * 10 * (quality + 1));
-        let agility: number = Math.ceil(Math.random() * 10 * (quality + 1));
-        let stamina: number = Math.ceil(Math.random() * 10 * (quality + 1));
+        const sprintSpeed: number = Math.ceil(Math.random() * 10 * (quality + 1));
+        const agility: number = Math.ceil(Math.random() * 10 * (quality + 1));
+        const stamina: number = Math.ceil(Math.random() * 10 * (quality + 1));
 
         this.agility.level = agility;
         this.sprintSpeed.level = sprintSpeed;

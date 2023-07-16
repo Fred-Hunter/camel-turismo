@@ -6,8 +6,8 @@ class Gym {
     }
 
     getSpaSession(camel: Camel) {
-        if (cashMoney >= 50) {
-            cashMoney += -50;
+        if (GameState.cashMoney >= 50) {
+            GameState.cashMoney += -50;
             return new SpaSession(
                 camel.stamina);
         }

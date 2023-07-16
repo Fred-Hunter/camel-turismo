@@ -42,12 +42,12 @@ class RaceSelection {
         raceSize: number,
         difficulty: Difficulty) {
 
-        if(cashMoney < entryFee){
+        if(GameState.cashMoney < entryFee){
             return;
         }
         
-        if (cashMoney >= entryFee) {
-            cashMoney -= entryFee;
+        if (GameState.cashMoney >= entryFee) {
+            GameState.cashMoney -= entryFee;
         }
 
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);

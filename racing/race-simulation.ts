@@ -20,7 +20,7 @@ class RaceSimulation {
         }
 
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
+            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
 
@@ -70,12 +70,12 @@ class RaceSimulation {
                 tryToSprint = canSprintToEnd;
             }
 
-            const hasSprint = racingCamel.stamina - secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
+            const hasSprint = racingCamel.stamina - GameState.secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
             const baseDistancePerSecond = hasSprint ? distancePerSecondWhileSprinting : distancePerSecondWhileWalking;
             const distancePerSecond = baseDistancePerSecond + (Math.random() - 0.5);
 
             const completedDistance = race.length * racingCamel.completionPercentage;
-            const newCompletedDistance = completedDistance + secondsPassed * distancePerSecond;
+            const newCompletedDistance = completedDistance + GameState.secondsPassed * distancePerSecond;
 
             racingCamel.completionPercentage = newCompletedDistance / race.length;
 
@@ -87,7 +87,7 @@ class RaceSimulation {
             }
 
             if (hasSprint) {
-                racingCamel.stamina -= secondsPassed * staminaDecreasePerSecond;
+                racingCamel.stamina -= GameState.secondsPassed * staminaDecreasePerSecond;
             }
         });
     }
@@ -116,7 +116,7 @@ class RaceSimulation {
 
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
-        cashMoney += prizeCashMoney;
+        GameState.cashMoney += prizeCashMoney;
 
         this._nextPosition = 1;
 

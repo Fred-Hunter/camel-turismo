@@ -2,6 +2,7 @@ class MapOverview {
     public static showMap(){
         CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
         CanvasService.showCanvas(CanvasNames.MapOverview);
+        GameState.Save();
     }
     public static hideMap(){
         CanvasService.hideCanvas(CanvasNames.MapOverview);
@@ -68,7 +69,7 @@ class MapOverview {
             }
             else if (mousePosition.x > 3*rect.width/8 && mousePosition.x < 19*rect.width/32 && mousePosition.y > 7*rect.height/16) {
                 if (!!camel && camel.agility.level > 20) {
-                    cashMoney += 1000;
+                    GameState.cashMoney += 1000;
                     CashMoneyService.drawCashMoney(ctx);
                 }
             }

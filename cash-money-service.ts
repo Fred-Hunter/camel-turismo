@@ -9,7 +9,7 @@ class CashMoneyService {
             ctx.font = '30pt Garamond';
             ctx.fillStyle = '#000';
             ctx.textAlign = "center";
-            ctx.fillText('Cash money: ' + cashMoney, GlobalStaticConstants.innerWidth - 250, GlobalStaticConstants.innerHeight - 102, 250);
+            ctx.fillText('Cash money: ' + GameState.cashMoney, GlobalStaticConstants.innerWidth - 250, GlobalStaticConstants.innerHeight - 102, 250);
         }
     }
 }

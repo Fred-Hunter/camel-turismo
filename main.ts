@@ -1,13 +1,6 @@
-// Time
-let secondsPassed: number;
-let oldTimeStamp: number = 0;
-
 // Recruitment
 let camel: Camel;
-let lastUsedId = 0;
 let recruitmentService: RecruitmentService;
-let cashMoney: number;
-
 // Race
 let raceSimulation: RaceSimulation;
 let raceSelection: RaceSelection;
@@ -23,7 +16,6 @@ let enterRequestSelectionRequested: boolean = false;
 let leaderboardService: LeaderboardService;
 
 // Map
-let map: MapOverview;
 let redirectToMap = new Event("redirectToMap");
 
 // Audio
@@ -39,7 +31,7 @@ let skillNavigationRequested = false;
 let mapNavigationRequested = false;
 
 function init() {
-    cashMoney = 100;
+    GameState.cashMoney = 100;
 
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
@@ -66,13 +58,22 @@ function init() {
     // Gym
     gymDrawing = new GymDrawing();
 
+    
+    // Load saved gameState
+    GameState.LoadIfExists();
+
     // Map
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
 
-    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
-
+    if (!camel) {
+        PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+    }
+    else {
+        PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
+    }
+    
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
@@ -89,8 +90,8 @@ function init() {
 
 function gameLoop(timeStamp: number) {
     try {
-        secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
-        oldTimeStamp = timeStamp;
+        GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
+        GameState.oldTimeStamp = timeStamp;
 
         // Navigation
         if (skillNavigationRequested) {
@@ -144,8 +145,8 @@ function gameLoop(timeStamp: number) {
                 raceSimulation.startRace(race);
             }
         }
-    } catch {
-        console.log('error')
+    } catch (exception) {
+        console.error(exception);
     } finally {
         window.requestAnimationFrame(gameLoop);
     }

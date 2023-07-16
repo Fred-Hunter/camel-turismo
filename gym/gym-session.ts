@@ -84,13 +84,13 @@ class SpaSession extends GymSession {
     }
 
     public startSession(): void {
-        this._startTime = secondsPassed;
+        this._startTime = GameState.secondsPassed;
         super.startSession()
     }
 
     public endSession() {
         super.endSession()
-        this._staiminaGained = secondsPassed - this._startTime;
+        this._staiminaGained = GameState.secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
             camel.unspentXp += this._staiminaGained;
         } else {

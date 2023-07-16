@@ -30,7 +30,7 @@ class RecruitmentService {
     }
 
     validateEnoughCashMoney(cost: number): boolean {
-        return cashMoney - cost >= 0;
+        return GameState.cashMoney - cost >= 0;
     }
 
     leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
@@ -45,9 +45,9 @@ class RecruitmentService {
             PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
-        cashMoney = cashMoney - cost;
+        GameState.cashMoney = GameState.cashMoney - cost;
         const quality: InitCamelQuality = cost/100 - 1;
-        camel = new Camel(++lastUsedId, quality);
+        camel = new Camel(++GameState.lastUsedId, quality);
         PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
         this._recruitedCamel = true;
     }

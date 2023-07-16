@@ -176,7 +176,7 @@ class CashMoneyService {
             ctx.font = '30pt Garamond';
             ctx.fillStyle = '#000';
             ctx.textAlign = "center";
-            ctx.fillText('Cash money: ' + cashMoney, GlobalStaticConstants.innerWidth - 250, GlobalStaticConstants.innerHeight - 102, 250);
+            ctx.fillText('Cash money: ' + GameState.cashMoney, GlobalStaticConstants.innerWidth - 250, GlobalStaticConstants.innerHeight - 102, 250);
         };
     }
 }
@@ -246,6 +246,51 @@ class CubeService {
         colour = colour.substring(1);
         const num = parseInt(colour, 16), amt = Math.round(2.55 * percent), R = (num >> 16) + amt, G = (num >> 8 & 0x00FF) + amt, B = (num & 0x0000FF) + amt;
         return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+    }
+}
+class GameState {
+    // Camel
+    static camel;
+    static secondsPassed = 0; // done
+    static oldTimeStamp = 0; // done
+    // Recruitment
+    static lastUsedId = 0; // done
+    static cashMoney = 100; // done
+    static Save() {
+        if (!!camel)
+            GameState.camel = camel;
+        const gameStateObject = {
+            camel: GameState.camel,
+            secondsPassed: GameState.secondsPassed,
+            oldTimeStamp: GameState.oldTimeStamp,
+            lastUsedId: GameState.lastUsedId,
+            cashMoney: GameState.cashMoney
+        };
+        const gameStateString = JSON.stringify(gameStateObject);
+        localStorage.setItem(GameState.name, gameStateString);
+    }
+    static LoadIfExists() {
+        const gameStateString = localStorage.getItem(GameState.name);
+        if (!gameStateString || gameStateString === undefined)
+            return;
+        const gameState = JSON.parse(gameStateString);
+        if (gameState.camel === undefined)
+            return;
+        // Load camel
+        GameState.camel = gameState.camel;
+        camel = new Camel(gameState.camel.id, gameState.camel.quality);
+        camel.colour = gameState.camel.colour;
+        camel.name = gameState.camel.name;
+        camel.temperament = gameState.camel.temperament;
+        camel.unspentXp = gameState.camel.unspentXp;
+        camel.agility = new CamelSkill(gameState.camel.agility._name, gameState.camel.agility._currentXp);
+        camel.sprintSpeed = new CamelSkill(gameState.camel.sprintSpeed._name, gameState.camel.sprintSpeed._currentXp);
+        camel.stamina = new CamelSkill(gameState.camel.stamina._name, gameState.camel.stamina._currentXp);
+        // Load game state
+        GameState.secondsPassed = gameState.secondsPassed;
+        GameState.oldTimeStamp = gameState.oldTimeStamp;
+        GameState.lastUsedId = gameState.lastUsedId;
+        GameState.cashMoney = gameState.cashMoney;
     }
 }
 class GlobalStaticConstants {
@@ -341,14 +386,9 @@ class LeaderboardService {
         this.ctx.closePath();
     }
 }
-// Time
-let secondsPassed;
-let oldTimeStamp = 0;
 // Recruitment
 let camel;
-let lastUsedId = 0;
 let recruitmentService;
-let cashMoney;
 // Race
 let raceSimulation;
 let raceSelection;
@@ -362,7 +402,6 @@ let raceTriggeredTimestamp;
 let enterRequestSelectionRequested = false;
 let leaderboardService;
 // Map
-let map;
 let redirectToMap = new Event("redirectToMap");
 // Audio
 let musicService;
@@ -374,7 +413,7 @@ let camelSkillComponent;
 let skillNavigationRequested = false;
 let mapNavigationRequested = false;
 function init() {
-    cashMoney = 100;
+    GameState.cashMoney = 100;
     // Camel
     CanvasService.createCanvas('3', CanvasNames.Recruitment);
     CanvasService.createCanvas('1', CanvasNames.RaceBackground);
@@ -395,11 +434,18 @@ function init() {
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing();
+    // Load saved gameState
+    GameState.LoadIfExists();
     // Map
     CanvasService.hideAllCanvas();
     MapOverview.showMap();
     MapOverview.renderMap();
-    PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+    if (!camel) {
+        PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
+    }
+    else {
+        PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
+    }
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
@@ -413,8 +459,8 @@ function init() {
 }
 function gameLoop(timeStamp) {
     try {
-        secondsPassed = Math.min((timeStamp - oldTimeStamp) / 1000, 0.1);
-        oldTimeStamp = timeStamp;
+        GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
+        GameState.oldTimeStamp = timeStamp;
         // Navigation
         if (skillNavigationRequested) {
             if (!!camel) {
@@ -457,8 +503,8 @@ function gameLoop(timeStamp) {
             }
         }
     }
-    catch {
-        console.log('error');
+    catch (exception) {
+        console.error(exception);
     }
     finally {
         window.requestAnimationFrame(gameLoop);
@@ -469,6 +515,7 @@ class MapOverview {
     static showMap() {
         CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
         CanvasService.showCanvas(CanvasNames.MapOverview);
+        GameState.Save();
     }
     static hideMap() {
         CanvasService.hideCanvas(CanvasNames.MapOverview);
@@ -527,7 +574,7 @@ class MapOverview {
             }
             else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
                 if (!!camel && camel.agility.level > 20) {
-                    cashMoney += 1000;
+                    GameState.cashMoney += 1000;
                     CashMoneyService.drawCashMoney(ctx);
                 }
             }
@@ -655,7 +702,7 @@ class RecruitmentService {
         document.addEventListener("redirectToMap", this.handleEvent, false);
     };
     validateEnoughCashMoney(cost) {
-        return cashMoney - cost >= 0;
+        return GameState.cashMoney - cost >= 0;
     }
     leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
         if (this._recruitedCamel) {
@@ -668,9 +715,9 @@ class RecruitmentService {
             PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
-        cashMoney = cashMoney - cost;
+        GameState.cashMoney = GameState.cashMoney - cost;
         const quality = cost / 100 - 1;
-        camel = new Camel(++lastUsedId, quality);
+        camel = new Camel(++GameState.lastUsedId, quality);
         PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
         this._recruitedCamel = true;
     }
@@ -993,12 +1040,12 @@ class SpaSession extends GymSession {
         this._skill = _skill;
     }
     startSession() {
-        this._startTime = secondsPassed;
+        this._startTime = GameState.secondsPassed;
         super.startSession();
     }
     endSession() {
         super.endSession();
-        this._staiminaGained = secondsPassed - this._startTime;
+        this._staiminaGained = GameState.secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
             camel.unspentXp += this._staiminaGained;
         }
@@ -1012,8 +1059,8 @@ class Gym {
         return new TrainSession(camel.sprintSpeed, camel.stamina.level);
     }
     getSpaSession(camel) {
-        if (cashMoney >= 50) {
-            cashMoney += -50;
+        if (GameState.cashMoney >= 50) {
+            GameState.cashMoney += -50;
             return new SpaSession(camel.stamina);
         }
     }
@@ -1112,9 +1159,9 @@ class Camel {
     id;
     constructor(id, quality) {
         this.id = id;
-        let sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
-        let agility = Math.ceil(Math.random() * 10 * (quality + 1));
-        let stamina = Math.ceil(Math.random() * 10 * (quality + 1));
+        const sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        const agility = Math.ceil(Math.random() * 10 * (quality + 1));
+        const stamina = Math.ceil(Math.random() * 10 * (quality + 1));
         this.agility.level = agility;
         this.sprintSpeed.level = sprintSpeed;
         this.stamina.level = stamina;
@@ -1356,11 +1403,11 @@ class RaceSelection {
         CashMoneyService.drawCashMoney(this._ctx);
     }
     selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
-        if (cashMoney < entryFee) {
+        if (GameState.cashMoney < entryFee) {
             return;
         }
-        if (cashMoney >= entryFee) {
-            cashMoney -= entryFee;
+        if (GameState.cashMoney >= entryFee) {
+            GameState.cashMoney -= entryFee;
         }
         race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
         CanvasService.hideAllCanvas();
@@ -1390,7 +1437,7 @@ class RaceSimulation {
             competitorQuality = InitCamelQuality.Cpu5;
         }
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++lastUsedId, competitorQuality);
+            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
             camelsInRace.push(competitorCamel);
         }
         const trackCreator = new RaceTrackCreator();
@@ -1429,11 +1476,11 @@ class RaceSimulation {
                 const canSprintToEnd = racingCamel.stamina - secondsToFinish * staminaDecreasePerSecond >= -2;
                 tryToSprint = canSprintToEnd;
             }
-            const hasSprint = racingCamel.stamina - secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
+            const hasSprint = racingCamel.stamina - GameState.secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
             const baseDistancePerSecond = hasSprint ? distancePerSecondWhileSprinting : distancePerSecondWhileWalking;
             const distancePerSecond = baseDistancePerSecond + (Math.random() - 0.5);
             const completedDistance = race.length * racingCamel.completionPercentage;
-            const newCompletedDistance = completedDistance + secondsPassed * distancePerSecond;
+            const newCompletedDistance = completedDistance + GameState.secondsPassed * distancePerSecond;
             racingCamel.completionPercentage = newCompletedDistance / race.length;
             if (racingCamel.completionPercentage >= 1) {
                 racingCamel.finalPosition = this._nextPosition++;
@@ -1442,7 +1489,7 @@ class RaceSimulation {
                 }
             }
             if (hasSprint) {
-                racingCamel.stamina -= secondsPassed * staminaDecreasePerSecond;
+                racingCamel.stamina -= GameState.secondsPassed * staminaDecreasePerSecond;
             }
         });
     }
@@ -1465,7 +1512,7 @@ class RaceSimulation {
             1 +
                 race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
         const prizeCashMoney = this.getPrizeMoney(race, position);
-        cashMoney += prizeCashMoney;
+        GameState.cashMoney += prizeCashMoney;
         this._nextPosition = 1;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         camel.unspentXp += xpGained;
