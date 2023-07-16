@@ -13,10 +13,10 @@ class CamelSkillDrawing {
         this._ctx.save();
         this._ctx.font = '12pt Garamond';
 
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this._btnService.removeEventListeners();
 
-        const maxX = this._canvas.width / window.devicePixelRatio;
+        const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
 
         this.drawOverview(camel, maxX / 40, maxX / 40);
         this.drawSkills(camel, levelUpSkillFunc);
@@ -34,7 +34,7 @@ class CamelSkillDrawing {
     }
 
     private drawSkills(camel: Camel, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {
-        const maxX = this._canvas.width / window.devicePixelRatio;
+        const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
 
         const xPadding = maxX / 40;
         const yPadding = maxX / 40;

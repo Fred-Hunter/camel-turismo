@@ -1,9 +1,4 @@
 "use strict";
-class GlobalStaticConstants {
-    static backgroundColour = "#e8d7a7";
-    static highlightColour = "#432818";
-    static mediumColour = "#bb9457";
-}
 class CanvasBtnService {
     canvas;
     constructor(canvas) {
@@ -21,8 +16,8 @@ class CanvasBtnService {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     }
     drawBackButton() {
-        const maxX = this.canvas.width / window.devicePixelRatio;
-        const maxY = this.canvas.height / window.devicePixelRatio;
+        const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
+        const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
         this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, '#cc807a', '#f2ada7', '#fff', () => mapNavigationRequested = true, 'Back');
     }
     drawBtn = (context, rect, radius, backgroundColour, borderColour, fontColour, text) => {
@@ -117,14 +112,14 @@ class CanvasService {
         const canvas = document.createElement('canvas');
         canvas.setAttribute("id", `canvas-${name}`);
         document.body.appendChild(canvas);
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = GlobalStaticConstants.innerWidth;
+        const height = GlobalStaticConstants.innerHeight;
         canvas.style.width = width + "px";
         canvas.style.height = height + "px";
         canvas.style.position = 'absolute';
         canvas.style.zIndex = zIndex;
         // Set actual size in memory (scaled to account for extra pixel density).
-        var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+        var scale = GlobalStaticConstants.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
         canvas.width = Math.floor(width * scale);
         canvas.height = Math.floor(height * scale);
         const ctx = canvas.getContext('2d');
@@ -175,13 +170,13 @@ class CashMoneyService {
         var img = new Image();
         img.src = './egyptian-pound.jpg';
         img.onload = function () {
-            ctx.drawImage(img, window.innerWidth - 450, window.innerHeight - 150, 400, 125);
+            ctx.drawImage(img, GlobalStaticConstants.innerWidth - 450, GlobalStaticConstants.innerHeight - 150, 400, 125);
             ctx.fillStyle = '#e8be9e';
-            ctx.fillRect(window.innerWidth - 375, window.innerHeight - 125, 250, 25);
+            ctx.fillRect(GlobalStaticConstants.innerWidth - 375, GlobalStaticConstants.innerHeight - 125, 250, 25);
             ctx.font = '30pt Garamond';
             ctx.fillStyle = '#000';
             ctx.textAlign = "center";
-            ctx.fillText('Cash money: ' + cashMoney, window.innerWidth - 250, window.innerHeight - 102, 250);
+            ctx.fillText('Cash money: ' + cashMoney, GlobalStaticConstants.innerWidth - 250, GlobalStaticConstants.innerHeight - 102, 250);
         };
     }
 }
@@ -253,9 +248,17 @@ class CubeService {
         return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
     }
 }
+class GlobalStaticConstants {
+    static backgroundColour = "#e8d7a7";
+    static highlightColour = "#432818";
+    static mediumColour = "#bb9457";
+    static innerWidth = window.innerWidth;
+    static innerHeight = window.innerHeight;
+    static devicePixelRatio = window.devicePixelRatio;
+}
 class ImportantService {
     static ConvertCoordToReal(coordX, coordY, sideLength, height = 0, xStart = 0, yStart = 0) {
-        const xOffset = window.innerWidth / 2;
+        const xOffset = GlobalStaticConstants.innerWidth / 2;
         coordX = coordX * 50 / sideLength;
         coordY = coordY * 50 / sideLength;
         const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
@@ -263,7 +266,7 @@ class ImportantService {
         return { x, y };
     }
     static ConvertRealToCoord(x, y, sideLength, height = 0, xStart = 0, yStart = 0) {
-        const xOffset = window.innerWidth / 2;
+        const xOffset = GlobalStaticConstants.innerWidth / 2;
         const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2 * y - 200) / (2 * sideLength);
         const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2 * y - 200) / (2 * sideLength);
         const x2 = coordX * sideLength / 50;
@@ -317,23 +320,23 @@ class LeaderboardService {
         const x = 5.5;
         const y = -6.5;
         const camelService = new CanvasCamelService(this.ctx);
-        camelService.drawCamelScreenCoords(window.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
-            this.ctx.fillText(camel.camel.name, window.innerWidth - 100, 59 - heightOffset * 10);
+            this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
         }
         this.ctx.fillStyle = '#000';
         this.ctx.font = '10pt Garamond';
         const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
         this.ctx.beginPath();
         this.ctx.fillStyle = '#fff';
-        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
         const colour = this.getProgressBarColour([255, 238, 150], [61, 204, 83], 1 - camel.completionPercentage);
         this.ctx.beginPath();
         this.ctx.fillStyle = colour;
-        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
     }
@@ -483,19 +486,19 @@ class MapOverview {
         const ctx = canvas?.getContext("2d");
         if (!ctx)
             return;
-        const scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
+        const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
         let rect = {
             x: 0,
             y: 0,
-            width: window.innerHeight / 0.815,
-            height: window.innerHeight
+            width: GlobalStaticConstants.innerHeight / 0.815,
+            height: GlobalStaticConstants.innerHeight
         };
         if (scaleToWidth) {
             rect = {
                 x: 0,
                 y: 0,
-                width: window.innerWidth,
-                height: 0.815 * window.innerWidth
+                width: GlobalStaticConstants.innerWidth,
+                height: 0.815 * GlobalStaticConstants.innerWidth
             };
         }
         const img = new Image();
@@ -559,8 +562,8 @@ class PopupService {
             return;
         const width = 400;
         const height = 120;
-        const x = (canvas.width / window.devicePixelRatio) / 2 - width / 2;
-        const y = window.innerHeight / 2 - height / 4;
+        const x = (canvas.width / GlobalStaticConstants.devicePixelRatio) / 2 - width / 2;
+        const y = GlobalStaticConstants.innerHeight / 2 - height / 4;
         const bgColour = GlobalStaticConstants.backgroundColour;
         const textColour = GlobalStaticConstants.highlightColour;
         const highlightColour = GlobalStaticConstants.highlightColour;
@@ -685,7 +688,7 @@ class RecruitmentService {
     };
     drawInitCanvas() {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const btnService = new CanvasBtnService(this._canvas);
         const camelService = new CanvasCamelService(this._ctx);
         const radius = 25;
@@ -747,9 +750,9 @@ class Countdown {
     _ctx;
     _canvas;
     displayCountdown(seconds) {
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        const middleX = this._canvas.width / window.devicePixelRatio / 2;
-        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
+        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
         this._ctx.font = "240px Garamond";
         this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
     }
@@ -769,12 +772,12 @@ class GymDrawing {
     drawGym() {
         const ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.drawFloor();
         this.drawTreadmill();
         const buttonService = new CanvasBtnService(this._camelCanvas);
-        buttonService.createBtn((this._camelCanvas.width / window.devicePixelRatio) / 2, window.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(camel), "Start session");
-        buttonService.createBtn((this._camelCanvas.width / window.devicePixelRatio) / 2, window.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(camel), "Start session");
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
     }
     exitGym(trainSession) {
         if (trainSession) {
@@ -839,7 +842,7 @@ class GymDrawing {
     }
     // public drawCamels(race: Race) {
     //     const ctx = this._camelCanvas.getContext("2d")!;
-    //     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    //     ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
     //     race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     // }
     drawCamel(camel, race) {
@@ -1051,9 +1054,9 @@ class CamelSkillDrawing {
     drawPage(camel, levelUpSkillFunc) {
         this._ctx.save();
         this._ctx.font = '12pt Garamond';
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this._btnService.removeEventListeners();
-        const maxX = this._canvas.width / window.devicePixelRatio;
+        const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
         this.drawOverview(camel, maxX / 40, maxX / 40);
         this.drawSkills(camel, levelUpSkillFunc);
         this._btnService.drawBackButton();
@@ -1066,7 +1069,7 @@ class CamelSkillDrawing {
         this._ctx.fillText(`XP: ${camel.unspentXp}`, x + nameTextLength + 20, y);
     }
     drawSkills(camel, levelUpSkillFunc) {
-        const maxX = this._canvas.width / window.devicePixelRatio;
+        const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
         const xPadding = maxX / 40;
         const yPadding = maxX / 40;
         const height = 40;
@@ -1175,7 +1178,7 @@ class RaceDrawing {
     drawRaceCourse(race) {
         const ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
         for (let i = 0; i < 15; i++) {
@@ -1249,7 +1252,7 @@ class RaceDrawing {
     }
     drawCamels(race) {
         const ctx = this._camelCanvas.getContext("2d");
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }
     drawCamel(camel, race) {
@@ -1339,13 +1342,13 @@ class RaceSelection {
     drawSelectionScreen() {
         const btnService = new CanvasBtnService(this._canvas);
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const radius = 25;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
-        const middleX = this._canvas.width / window.devicePixelRatio / 2;
-        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
+        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
         btnService.drawBackButton();
         btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
         btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');

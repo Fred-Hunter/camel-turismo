@@ -17,15 +17,15 @@ class GymDrawing {
         const ctx = this._backgroundCanvas.getContext("2d")!;
 
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         this.drawFloor();
         this.drawTreadmill();
 
         const buttonService = new CanvasBtnService(this._camelCanvas);
         buttonService.createBtn(
-            (this._camelCanvas.width/window.devicePixelRatio)/2,
-            window.innerHeight/2,
+            (this._camelCanvas.width/GlobalStaticConstants.devicePixelRatio)/2,
+            GlobalStaticConstants.innerHeight/2,
             550,
             50,
             25,
@@ -36,8 +36,8 @@ class GymDrawing {
             "Start session");
 
         buttonService.createBtn(
-            (this._camelCanvas.width/window.devicePixelRatio)/2,
-            window.innerHeight/2 + 100,
+            (this._camelCanvas.width/GlobalStaticConstants.devicePixelRatio)/2,
+            GlobalStaticConstants.innerHeight/2 + 100,
             550,
             50,
             25,
@@ -125,7 +125,7 @@ class GymDrawing {
 
     // public drawCamels(race: Race) {
     //     const ctx = this._camelCanvas.getContext("2d")!;
-    //     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    //     ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
     //     race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     // }

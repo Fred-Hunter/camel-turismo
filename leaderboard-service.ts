@@ -51,11 +51,11 @@ class LeaderboardService {
         const y = -6.5;
         const camelService = new CanvasCamelService(this.ctx);
 
-        camelService.drawCamelScreenCoords(window.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
-            this.ctx.fillText(camel.camel.name, window.innerWidth - 100, 59 - heightOffset * 10);
+            this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
         }
 
         this.ctx.fillStyle = '#000';
@@ -63,7 +63,7 @@ class LeaderboardService {
         const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100)/100);
         this.ctx.beginPath();
         this.ctx.fillStyle = '#fff';
-        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
 
@@ -71,7 +71,7 @@ class LeaderboardService {
         
         this.ctx.beginPath();
         this.ctx.fillStyle = colour;
-        this.ctx.roundRect(window.innerWidth - 100, 70 - heightOffset * 10, 80*completionPercentage, 10, 5);
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80*completionPercentage, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
     }

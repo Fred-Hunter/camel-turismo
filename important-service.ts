@@ -7,7 +7,7 @@ class ImportantService {
         xStart: number = 0,
         yStart: number = 0) {
 
-        const xOffset = window.innerWidth / 2;
+        const xOffset = GlobalStaticConstants.innerWidth / 2;
 
         coordX = coordX * 50 / sideLength;
         coordY = coordY * 50 / sideLength;
@@ -26,7 +26,7 @@ class ImportantService {
         xStart: number = 0,
         yStart: number = 0) {
             
-        const xOffset = window.innerWidth / 2;
+        const xOffset = GlobalStaticConstants.innerWidth / 2;
       
         const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2*y -200)/(2*sideLength);
         const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2*y -200)/(2*sideLength);

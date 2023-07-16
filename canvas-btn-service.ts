@@ -18,8 +18,8 @@ class CanvasBtnService {
     }
 
     drawBackButton() {
-        const maxX = this.canvas.width / window.devicePixelRatio;
-        const maxY = this.canvas.height / window.devicePixelRatio;
+        const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
+        const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
         this.createBtn(
             maxX / 40, 

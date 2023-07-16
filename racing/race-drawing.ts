@@ -16,7 +16,7 @@ class RaceDrawing {
         const ctx = this._backgroundCanvas.getContext("2d")!;
 
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
@@ -104,7 +104,7 @@ class RaceDrawing {
 
     public drawCamels(race: Race) {
         const ctx = this._camelCanvas.getContext("2d")!;
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         race.racingCamels.forEach(camel => this.drawCamel(camel, race));
     }

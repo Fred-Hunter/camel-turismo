@@ -13,8 +13,8 @@ class PopupService {
         const width = 400;
         const height = 120;
 
-        const x = (canvas.width / window.devicePixelRatio) / 2 - width / 2; 
-        const y = window.innerHeight/2 - height/4; 
+        const x = (canvas.width / GlobalStaticConstants.devicePixelRatio) / 2 - width / 2; 
+        const y = GlobalStaticConstants.innerHeight/2 - height/4; 
 
         const bgColour = GlobalStaticConstants.backgroundColour;
         const textColour =GlobalStaticConstants.highlightColour;

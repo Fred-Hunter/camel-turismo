@@ -69,7 +69,7 @@ class RecruitmentService {
 
     drawInitCanvas(): void {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        this._ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         const btnService = new CanvasBtnService(this._canvas);
         const camelService = new CanvasCamelService(this._ctx);

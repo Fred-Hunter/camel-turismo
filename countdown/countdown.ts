@@ -9,10 +9,10 @@ class Countdown {
     private _canvas: HTMLCanvasElement;
 
     displayCountdown(seconds: number) {
-        this._ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
-        const middleX = this._canvas.width / window.devicePixelRatio / 2;
-        const middleY = this._canvas.height / window.devicePixelRatio / 2;
+        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
+        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
 
         this._ctx.font = "240px Garamond";
         this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);

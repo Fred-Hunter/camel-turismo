@@ -21,21 +21,21 @@ class MapOverview {
         const ctx = canvas?.getContext("2d");
         if (!ctx) return;
 
-        const scaleToWidth = window.innerHeight > 0.815 * window.innerWidth;
+        const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
 
         let rect = {
             x: 0,
             y: 0,
-            width: window.innerHeight / 0.815,
-            height: window.innerHeight
+            width: GlobalStaticConstants.innerHeight / 0.815,
+            height: GlobalStaticConstants.innerHeight
         };
 
         if (scaleToWidth) {
             rect = {
                 x: 0,
                 y: 0,
-                width: window.innerWidth,
-                height: 0.815 * window.innerWidth
+                width: GlobalStaticConstants.innerWidth,
+                height: 0.815 * GlobalStaticConstants.innerWidth
             };
         }
 

@@ -5,8 +5,8 @@ class CanvasService {
 
         document.body.appendChild(canvas);
 
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = GlobalStaticConstants.innerWidth;
+        const height = GlobalStaticConstants.innerHeight;
 
         canvas.style.width = width + "px";
         canvas.style.height = height + "px";
@@ -14,7 +14,7 @@ class CanvasService {
         canvas.style.zIndex = zIndex;
 
         // Set actual size in memory (scaled to account for extra pixel density).
-        var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+        var scale = GlobalStaticConstants.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
         canvas.width = Math.floor(width * scale);
         canvas.height = Math.floor(height * scale);
 
