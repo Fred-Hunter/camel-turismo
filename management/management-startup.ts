@@ -10,6 +10,7 @@ class ManagementStartup {
         camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
 
         const selectCamelFunc = (camel: Camel) => {
+            GameState.camel = camel;
             this._navigatorService.requestPageNavigation(Page.management);
         };
         

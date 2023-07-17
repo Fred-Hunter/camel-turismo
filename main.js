@@ -1041,6 +1041,7 @@ class ManagementStartup {
         const camelSkillCommands = new CamelSkillCommands();
         camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
         const selectCamelFunc = (camel) => {
+            GameState.camel = camel;
             this._navigatorService.requestPageNavigation(Page.management);
         };
         camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
@@ -1757,6 +1758,7 @@ class RacingStartup {
     }
     registerRaceCamelSelectComponent() {
         const selectRaceCamelFunc = (camel) => {
+            GameState.camel = camel;
             this._navigatorService.requestPageNavigation(Page.race);
             this._musicService.setAudio("RaceAudio");
             this._musicService.startAudio();
