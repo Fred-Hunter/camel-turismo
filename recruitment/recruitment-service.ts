@@ -78,23 +78,25 @@ class RecruitmentService {
 
         btnService.drawBackButton(Page.mapOverview);
 
+        const camelSize = Math.round(GlobalStaticConstants.baseCubeSize * 4 / 5);
+
         const btnWidth = 550;
         const btnHeight = 50;
 
         let btnX = 240;
         let btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#cc807a');
 
         btnX = 840;
         btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40,'#debb49');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize,'#debb49');
 
         btnX = 540;
         btnY = 650;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
 
         CashMoneyService.drawCashMoney(this._ctx);
     }

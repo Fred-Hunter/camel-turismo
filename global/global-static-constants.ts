@@ -5,4 +5,5 @@ class GlobalStaticConstants {
     public static innerWidth: number = window.innerWidth;
     public static innerHeight: number = window.innerHeight;
     public static devicePixelRatio: number = window.devicePixelRatio;
+    public static baseCubeSize: number = Math.round(window.innerWidth / 30);
 }

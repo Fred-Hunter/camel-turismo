@@ -72,21 +72,6 @@ class MusicService {
         this.currentAudio = audioName;
     }
 }
-class Countdown {
-    constructor() {
-        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
-        this._ctx = this._canvas.getContext('2d');
-    }
-    _ctx;
-    _canvas;
-    displayCountdown(seconds) {
-        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
-        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
-        this._ctx.font = "240px Garamond";
-        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
-    }
-}
 class CanvasBtnService {
     canvas;
     _navigator;
@@ -172,13 +157,14 @@ class CanvasCamelService {
     }
     _cubeService;
     drawCamelIsoCoords(xCoord, yCoord, size, colour, height = 0) {
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / 40));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / 40));
+        const scaleFactor = GlobalStaticConstants.baseCubeSize * 4 / 5;
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / scaleFactor));
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / scaleFactor));
     }
     drawCamelScreenCoords(xCoord, yCoord, size, colour) {
         const isoCoords = ImportantService.ConvertRealToCoord(xCoord, yCoord, size);
@@ -401,22 +387,25 @@ class GlobalStaticConstants {
     static innerWidth = window.innerWidth;
     static innerHeight = window.innerHeight;
     static devicePixelRatio = window.devicePixelRatio;
+    static baseCubeSize = Math.round(window.innerWidth / 30);
 }
 class ImportantService {
     static ConvertCoordToReal(coordX, coordY, sideLength, height = 0, xStart = 0, yStart = 0) {
         const xOffset = GlobalStaticConstants.innerWidth / 2;
-        coordX = coordX * 50 / sideLength;
-        coordY = coordY * 50 / sideLength;
-        const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * 10;
-        const y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * 5;
+        coordX = coordX * GlobalStaticConstants.baseCubeSize / sideLength;
+        coordY = coordY * GlobalStaticConstants.baseCubeSize / sideLength;
+        const xScaleFactor = GlobalStaticConstants.baseCubeSize / 5;
+        const yScaleFactor = xScaleFactor / 2;
+        const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * xScaleFactor;
+        const y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * yScaleFactor;
         return { x, y };
     }
     static ConvertRealToCoord(x, y, sideLength, height = 0, xStart = 0, yStart = 0) {
         const xOffset = GlobalStaticConstants.innerWidth / 2;
         const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2 * y - 200) / (2 * sideLength);
         const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2 * y - 200) / (2 * sideLength);
-        const x2 = coordX * sideLength / 50;
-        const y2 = coordY * sideLength / 50;
+        const x2 = coordX * sideLength / GlobalStaticConstants.baseCubeSize;
+        const y2 = coordY * sideLength / GlobalStaticConstants.baseCubeSize;
         return { x2, y2 };
     }
 }
@@ -1378,12 +1367,12 @@ class RaceDrawing {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
                     // If is a race track
                     const height = -Math.random() / 6;
-                    this.backgroundCubeService.drawCube(i, j, 50, '#938b71', height);
+                    this.backgroundCubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, '#938b71', height);
                 }
                 else {
                     const height = Math.random() / 3;
                     const colour = height < 0.1 ? canvasColour : lighterColour;
-                    this.backgroundCubeService.drawCube(i, j, 50, colour, height);
+                    this.backgroundCubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, colour, height);
                     const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
                     if (shouldIncludeObject) {
                         // Randomize object
@@ -1404,50 +1393,52 @@ class RaceDrawing {
     }
     drawStaticCamel(newXCoord, newYCoord, height) {
         new CanvasCamelService(this._backgroundCanvas.getContext("2d"))
-            .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, 10, '#d8843b', height);
+            .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, GlobalStaticConstants.baseCubeSize / 5, '#d8843b', height);
     }
     drawRocks(i, j, height) {
         var xOffset = (Math.random() - 0.5) * 0.5;
         var yOffset = (Math.random() - 0.5) * 0.5;
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 12, '#555555', height);
+        const size = GlobalStaticConstants.baseCubeSize / 6;
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#555555', height);
     }
     drawPalmTree(i, j, height) {
         var xOffset = (Math.random() - 0.5) * 0.5;
         var yOffset = (Math.random() - 0.5) * 0.5;
-        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 1);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 2);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 3);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 4);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, 5, '#b18579', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, 5, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, 5, '#3e6549', height + 5);
+        const size = GlobalStaticConstants.baseCubeSize / 10;
+        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 1);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 2);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 3);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 4);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
+        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
     }
     drawCamels(race) {
         const ctx = this._camelCanvas.getContext("2d");
         ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        race.racingCamels.forEach(camel => this.drawCamel(camel, race));
+        race.racingCamels.forEach(camel => this.drawCamel(camel, race, GlobalStaticConstants.baseCubeSize / 5));
     }
-    drawCamel(camel, race) {
+    drawCamel(camel, race, size) {
         const numberOfRaceTrackCoords = race.track.length;
         const completionPercentage = Math.min(camel.completionPercentage, 1);
         const currectCoordIndex = Math.floor(completionPercentage * numberOfRaceTrackCoords);
@@ -1469,59 +1460,59 @@ class RaceDrawing {
             movingInNegativeY ? currentCoord[1] - offset :
                 currentCoord[1];
         if (movingInNegativeY) {
-            this.drawNegativeYCamel(newXCoord, newYCoord, camel);
+            this.drawNegativeYCamel(newXCoord, newYCoord, camel, size);
         }
         else if (movingInNegativeX) {
-            this.drawNegativeXCamel(newXCoord, newYCoord, camel);
+            this.drawNegativeXCamel(newXCoord, newYCoord, camel, size);
         }
         else if (movingInPositiveY) {
-            this.drawPositiveYCamel(newXCoord, newYCoord, camel);
+            this.drawPositiveYCamel(newXCoord, newYCoord, camel, size);
         }
         else if (movingInPositiveX) {
-            this.drawPositiveXCamel(newXCoord, newYCoord, camel);
+            this.drawPositiveXCamel(newXCoord, newYCoord, camel, size);
         }
     }
-    drawNegativeYCamel(newXCoord, newYCoord, camel) {
+    drawNegativeYCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1.5 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 2 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, camel.jumpHeight);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight);
     }
-    drawNegativeXCamel(newXCoord, newYCoord, camel) {
+    drawNegativeXCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1.5 + camel.jumpHeight, -2, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, -1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 2 + camel.jumpHeight, 0, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
     }
-    drawPositiveYCamel(newXCoord, newYCoord, camel) {
+    drawPositiveYCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 2 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, 10, camel.camel.colour, 1.5 + camel.jumpHeight, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0);
     }
-    drawPositiveXCamel(newXCoord, newYCoord, camel) {
+    drawPositiveXCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 2 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 0 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, 10, camel.camel.colour, 1.5 + camel.jumpHeight, 1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 2 + camel.jumpHeight, -0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
 class RaceSelection {
@@ -1761,6 +1752,21 @@ class RacingStartup {
         raceComponent = new RaceComponent(raceDrawing, raceSimulation, leaderboardService, countdown);
     }
 }
+class Countdown {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    displayCountdown(seconds) {
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
+        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
+        this._ctx.font = "240px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
+    }
+}
 class Race {
     length;
     track;
@@ -1885,20 +1891,21 @@ class RecruitmentService {
         const camelService = new CanvasCamelService(this._ctx);
         const radius = 25;
         btnService.drawBackButton(Page.mapOverview);
+        const camelSize = Math.round(GlobalStaticConstants.baseCubeSize * 4 / 5);
         const btnWidth = 550;
         const btnHeight = 50;
         let btnX = 240;
         let btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#cc807a');
         btnX = 840;
         btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#debb49');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#debb49');
         btnX = 540;
         btnY = 650;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
     }
 }
