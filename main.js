@@ -367,7 +367,9 @@ class GameState {
             return;
         // Load camel
         gameState.camels.forEach(camel => this.loadCamel(camel));
-        GameState.camel = GameState.camels[0];
+        if (gameState.camels.length > 0) {
+            GameState.camel = GameState.camels[0];
+        }
         // Load game state
         GameState.secondsPassed = gameState.secondsPassed;
         GameState.oldTimeStamp = gameState.oldTimeStamp;

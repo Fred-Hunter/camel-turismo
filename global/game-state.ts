@@ -16,7 +16,7 @@ class GameState {
     public static camels: Camel[] = [];
     public static secondsPassed: number = 0; // done
     public static oldTimeStamp: number = 0; // done
-    
+
     // Recruitment
     public static lastUsedId: number = 0; // done
     public static cashMoney: number = 100; // done
@@ -58,7 +58,9 @@ class GameState {
         // Load camel
         gameState.camels.forEach(camel => this.loadCamel(camel));
 
-        GameState.camel = GameState.camels[0];
+        if (gameState.camels.length > 0) {
+            GameState.camel = GameState.camels[0];
+        }
 
         // Load game state
         GameState.secondsPassed = gameState.secondsPassed;
@@ -69,7 +71,7 @@ class GameState {
 
     private static loadCamel(serialisedCamel: Camel) {
         const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
-        
+
         camel.colour = serialisedCamel.colour;
         camel.name = serialisedCamel.name;
         camel.temperament = serialisedCamel.temperament;
