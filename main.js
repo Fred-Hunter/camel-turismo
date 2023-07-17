@@ -423,7 +423,7 @@ class ImportantService {
 class PopupService {
     constructor() {
     }
-    static drawAlertPopup(text) {
+    static drawAlertPopup(text, navigateBackToMap = true) {
         const canvas = CanvasService.getCanvasByName(CanvasNames.PopupCanvas);
         CanvasService.bringCanvasToTop(CanvasNames.PopupCanvas);
         CanvasService.showCanvas(CanvasNames.PopupCanvas);
@@ -477,7 +477,9 @@ class PopupService {
                 mouseY <= backgroundRect[1] + backgroundRect[3]) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
-                navigatorService.requestPageNavigation(Page.mapOverview);
+                if (navigateBackToMap) {
+                    navigatorService.requestPageNavigation(Page.mapOverview);
+                }
             }
         });
     }
