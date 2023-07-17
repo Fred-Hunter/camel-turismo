@@ -55,7 +55,7 @@ class CanvasBtnService {
         context.font = '30pt Garamond';
         context.fillStyle = fontColour;
         context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.x + rect.width);
+        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width);
 
         context.restore();
     }
