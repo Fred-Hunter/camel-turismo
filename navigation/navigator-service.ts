@@ -42,6 +42,9 @@ class NavigatorService {
                 case Page.raceCamelSelect:
                     raceCamelSelectComponent.load();
                     break;
+                case Page.managementSelect:
+                    camelManagementSelectComponent.load();
+                    break;
             }
 
             this._postNavigationFunc();

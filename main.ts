@@ -11,6 +11,7 @@ let recruitmentService: RecruitmentService;
 
 // Camel management
 let camelSkillComponent: CamelSkillComponent;
+let camelManagementSelectComponent: CamelSelectComponent;
 
 // Race
 let raceSelection: RaceSelection;

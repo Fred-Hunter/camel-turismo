@@ -9,6 +9,7 @@ let navigatorService;
 let recruitmentService;
 // Camel management
 let camelSkillComponent;
+let camelManagementSelectComponent;
 // Race
 let raceSelection;
 let raceComponent;
@@ -1025,6 +1026,10 @@ class ManagementStartup {
         const camelSkillDrawing = new CamelSkillDrawing(this._navigatorService);
         const camelSkillCommands = new CamelSkillCommands();
         camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+        const selectCamelFunc = (camel) => {
+            this._navigatorService.requestPageNavigation(Page.management);
+        };
+        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
     }
 }
 class CamelSelectComponent {
@@ -1156,7 +1161,7 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                     return;
                 }
-                navigatorService.requestPageNavigation(Page.management);
+                navigatorService.requestPageNavigation(Page.managementSelect);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -1201,6 +1206,9 @@ class NavigatorService {
                 case Page.raceCamelSelect:
                     raceCamelSelectComponent.load();
                     break;
+                case Page.managementSelect:
+                    camelManagementSelectComponent.load();
+                    break;
             }
             this._postNavigationFunc();
             this._pageLoaded = true;
@@ -1227,9 +1235,10 @@ var Page;
     Page[Page["loading"] = 0] = "loading";
     Page[Page["mapOverview"] = 1] = "mapOverview";
     Page[Page["management"] = 2] = "management";
-    Page[Page["race"] = 3] = "race";
-    Page[Page["raceCamelSelect"] = 4] = "raceCamelSelect";
-    Page[Page["raceSelection"] = 5] = "raceSelection";
+    Page[Page["managementSelect"] = 3] = "managementSelect";
+    Page[Page["race"] = 4] = "race";
+    Page[Page["raceCamelSelect"] = 5] = "raceCamelSelect";
+    Page[Page["raceSelection"] = 6] = "raceSelection";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {

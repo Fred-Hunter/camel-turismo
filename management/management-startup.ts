@@ -8,5 +8,11 @@ class ManagementStartup {
         const camelSkillCommands = new CamelSkillCommands();
 
         camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+
+        const selectCamelFunc = (camel: Camel) => {
+            this._navigatorService.requestPageNavigation(Page.management);
+        };
+        
+        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
     }
 }

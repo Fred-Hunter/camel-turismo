@@ -88,7 +88,7 @@ class MapOverview {
                     return;
                 }
                 
-                navigatorService.requestPageNavigation(Page.management);
+                navigatorService.requestPageNavigation(Page.managementSelect);
             }
         }, false);
 
