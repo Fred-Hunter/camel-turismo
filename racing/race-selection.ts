@@ -63,7 +63,7 @@ class RaceSelection {
 
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = this._raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            race = this._raceSimulation.createRace(GameState.camel!, raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
 

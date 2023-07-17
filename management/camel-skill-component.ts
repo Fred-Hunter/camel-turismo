@@ -5,7 +5,7 @@ class CamelSkillComponent {
 
     public load() {
         CanvasService.showCanvas(CanvasNames.CamelManagement);
-        this._camelSkillDrawing.drawPage(camel, (camelSkill: CamelSkill) => this.levelUpSkill(camel, camelSkill));
+        this._camelSkillDrawing.drawPage(GameState.camel!, (camelSkill: CamelSkill) => this.levelUpSkill(GameState.camel!, camelSkill));
     }
 
     private levelUpSkill = (camel: Camel, skill: CamelSkill) => {

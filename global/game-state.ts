@@ -1,6 +1,19 @@
+interface GameStateObject {
+    camel: Camel | undefined,
+    camels: Camel[],
+    secondsPassed: number,
+    oldTimeStamp: number,
+    lastUsedId: number,
+    cashMoney: number
+}
+
 class GameState {
+    // Update this whenever a new gamestate version is created
+    private static _version: number = 0;
+
     // Camel
     public static camel: Camel | undefined;
+    public static camels: Camel[] = [];
     public static secondsPassed: number = 0; // done
     public static oldTimeStamp: number = 0; // done
     
@@ -9,25 +22,24 @@ class GameState {
     public static cashMoney: number = 100; // done
 
     public static Save() {
-        if (!!camel) GameState.camel = camel;
-
-        const gameStateObject = {
+        const gameStateObject: GameStateObject = {
             camel: GameState.camel,
+            camels: GameState.camels,
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
             cashMoney: GameState.cashMoney
         }
         const gameStateString = JSON.stringify(gameStateObject);
-        localStorage.setItem(GameState.name, gameStateString);
+        localStorage.setItem(this.getItemKey(), gameStateString);
     }
 
     public static Reset() {
-        localStorage.removeItem(GameState.name);
+        localStorage.removeItem(this.getItemKey());
     }
 
     public static GetExists() {
-        const gameStateString = localStorage.getItem(GameState.name);
+        const gameStateString = localStorage.getItem(this.getItemKey());
         if (!gameStateString || gameStateString === undefined) return;
 
         const gameState = JSON.parse(gameStateString);
@@ -36,29 +48,41 @@ class GameState {
     }
 
     public static LoadIfExists() {
-        const gameStateString = localStorage.getItem(GameState.name);
+        const gameStateString = localStorage.getItem(this.getItemKey());
         if (!gameStateString || gameStateString === undefined) return;
 
-        const gameState = JSON.parse(gameStateString);
+        const gameState: GameStateObject = JSON.parse(gameStateString);
 
         if (gameState.camel === undefined) return;
 
         // Load camel
-        GameState.camel = gameState.camel;
-        camel = new Camel(gameState.camel.id, gameState.camel.quality);
-        camel.colour = gameState.camel.colour;
-        camel.name = gameState.camel.name;
-        camel.temperament = gameState.camel.temperament;
-        camel.unspentXp = gameState.camel.unspentXp;
-        
-        camel.agility = new CamelSkill(gameState.camel.agility._name, gameState.camel.agility._currentXp);
-        camel.sprintSpeed = new CamelSkill(gameState.camel.sprintSpeed._name, gameState.camel.sprintSpeed._currentXp);
-        camel.stamina = new CamelSkill(gameState.camel.stamina._name, gameState.camel.stamina._currentXp);
+        gameState.camels.forEach(camel => this.loadCamel(camel));
+
+        GameState.camel = GameState.camels[0];
 
         // Load game state
         GameState.secondsPassed = gameState.secondsPassed;
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+    }
+
+    private static loadCamel(serialisedCamel: Camel) {
+        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
+        
+        camel.colour = serialisedCamel.colour;
+        camel.name = serialisedCamel.name;
+        camel.temperament = serialisedCamel.temperament;
+        camel.unspentXp = serialisedCamel.unspentXp;
+
+        camel.agility.addXp(serialisedCamel.agility.currentXp);
+        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
+        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+
+        GameState.camels.push(camel);
+    }
+
+    private static getItemKey() {
+        return GameState.name + this._version;
     }
 }

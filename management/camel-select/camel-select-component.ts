@@ -22,9 +22,7 @@ class CamelSelectComponent {
         const list = document.createElement('ul');
         camelSelectSection.appendChild(list);
 
-        const camelForList = camel;
-
-        this.addCamelToList(list, camelForList);
+        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
     }
 
     private addCamelToList(list: HTMLElement, camel: Camel): void {

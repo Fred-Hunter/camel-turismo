@@ -1,5 +1,4 @@
 // Game state
-let camel: Camel;
 let race: Race;
 
 // Navigation TODO should not be available globally

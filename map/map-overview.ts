@@ -57,7 +57,7 @@ class MapOverview {
             }
             // Gym
             else if (mousePosition.x > 11*rect.width/32 && mousePosition.x < 19*rect.width/32 && mousePosition.y < 3*rect.height/8) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
                     return;
                 }
@@ -68,14 +68,14 @@ class MapOverview {
                 (new GymDrawing(navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3*rect.width/8 && mousePosition.x < 19*rect.width/32 && mousePosition.y > 7*rect.height/16) {
-                if (!!camel && camel.agility.level > 20) {
+                if (!!GameState.camel && GameState.camel.agility.level > 20) {
                     GameState.cashMoney += 1000;
                     CashMoneyService.drawCashMoney(ctx);
                 }
             }
             // Race
             else if (mousePosition.x < rect.width/3 && mousePosition.y > rect.height/2) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
@@ -83,7 +83,7 @@ class MapOverview {
             }
             // Management
             else if (mousePosition.x > 19*rect.width/32 && mousePosition.x < rect.width && mousePosition.y > 3*rect.height/16 && mousePosition.y < 9*rect.height/16) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                     return;
                 }

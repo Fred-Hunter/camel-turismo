@@ -1,6 +1,5 @@
 "use strict";
 // Game state
-let camel;
 let race;
 // Navigation TODO should not be available globally
 let navigatorService;
@@ -327,58 +326,67 @@ class CubeService {
     }
 }
 class GameState {
+    // Update this whenever a new gamestate version is created
+    static _version = 0;
     // Camel
     static camel;
+    static camels = [];
     static secondsPassed = 0; // done
     static oldTimeStamp = 0; // done
     // Recruitment
     static lastUsedId = 0; // done
     static cashMoney = 100; // done
     static Save() {
-        if (!!camel)
-            GameState.camel = camel;
         const gameStateObject = {
             camel: GameState.camel,
+            camels: GameState.camels,
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
             cashMoney: GameState.cashMoney
         };
         const gameStateString = JSON.stringify(gameStateObject);
-        localStorage.setItem(GameState.name, gameStateString);
+        localStorage.setItem(this.getItemKey(), gameStateString);
     }
     static Reset() {
-        localStorage.removeItem(GameState.name);
+        localStorage.removeItem(this.getItemKey());
     }
     static GetExists() {
-        const gameStateString = localStorage.getItem(GameState.name);
+        const gameStateString = localStorage.getItem(this.getItemKey());
         if (!gameStateString || gameStateString === undefined)
             return;
         const gameState = JSON.parse(gameStateString);
         return !!gameState.camel;
     }
     static LoadIfExists() {
-        const gameStateString = localStorage.getItem(GameState.name);
+        const gameStateString = localStorage.getItem(this.getItemKey());
         if (!gameStateString || gameStateString === undefined)
             return;
         const gameState = JSON.parse(gameStateString);
         if (gameState.camel === undefined)
             return;
         // Load camel
-        GameState.camel = gameState.camel;
-        camel = new Camel(gameState.camel.id, gameState.camel.quality);
-        camel.colour = gameState.camel.colour;
-        camel.name = gameState.camel.name;
-        camel.temperament = gameState.camel.temperament;
-        camel.unspentXp = gameState.camel.unspentXp;
-        camel.agility = new CamelSkill(gameState.camel.agility._name, gameState.camel.agility._currentXp);
-        camel.sprintSpeed = new CamelSkill(gameState.camel.sprintSpeed._name, gameState.camel.sprintSpeed._currentXp);
-        camel.stamina = new CamelSkill(gameState.camel.stamina._name, gameState.camel.stamina._currentXp);
+        gameState.camels.forEach(camel => this.loadCamel(camel));
+        GameState.camel = GameState.camels[0];
         // Load game state
         GameState.secondsPassed = gameState.secondsPassed;
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+    }
+    static loadCamel(serialisedCamel) {
+        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
+        camel.colour = serialisedCamel.colour;
+        camel.name = serialisedCamel.name;
+        camel.temperament = serialisedCamel.temperament;
+        camel.unspentXp = serialisedCamel.unspentXp;
+        camel.agility.addXp(serialisedCamel.agility.currentXp);
+        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
+        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+        GameState.camels.push(camel);
+    }
+    static getItemKey() {
+        return GameState.name + this._version;
     }
 }
 class GlobalStaticConstants {
@@ -595,7 +603,7 @@ class GymDrawing {
         this.drawFloor();
         this.drawTreadmill();
         const buttonService = new CanvasBtnService(this._camelCanvas, this._navigatorService);
-        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(camel), "Start session");
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(GameState.camel), "Start session");
         buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
     }
     exitGym(trainSession) {
@@ -800,7 +808,7 @@ class TrainSession extends GymSession {
     }
     endSession() {
         super.endSession();
-        camel.unspentXp += this._xpGained;
+        GameState.camel.unspentXp += this._xpGained;
     }
 }
 class SpaSession extends GymSession {
@@ -819,10 +827,10 @@ class SpaSession extends GymSession {
         super.endSession();
         this._staiminaGained = GameState.secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
-            camel.unspentXp += this._staiminaGained;
+            GameState.camel.unspentXp += this._staiminaGained;
         }
         else {
-            camel.unspentXp += this._skill.level;
+            GameState.camel.unspentXp += this._skill.level;
         }
     }
 }
@@ -890,7 +898,7 @@ class CamelSkillComponent {
     }
     load() {
         CanvasService.showCanvas(CanvasNames.CamelManagement);
-        this._camelSkillDrawing.drawPage(camel, (camelSkill) => this.levelUpSkill(camel, camelSkill));
+        this._camelSkillDrawing.drawPage(GameState.camel, (camelSkill) => this.levelUpSkill(GameState.camel, camelSkill));
     }
     levelUpSkill = (camel, skill) => {
         this._camelSkillCommands.levelUpSkill(camel, skill);
@@ -956,19 +964,23 @@ var CamelTemperament;
 })(CamelTemperament || (CamelTemperament = {}));
 var InitCamelQuality;
 (function (InitCamelQuality) {
-    InitCamelQuality[InitCamelQuality["Low"] = 0] = "Low";
-    InitCamelQuality[InitCamelQuality["Medium"] = 1] = "Medium";
-    InitCamelQuality[InitCamelQuality["High"] = 2] = "High";
-    InitCamelQuality[InitCamelQuality["Cpu1"] = 3] = "Cpu1";
-    InitCamelQuality[InitCamelQuality["Cpu2"] = 4] = "Cpu2";
-    InitCamelQuality[InitCamelQuality["Cpu3"] = 5] = "Cpu3";
-    InitCamelQuality[InitCamelQuality["Cpu4"] = 6] = "Cpu4";
-    InitCamelQuality[InitCamelQuality["Cpu5"] = 7] = "Cpu5";
+    InitCamelQuality[InitCamelQuality["None"] = 0] = "None";
+    InitCamelQuality[InitCamelQuality["Low"] = 1] = "Low";
+    InitCamelQuality[InitCamelQuality["Medium"] = 2] = "Medium";
+    InitCamelQuality[InitCamelQuality["High"] = 3] = "High";
+    InitCamelQuality[InitCamelQuality["Cpu1"] = 4] = "Cpu1";
+    InitCamelQuality[InitCamelQuality["Cpu2"] = 5] = "Cpu2";
+    InitCamelQuality[InitCamelQuality["Cpu3"] = 6] = "Cpu3";
+    InitCamelQuality[InitCamelQuality["Cpu4"] = 7] = "Cpu4";
+    InitCamelQuality[InitCamelQuality["Cpu5"] = 8] = "Cpu5";
 })(InitCamelQuality || (InitCamelQuality = {}));
 class Camel {
     id;
     constructor(id, quality) {
         this.id = id;
+        if (quality === InitCamelQuality.None) {
+            return;
+        }
         const sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
         const agility = Math.ceil(Math.random() * 10 * (quality + 1));
         const stamina = Math.ceil(Math.random() * 10 * (quality + 1));
@@ -1051,8 +1063,7 @@ class CamelSelectComponent {
         camelSelectSection.appendChild(heading);
         const list = document.createElement('ul');
         camelSelectSection.appendChild(list);
-        const camelForList = camel;
-        this.addCamelToList(list, camelForList);
+        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
     }
     addCamelToList(list, camel) {
         const listItem = document.createElement('li');
@@ -1131,7 +1142,7 @@ class MapOverview {
             }
             // Gym
             else if (mousePosition.x > 11 * rect.width / 32 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y < 3 * rect.height / 8) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
                     return;
                 }
@@ -1142,14 +1153,14 @@ class MapOverview {
                 (new GymDrawing(navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
-                if (!!camel && camel.agility.level > 20) {
+                if (!!GameState.camel && GameState.camel.agility.level > 20) {
                     GameState.cashMoney += 1000;
                     CashMoneyService.drawCashMoney(ctx);
                 }
             }
             // Race
             else if (mousePosition.x < rect.width / 3 && mousePosition.y > rect.height / 2) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
@@ -1157,7 +1168,7 @@ class MapOverview {
             }
             // Management
             else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
-                if (!camel) {
+                if (!GameState.camel) {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                     return;
                 }
@@ -1217,7 +1228,7 @@ class NavigatorService {
     canNavigate(requestedPage) {
         switch (requestedPage) {
             case Page.raceSelection:
-                return !!camel;
+                return !!GameState.camel;
         }
         return true;
     }
@@ -1274,7 +1285,7 @@ class LeaderboardService {
         });
     }
     isCamelUserOwned(racingCamel) {
-        return racingCamel == camel;
+        return racingCamel == GameState.camel;
     }
     componentToHex(c) {
         var hex = c.toString(16);
@@ -1567,7 +1578,7 @@ class RaceSelection {
         PopupService.showLoading();
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = this._raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            race = this._raceSimulation.createRace(GameState.camel, raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
     }
@@ -1661,21 +1672,21 @@ class RaceSimulation {
     }
     handleFinishedRace(race) {
         race.inProgress = false;
-        let position = race.racingCamels.filter(o => o.camel == camel)[0].finalPosition;
+        let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
         position = position ??
             1 +
-                race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
+                race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel);
         const prizeCashMoney = this.getPrizeMoney(race, position);
         GameState.cashMoney += prizeCashMoney;
         this._nextPosition = 1;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
-        camel.unspentXp += xpGained;
+        GameState.camel.unspentXp += xpGained;
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
-        PopupService.drawAlertPopup(`Congratulations, ${camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
+        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
     }
     getPrizeMoney(race, position) {
         const prizePool = race.prizeCashMoney;
@@ -1876,9 +1887,10 @@ class RecruitmentService {
             return;
         }
         GameState.cashMoney = GameState.cashMoney - cost;
-        const quality = cost / 100 - 1;
-        camel = new Camel(++GameState.lastUsedId, quality);
-        PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
+        const quality = cost / 100;
+        GameState.camel = new Camel(++GameState.lastUsedId, quality);
+        GameState.camels.push(GameState.camel);
+        PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
     }
     spendHighCashMoney = () => {
@@ -1927,12 +1939,12 @@ class CamelSkill {
         if (_initialXP < 0) {
             throw Error('Cannot create camel skill with negative xp');
         }
-        this._currentXp = _initialXP;
+        this.currentXp = _initialXP;
         this._level = this.getLevelFromXp(_initialXP);
     }
+    currentXp = 0;
     _minSkillLevel = 1;
     _maxSkillLevel = 99;
-    _currentXp = 0;
     _level = 0;
     get name() {
         return this._name;
@@ -1948,7 +1960,7 @@ class CamelSkill {
         flooredLevel = Math.max(level, this._minSkillLevel);
         flooredLevel = Math.min(level, this._maxSkillLevel);
         this._level = flooredLevel;
-        this._currentXp = this.getXpRequiredForLevel(flooredLevel);
+        this.currentXp = this.getXpRequiredForLevel(flooredLevel);
     }
     get level() {
         return this._level;
@@ -1957,13 +1969,13 @@ class CamelSkill {
         if (this._level === this._maxSkillLevel) {
             return 0;
         }
-        return this.getXpRequiredForLevel(this.level + 1) - this._currentXp;
+        return this.getXpRequiredForLevel(this.level + 1) - this.currentXp;
     }
     addXp(value) {
-        if (value <= 0) {
-            throw Error('Cannot add negative or 0 xp');
+        if (value < 0) {
+            throw Error('Cannot add negative xp');
         }
-        this._currentXp += value;
-        this._level = this.getLevelFromXp(this._currentXp);
+        this.currentXp += value;
+        this._level = this.getLevelFromXp(this.currentXp);
     }
 }

@@ -109,11 +109,11 @@ class RaceSimulation {
     handleFinishedRace(race: Race) {
         race.inProgress = false;
 
-        let position = race.racingCamels.filter(o => o.camel == camel)[0].finalPosition;
+        let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
 
         position = position ??
             1 +
-            race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(camel);
+            race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel!);
 
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
@@ -122,7 +122,7 @@ class RaceSimulation {
         this._nextPosition = 1;
 
         const xpGained = (race.racingCamels.length - position + 1) * 100;
-        camel.unspentXp += xpGained;
+        GameState.camel!.unspentXp += xpGained;
 
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
@@ -131,7 +131,7 @@ class RaceSimulation {
         MapOverview.showMap();
         MapOverview.renderMap();
 
-        PopupService.drawAlertPopup(`Congratulations, ${camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
+        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel!.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
     }
 
     getPrizeMoney(race: Race, position: number) {

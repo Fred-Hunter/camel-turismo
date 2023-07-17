@@ -55,7 +55,7 @@ class NavigatorService {
     private canNavigate(requestedPage: Page): boolean {
         switch (requestedPage) {
             case Page.raceSelection:
-                return !!camel;
+                return !!GameState.camel;
         }
 
         return true;

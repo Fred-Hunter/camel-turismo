@@ -69,7 +69,7 @@ class TrainSession extends GymSession {
 
     public endSession() {
         super.endSession()
-        camel.unspentXp += this._xpGained;
+        GameState.camel!.unspentXp += this._xpGained;
     }
 }
 
@@ -92,9 +92,9 @@ class SpaSession extends GymSession {
         super.endSession()
         this._staiminaGained = GameState.secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
-            camel.unspentXp += this._staiminaGained;
+            GameState.camel!.unspentXp += this._staiminaGained;
         } else {
-            camel.unspentXp += this._skill.level;
+            GameState.camel!.unspentXp += this._skill.level;
         }
     }
 }

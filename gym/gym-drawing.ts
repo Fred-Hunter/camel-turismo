@@ -33,7 +33,7 @@ class GymDrawing {
             GlobalStaticConstants.backgroundColour,
             GlobalStaticConstants.mediumColour,
             "black",
-            () => this._trainSession = Gym.getTreadmillSession(camel),
+            () => this._trainSession = Gym.getTreadmillSession(GameState.camel!),
             "Start session");
 
         buttonService.createBtn(

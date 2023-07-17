@@ -28,7 +28,7 @@ class LeaderboardService {
     }
 
     private isCamelUserOwned(racingCamel: Camel): boolean {
-        return racingCamel == camel;
+        return racingCamel == GameState.camel;
     }
 
     private componentToHex(c: any) {

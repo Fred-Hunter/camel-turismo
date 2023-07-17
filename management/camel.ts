@@ -1,16 +1,21 @@
 enum InitCamelQuality {
-    Low = 0,
-    Medium = 1,
-    High = 2,
-    Cpu1 = 3,
-    Cpu2 = 4,
-    Cpu3 = 5,
-    Cpu4 = 6,
-    Cpu5 = 7
+    None = 0,
+    Low,
+    Medium,
+    High,
+    Cpu1,
+    Cpu2,
+    Cpu3,
+    Cpu4,
+    Cpu5
 }
 
 class Camel {
     constructor(public id: number, quality: InitCamelQuality) {
+        if (quality === InitCamelQuality.None) {
+            return;
+        }
+
         const sprintSpeed: number = Math.ceil(Math.random() * 10 * (quality + 1));
         const agility: number = Math.ceil(Math.random() * 10 * (quality + 1));
         const stamina: number = Math.ceil(Math.random() * 10 * (quality + 1));

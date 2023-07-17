@@ -6,13 +6,13 @@ class CamelSkill {
             throw Error('Cannot create camel skill with negative xp')
         }
 
-        this._currentXp = _initialXP;
+        this.currentXp = _initialXP;
         this._level = this.getLevelFromXp(_initialXP);
     }
 
+    public currentXp = 0;
     private readonly _minSkillLevel = 1;
     private readonly _maxSkillLevel = 99;
-    private _currentXp = 0;
     private _level = 0;
 
     public get name() {
@@ -34,7 +34,7 @@ class CamelSkill {
         flooredLevel = Math.min(level, this._maxSkillLevel);
 
         this._level = flooredLevel;
-        this._currentXp = this.getXpRequiredForLevel(flooredLevel);
+        this.currentXp = this.getXpRequiredForLevel(flooredLevel);
     }
 
     public get level(): number {
@@ -46,15 +46,15 @@ class CamelSkill {
             return 0;
         }
 
-        return this.getXpRequiredForLevel(this.level + 1) - this._currentXp;
+        return this.getXpRequiredForLevel(this.level + 1) - this.currentXp;
     }
 
     public addXp(value: number) {
-        if (value <= 0) {
-            throw Error('Cannot add negative or 0 xp');
+        if (value < 0) {
+            throw Error('Cannot add negative xp');
         }
 
-        this._currentXp += value;
-        this._level = this.getLevelFromXp(this._currentXp);
+        this.currentXp += value;
+        this._level = this.getLevelFromXp(this.currentXp);
     }
 }

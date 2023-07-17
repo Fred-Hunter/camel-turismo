@@ -26,7 +26,7 @@ class RecruitmentService {
             "redirectToMap",
             this.handleEvent,
             false,
-          );
+        );
     }
 
     validateEnoughCashMoney(cost: number): boolean {
@@ -46,9 +46,10 @@ class RecruitmentService {
             return;
         }
         GameState.cashMoney = GameState.cashMoney - cost;
-        const quality: InitCamelQuality = cost/100 - 1;
-        camel = new Camel(++GameState.lastUsedId, quality);
-        PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
+        const quality: InitCamelQuality = cost / 100;
+        GameState.camel = new Camel(++GameState.lastUsedId, quality);
+        GameState.camels.push(GameState.camel);
+        PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
     }
 
@@ -91,7 +92,7 @@ class RecruitmentService {
         btnX = 840;
         btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize,'#debb49');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#debb49');
 
         btnX = 540;
         btnY = 650;
