@@ -1,0 +1,93 @@
+body {
+    font-family: Garamond;
+}
+
+#camel-select {
+    margin-top: 2rem;
+    align-items: center;
+    flex-direction: column;
+}
+
+#camel-select ul {
+    padding: 0;
+    margin: 0;
+    width: 25rem;
+}
+
+#camel-select li {
+    list-style: none;
+    height: 4rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    background-color: #F8F0E3;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: grid;
+    grid-template: repeat(2, 1fr) / repeat(6, 1fr);
+    transition: padding 0.25s ease;
+}
+
+#camel-select li:hover {
+    cursor: pointer;
+    padding-left: 1.5rem;
+    filter: brightness(95%);
+}
+
+.camel__name {
+    font-weight: 600;
+    font-size: 12pt;
+    grid-area: 1 / 2 / 1 / 6;
+    align-self: end;
+}
+
+.camel__picture-container {
+    height: 2.5rem;
+    width: 2.5rem;
+    background-color: white;
+    border-radius: 50%;
+    grid-area: 1 / 1 / 3 / 1;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camel__picture {
+    box-shadow:
+        6px 0px, -6px 0px, 0px -6px, -6px 6px, 6px 6px, 12px -2px;
+    height: 6px;
+    width: 6px;
+    margin-left: -3px;
+}
+
+.camel__stats {
+    font-weight: 100;
+    grid-area: 2 / 2 / 2 / 6;
+    font-size: 10pt;
+    margin-top: 0.25rem;
+}
+
+.camel__select {
+    grid-area: 1 / 6 / 3 / 7;
+    text-align: center;
+    font-size: 15pt;
+    font-weight: 100;
+}
+
+.chevron {
+    position: relative;
+}
+
+.chevron::after {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    width: 10px;
+    height: 10px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+    transform: rotate(-45deg);
+    position: relative;
+    left: 2rem;
+}

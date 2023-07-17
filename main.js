@@ -455,6 +455,7 @@ let musicService;
 let camelSkillDrawing;
 let camelSkillCommands;
 let camelSkillComponent;
+let raceCamelSelectComponent;
 // Loading
 let loadingScreen;
 function init() {
@@ -479,6 +480,17 @@ function init() {
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection(navigatorService);
     countdown = new Countdown();
+    const selectRaceCamelFunc = (camel) => {
+        PopupService.showLoading();
+        // A few frames are needed to paint the loader
+        window.setTimeout(() => {
+            navigatorService.requestPageNavigation(Page.race);
+            musicService.setAudio("RaceAudio");
+            musicService.startAudio();
+            race.triggered = true;
+        }, 100);
+    };
+    raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
     // Gym
     gymDrawing = new GymDrawing(navigatorService);
@@ -1285,6 +1297,54 @@ class Camel {
         }
     }
 }
+class CamelSelectComponent {
+    _selectFunc;
+    constructor(_selectFunc) {
+        this._selectFunc = _selectFunc;
+    }
+    load() {
+        const camelSelectSection = document.getElementById('camel-select');
+        if (!camelSelectSection) {
+            throw new Error('No camel select element');
+        }
+        camelSelectSection.style.display = 'flex';
+        this.createSelectList(camelSelectSection);
+    }
+    createSelectList(camelSelectSection) {
+        const heading = document.createElement('h1');
+        heading.appendChild(document.createTextNode('Choose camel'));
+        camelSelectSection.appendChild(heading);
+        const list = document.createElement('ul');
+        camelSelectSection.appendChild(list);
+        const camelForList = camel;
+        this.addCamelToList(list, camelForList);
+    }
+    addCamelToList(list, camel) {
+        const listItem = document.createElement('li');
+        listItem.onclick = () => this._selectFunc(camel);
+        const camelPictureContainer = document.createElement('div');
+        camelPictureContainer.classList.add('camel__picture-container');
+        const camelPicture = document.createElement('div');
+        camelPicture.classList.add('camel__picture');
+        camelPicture.style.color = camel.colour;
+        camelPicture.style.backgroundColor = camel.colour;
+        camelPictureContainer.appendChild(camelPicture);
+        const camelName = document.createElement('div');
+        camelName.classList.add('camel__name');
+        camelName.appendChild(document.createTextNode(camel.name));
+        const camelStats = document.createElement('div');
+        camelStats.classList.add('camel__stats');
+        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
+        const camelSelect = document.createElement('button');
+        camelSelect.classList.add('camel__select');
+        camelSelect.classList.add('chevron');
+        listItem.appendChild(camelPictureContainer);
+        listItem.appendChild(camelName);
+        listItem.appendChild(camelStats);
+        listItem.appendChild(camelSelect);
+        list.appendChild(listItem);
+    }
+}
 class NavigatorService {
     _pageLoaded = false;
     _currentPage = Page.loading;
@@ -1298,6 +1358,11 @@ class NavigatorService {
     doNavigation() {
         if (this._pageLoaded === false) {
             CanvasService.hideAllCanvas();
+            const camelSelectSection = document.getElementById('camel-select');
+            if (!!camelSelectSection) {
+                camelSelectSection.innerHTML = '';
+                camelSelectSection.style.display = 'none';
+            }
             switch (this._currentPage) {
                 case Page.loading:
                     this.navigateToLoading();
@@ -1313,6 +1378,9 @@ class NavigatorService {
                     break;
                 case Page.race:
                     this.navigateToRace();
+                    break;
+                case Page.raceCamelSelect:
+                    raceCamelSelectComponent.load();
                     break;
             }
             this._pageLoaded = true;
@@ -1355,8 +1423,9 @@ var Page;
     Page[Page["loading"] = 0] = "loading";
     Page[Page["mapOverview"] = 1] = "mapOverview";
     Page[Page["management"] = 2] = "management";
-    Page[Page["raceSelection"] = 3] = "raceSelection";
-    Page[Page["race"] = 4] = "race";
+    Page[Page["race"] = 3] = "race";
+    Page[Page["raceCamelSelect"] = 4] = "raceCamelSelect";
+    Page[Page["raceSelection"] = 5] = "raceSelection";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
@@ -1566,16 +1635,8 @@ class RaceSelection {
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
         }
-        PopupService.showLoading();
-        // A few frames are needed to paint the loader
-        window.setTimeout(() => {
-            race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
-            this._navigator.requestPageNavigation(Page.race);
-            PopupService.clearPopups();
-            musicService.setAudio("RaceAudio");
-            musicService.startAudio();
-            race.triggered = true;
-        }, 100);
+        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+        this._navigator.requestPageNavigation(Page.raceCamelSelect);
     }
 }
 class RaceSimulation {

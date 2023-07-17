@@ -24,6 +24,7 @@ let musicService: MusicService;
 let camelSkillDrawing: CamelSkillDrawing;
 let camelSkillCommands: CamelSkillCommands;
 let camelSkillComponent: CamelSkillComponent;
+let raceCamelSelectComponent: CamelSelectComponent;
 
 // Loading
 let loadingScreen: LoadingScreen;
@@ -49,19 +50,34 @@ function init() {
 
     recruitmentService = new RecruitmentService(navigatorService);
     loadingScreen = new LoadingScreen(navigatorService);
-    
+
     // Race
     raceDrawing = new RaceDrawing();
     raceSimulation = new RaceSimulation();
     raceSelection = new RaceSelection(navigatorService);
     countdown = new Countdown();
 
+    const selectRaceCamelFunc = (camel: Camel) => {
+        PopupService.showLoading();
+        
+        // A few frames are needed to paint the loader
+        window.setTimeout(() => {
+            navigatorService.requestPageNavigation(Page.race)
+            musicService.setAudio("RaceAudio");
+            musicService.startAudio()
+
+            race.triggered = true;
+        }, 100);
+    }
+
+    raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
+
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d")!);
 
     // Gym
     gymDrawing = new GymDrawing(navigatorService);
 
-    
+
     // Audio
     musicService = new MusicService();
     window.addEventListener('keydown', () => {
@@ -85,7 +101,7 @@ function gameLoop(timeStamp: number) {
 
         if (initMapLoadRequested) {
             initMapLoadRequested = false;
-            
+
             // Map
             CanvasService.hideAllCanvas();
             MapOverview.showMap();
@@ -98,7 +114,7 @@ function gameLoop(timeStamp: number) {
                 PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
             }
         }
-        
+
         navigatorService.doNavigation();
 
         if (!!race && race.inProgress) {

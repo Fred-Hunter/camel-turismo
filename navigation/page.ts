@@ -2,6 +2,7 @@ enum Page {
     loading,
     mapOverview,
     management,
-    raceSelection,
-    race
+    race,
+    raceCamelSelect,
+    raceSelection
 }

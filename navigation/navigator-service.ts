@@ -14,6 +14,12 @@ class NavigatorService {
     public doNavigation(): void {
         if (this._pageLoaded === false) {
             CanvasService.hideAllCanvas();
+            const camelSelectSection = document.getElementById('camel-select');
+
+            if (!!camelSelectSection) {
+                camelSelectSection.innerHTML = ''
+                camelSelectSection.style.display = 'none';
+            }
 
             switch (this._currentPage) {
                 case Page.loading:
@@ -30,6 +36,9 @@ class NavigatorService {
                     break;
                 case Page.race:
                     this.navigateToRace();
+                    break;
+                case Page.raceCamelSelect:
+                    raceCamelSelectComponent.load();
                     break;
             }
 
