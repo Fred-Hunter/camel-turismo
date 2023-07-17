@@ -14,7 +14,7 @@ class RacingStartup {
 
     private registerRaceCamelSelectComponent() {
         const selectRaceCamelFunc = (camel: Camel) => {
-            navigatorService.requestPageNavigation(Page.race)
+            this._navigatorService.requestPageNavigation(Page.race)
             this._musicService.setAudio("RaceAudio");
             this._musicService.startAudio()
 
@@ -25,7 +25,7 @@ class RacingStartup {
     }
 
     private registerRaceSelection(raceSimulation: RaceSimulation) {
-        raceSelection = new RaceSelection(navigatorService, raceSimulation);
+        raceSelection = new RaceSelection(this._navigatorService, raceSimulation);
     }
 
     private registerRaceComponent(raceSimulation: RaceSimulation) {

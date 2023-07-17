@@ -1742,7 +1742,7 @@ class RacingStartup {
     }
     registerRaceCamelSelectComponent() {
         const selectRaceCamelFunc = (camel) => {
-            navigatorService.requestPageNavigation(Page.race);
+            this._navigatorService.requestPageNavigation(Page.race);
             this._musicService.setAudio("RaceAudio");
             this._musicService.startAudio();
             race.triggered = true;
@@ -1750,7 +1750,7 @@ class RacingStartup {
         raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     }
     registerRaceSelection(raceSimulation) {
-        raceSelection = new RaceSelection(navigatorService, raceSimulation);
+        raceSelection = new RaceSelection(this._navigatorService, raceSimulation);
     }
     registerRaceComponent(raceSimulation) {
         const leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
