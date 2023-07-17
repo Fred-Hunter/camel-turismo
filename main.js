@@ -481,14 +481,10 @@ function init() {
     raceSelection = new RaceSelection(navigatorService);
     countdown = new Countdown();
     const selectRaceCamelFunc = (camel) => {
-        PopupService.showLoading();
-        // A few frames are needed to paint the loader
-        window.setTimeout(() => {
-            navigatorService.requestPageNavigation(Page.race);
-            musicService.setAudio("RaceAudio");
-            musicService.startAudio();
-            race.triggered = true;
-        }, 100);
+        navigatorService.requestPageNavigation(Page.race);
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio();
+        race.triggered = true;
     };
     raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
@@ -1635,8 +1631,12 @@ class RaceSelection {
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
         }
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
-        this._navigator.requestPageNavigation(Page.raceCamelSelect);
+        PopupService.showLoading();
+        // A few frames are needed to paint the loader
+        window.setTimeout(() => {
+            race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            this._navigator.requestPageNavigation(Page.raceCamelSelect);
+        }, 100);
     }
 }
 class RaceSimulation {

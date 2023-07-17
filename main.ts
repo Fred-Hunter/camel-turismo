@@ -58,17 +58,13 @@ function init() {
     countdown = new Countdown();
 
     const selectRaceCamelFunc = (camel: Camel) => {
-        PopupService.showLoading();
-        
-        // A few frames are needed to paint the loader
-        window.setTimeout(() => {
-            navigatorService.requestPageNavigation(Page.race)
-            musicService.setAudio("RaceAudio");
-            musicService.startAudio()
 
-            race.triggered = true;
-        }, 100);
-    }
+        navigatorService.requestPageNavigation(Page.race)
+        musicService.setAudio("RaceAudio");
+        musicService.startAudio()
+
+        race.triggered = true;
+    };
 
     raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
 

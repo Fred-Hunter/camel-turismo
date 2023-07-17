@@ -53,7 +53,13 @@ class RaceSelection {
             GameState.cashMoney -= entryFee;
         }
 
-        race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
-        this._navigator.requestPageNavigation(Page.raceCamelSelect);
+        PopupService.showLoading();
+
+        // A few frames are needed to paint the loader
+        window.setTimeout(() => {
+            race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            this._navigator.requestPageNavigation(Page.raceCamelSelect);
+        }, 100);
+
     }
 }
