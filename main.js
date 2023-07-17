@@ -1,4 +1,92 @@
 "use strict";
+// Game state
+let camel;
+let race;
+// Navigation TODO should not be available globally
+let navigatorService;
+// Components
+// Recruitment
+let recruitmentService;
+// Camel management
+let camelSkillComponent;
+// Race
+let raceSelection;
+let raceComponent;
+let raceCamelSelectComponent;
+// Loading
+let loadingScreen;
+function init() {
+    navigatorService = new NavigatorService();
+    const musicService = new MusicService();
+    const startup = new Startup(musicService, navigatorService);
+    startup.createCanvases();
+    startup.registerComponents();
+    startup.registerAudio();
+    navigatorService.doNavigation();
+    window.requestAnimationFrame(gameLoop);
+}
+function gameLoop(timeStamp) {
+    try {
+        GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
+        GameState.oldTimeStamp = timeStamp;
+        navigatorService.doNavigation();
+        raceComponent.handleRaceLoop(timeStamp);
+    }
+    catch (exception) {
+        console.error(exception);
+    }
+    finally {
+        window.requestAnimationFrame(gameLoop);
+    }
+}
+window.onload = () => { init(); };
+class MusicService {
+    HomeScreenAudio;
+    RaceAudio;
+    currentAudio = "HomeScreenAudio";
+    constructor() {
+        this.HomeScreenAudio = new Audio("audio/Mii Camel.mp3");
+        this.RaceAudio = new Audio("audio/Camel Mall.mp3");
+        this.HomeScreenAudio.loop = true;
+        this.RaceAudio.loop = true;
+    }
+    startAudio() {
+        if (this.currentAudio == "HomeScreenAudio") {
+            this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
+            this.HomeScreenAudio.play();
+        }
+        else if (this.currentAudio == "RaceAudio") {
+            this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
+            this.RaceAudio.play();
+        }
+        else {
+            this.HomeScreenAudio.pause();
+            this.HomeScreenAudio.currentTime = 0;
+            this.RaceAudio.pause();
+            this.RaceAudio.currentTime = 0;
+        }
+    }
+    setAudio(audioName) {
+        this.currentAudio = audioName;
+    }
+}
+class Countdown {
+    constructor() {
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _ctx;
+    _canvas;
+    displayCountdown(seconds) {
+        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
+        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
+        this._ctx.font = "240px Garamond";
+        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
+    }
+}
 class CanvasBtnService {
     canvas;
     _navigator;
@@ -171,7 +259,7 @@ class CanvasService {
 class CashMoneyService {
     static drawCashMoney(ctx) {
         var img = new Image();
-        img.src = './egyptian-pound.jpg';
+        img.src = './assets/egyptian-pound.jpg';
         img.onload = function () {
             ctx.drawImage(img, GlobalStaticConstants.innerWidth - 450, GlobalStaticConstants.innerHeight - 150, 400, 125);
             ctx.fillStyle = '#e8be9e';
@@ -332,295 +420,6 @@ class ImportantService {
         return { x2, y2 };
     }
 }
-class LeaderboardService {
-    ctx;
-    constructor(ctx) {
-        this.ctx = ctx;
-        this._camelCubeService = new CubeService(ctx);
-    }
-    _camelCubeService;
-    sortCamels(a, b) {
-        if (b.finalPosition && !a.finalPosition) {
-            return 1;
-        }
-        if (!b.finalPosition && a.finalPosition) {
-            return -1;
-        }
-        if (!b.finalPosition && !a.finalPosition) {
-            return b.completionPercentage - a.completionPercentage;
-        }
-        return a.finalPosition - b.finalPosition;
-    }
-    drawLeaderboard() {
-        const cols = Math.ceil(race.racingCamels.length / 5);
-        let height = 0;
-        race.racingCamels.sort((a, b) => this.sortCamels(a, b)).forEach(racingCamel => {
-            this.drawCamel(racingCamel, height);
-            height -= 5;
-        });
-    }
-    isCamelUserOwned(racingCamel) {
-        return racingCamel == camel;
-    }
-    componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-    getProgressBarColour(color1, color2, weight) {
-        var w1 = weight;
-        var w2 = 1 - w1;
-        var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
-            Math.round(color1[1] * w1 + color2[1] * w2),
-            Math.round(color1[2] * w1 + color2[2] * w2)];
-        return "#" + this.componentToHex(rgb[0]) + this.componentToHex(rgb[1]) + this.componentToHex(rgb[2]);
-    }
-    drawCamel(camel, heightOffset) {
-        const x = 5.5;
-        const y = -6.5;
-        const camelService = new CanvasCamelService(this.ctx);
-        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
-        if (this.isCamelUserOwned(camel.camel)) {
-            this.ctx.fillStyle = '#96876e';
-            this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
-        }
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '10pt Garamond';
-        const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
-        this.ctx.beginPath();
-        this.ctx.fillStyle = '#fff';
-        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
-        this.ctx.fill();
-        this.ctx.closePath();
-        const colour = this.getProgressBarColour([255, 238, 150], [61, 204, 83], 1 - camel.completionPercentage);
-        this.ctx.beginPath();
-        this.ctx.fillStyle = colour;
-        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
-        this.ctx.fill();
-        this.ctx.closePath();
-    }
-}
-class LoadingScreen {
-    _navigator;
-    constructor(_navigator) {
-        this._navigator = _navigator;
-        this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
-        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
-    }
-    _canvas;
-    _btnService;
-    startFreshGame = () => {
-        GameState.Reset();
-        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
-    };
-    loadSavedGame = () => {
-        GameState.LoadIfExists();
-        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
-    };
-    drawLoadingScreen() {
-        const ctx = this._canvas.getContext("2d");
-        const img = new Image();
-        img.src = './graphics/camel-oasis.jpg';
-        ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const radius = 50;
-        const backgroundColour = '#cc807a';
-        const borderColour = '#f2ada7';
-        const textColour = '#fff';
-        if (GameState.GetExists()) {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
-            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.loadSavedGame, 'Load saved game');
-        }
-        else {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
-        }
-    }
-}
-// Recruitment
-let camel;
-let recruitmentService;
-// Navigation
-let navigatorService;
-// Race
-let raceSimulation;
-let raceSelection;
-let raceDrawing;
-let gymDrawing;
-let race;
-let countdown;
-let raceTriggeredTimestamp;
-let leaderboardService;
-// Audio
-let musicService;
-// Camel management
-let camelSkillDrawing;
-let camelSkillCommands;
-let camelSkillComponent;
-let raceCamelSelectComponent;
-// Loading
-let loadingScreen;
-function init() {
-    GameState.cashMoney = 100;
-    navigatorService = new NavigatorService();
-    // Camel
-    CanvasService.createCanvas('3', CanvasNames.Recruitment);
-    CanvasService.createCanvas('1', CanvasNames.RaceBackground);
-    CanvasService.createCanvas('2', CanvasNames.RaceCamel);
-    CanvasService.createCanvas('4', CanvasNames.MapOverview);
-    CanvasService.createCanvas('1', CanvasNames.GymCamel);
-    CanvasService.createCanvas('0', CanvasNames.GymBackground);
-    CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
-    CanvasService.createCanvas('5', CanvasNames.RaceSelection);
-    CanvasService.createCanvas('6', CanvasNames.Countdown);
-    CanvasService.createCanvas('7', CanvasNames.CamelManagement);
-    CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
-    recruitmentService = new RecruitmentService(navigatorService);
-    loadingScreen = new LoadingScreen(navigatorService);
-    // Race
-    raceDrawing = new RaceDrawing();
-    raceSimulation = new RaceSimulation();
-    raceSelection = new RaceSelection(navigatorService);
-    countdown = new Countdown();
-    const selectRaceCamelFunc = (camel) => {
-        navigatorService.requestPageNavigation(Page.race);
-        musicService.setAudio("RaceAudio");
-        musicService.startAudio();
-        race.triggered = true;
-    };
-    raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
-    leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
-    // Gym
-    gymDrawing = new GymDrawing(navigatorService);
-    // Audio
-    musicService = new MusicService();
-    window.addEventListener('keydown', () => {
-        musicService.startAudio();
-    });
-    // Camel management
-    camelSkillDrawing = new CamelSkillDrawing(navigatorService);
-    camelSkillCommands = new CamelSkillCommands();
-    camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
-    navigatorService.doNavigation();
-    window.requestAnimationFrame(gameLoop);
-}
-function gameLoop(timeStamp) {
-    try {
-        GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
-        GameState.oldTimeStamp = timeStamp;
-        navigatorService.doNavigation();
-        if (!!race && race.inProgress) {
-            raceSimulation.simulateRaceStep(race);
-            raceDrawing.drawCamels(race);
-            leaderboardService.drawLeaderboard();
-        }
-        if (!!race && race.triggered) {
-            if (!race.initialised) {
-                raceDrawing.drawRaceCourse(race);
-                raceTriggeredTimestamp = timeStamp;
-                raceDrawing.drawCamels(race);
-                race.initialised = true;
-            }
-            countdown.displayCountdown(8000 - (timeStamp - raceTriggeredTimestamp));
-            if (timeStamp - raceTriggeredTimestamp >= 7500) {
-                CanvasService.hideCanvas(CanvasNames.Countdown);
-                race.triggered = false;
-                raceSimulation.startRace(race);
-            }
-        }
-    }
-    catch (exception) {
-        console.error(exception);
-    }
-    finally {
-        window.requestAnimationFrame(gameLoop);
-    }
-}
-window.onload = () => { init(); };
-class MapOverview {
-    static showMap() {
-        CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
-        CanvasService.showCanvas(CanvasNames.MapOverview);
-        GameState.Save();
-    }
-    static hideMap() {
-        CanvasService.hideCanvas(CanvasNames.MapOverview);
-    }
-    static getMousePosition(event) {
-        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
-        };
-    }
-    static renderMap() {
-        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-        const ctx = canvas?.getContext("2d");
-        if (!ctx)
-            return;
-        const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
-        let rect = {
-            x: 0,
-            y: 0,
-            width: GlobalStaticConstants.innerHeight / 0.815,
-            height: GlobalStaticConstants.innerHeight
-        };
-        if (scaleToWidth) {
-            rect = {
-                x: 0,
-                y: 0,
-                width: GlobalStaticConstants.innerWidth,
-                height: 0.815 * GlobalStaticConstants.innerWidth
-            };
-        }
-        const img = new Image();
-        img.src = './graphics/camelmap-nobreed-v3.svg';
-        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
-        canvas.addEventListener('click', (event) => {
-            const mousePosition = this.getMousePosition(event);
-            // Hire
-            if (mousePosition.x < rect.width / 3 && mousePosition.y < 7 * rect.height / 16) {
-                CanvasService.showAllCanvas();
-                this.hideMap();
-                CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d"));
-                CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
-            }
-            // Gym
-            else if (mousePosition.x > 11 * rect.width / 32 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y < 3 * rect.height / 8) {
-                if (!camel) {
-                    PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
-                    return;
-                }
-                CanvasService.showAllCanvas();
-                this.hideMap();
-                CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
-                CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                (new GymDrawing(navigatorService)).drawGym();
-            }
-            else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
-                if (!!camel && camel.agility.level > 20) {
-                    GameState.cashMoney += 1000;
-                    CashMoneyService.drawCashMoney(ctx);
-                }
-            }
-            // Race
-            else if (mousePosition.x < rect.width / 3 && mousePosition.y > rect.height / 2) {
-                if (!camel) {
-                    PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
-                    return;
-                }
-                navigatorService.requestPageNavigation(Page.raceSelection);
-            }
-            // Management
-            else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
-                if (!camel) {
-                    PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
-                    return;
-                }
-                navigatorService.requestPageNavigation(Page.management);
-            }
-        }, false);
-        CashMoneyService.drawCashMoney(ctx);
-    }
-}
 class PopupService {
     constructor() {
     }
@@ -749,129 +548,38 @@ class PopupService {
         return lines;
     }
 }
-class RecruitmentService {
-    _navigator;
-    constructor(_navigator) {
-        this._navigator = _navigator;
-        this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
-        this._ctx = this._canvas.getContext('2d');
-        this._camelCubeService = new CubeService(this._ctx);
-        this.drawInitCanvas();
+class Startup {
+    _musicService;
+    _navigatorService;
+    constructor(_musicService, _navigatorService) {
+        this._musicService = _musicService;
+        this._navigatorService = _navigatorService;
     }
-    _canvas;
-    _ctx;
-    _camelCubeService;
-    _recruitedCamel = false;
-    handleEvent = () => {
-        CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
-        document.removeEventListener("redirectToMap", this.handleEvent);
-    };
-    leaveRecruitmentArea = () => {
-        document.addEventListener("redirectToMap", this.handleEvent, false);
-    };
-    validateEnoughCashMoney(cost) {
-        return GameState.cashMoney - cost >= 0;
+    registerComponents() {
+        const racingStartup = new RacingStartup(this._musicService, this._navigatorService);
+        racingStartup.registerComponents();
+        const managementStartup = new RacingStartup(this._musicService, this._navigatorService);
+        managementStartup.registerComponents();
+        recruitmentService = new RecruitmentService(navigatorService);
+        loadingScreen = new LoadingScreen(navigatorService);
     }
-    leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
-        if (this._recruitedCamel) {
-            this._recruitedCamel = false;
-            this.leaveRecruitmentArea();
-        }
-    };
-    tryBuyCamel(cost) {
-        if (!this.validateEnoughCashMoney(cost)) {
-            PopupService.drawAlertPopup('Not enough cash money!');
-            return;
-        }
-        GameState.cashMoney = GameState.cashMoney - cost;
-        const quality = cost / 100 - 1;
-        camel = new Camel(++GameState.lastUsedId, quality);
-        PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
-        this._recruitedCamel = true;
+    registerAudio() {
+        window.addEventListener('keydown', () => {
+            this._musicService.startAudio();
+        });
     }
-    spendHighCashMoney = () => {
-        this.tryBuyCamel(300);
-        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
-    };
-    spendMediumCashMoney = () => {
-        this.tryBuyCamel(200);
-        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
-    };
-    spendLowCashMoney = () => {
-        this.tryBuyCamel(100);
-        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
-    };
-    drawInitCanvas() {
-        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
-        this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const btnService = new CanvasBtnService(this._canvas, this._navigator);
-        const camelService = new CanvasCamelService(this._ctx);
-        const radius = 25;
-        btnService.drawBackButton(Page.mapOverview);
-        const btnWidth = 550;
-        const btnHeight = 50;
-        let btnX = 240;
-        let btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
-        btnX = 840;
-        btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#debb49');
-        btnX = 540;
-        btnY = 650;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
-        CashMoneyService.drawCashMoney(this._ctx);
-    }
-}
-class MusicService {
-    HomeScreenAudio;
-    RaceAudio;
-    currentAudio = "HomeScreenAudio";
-    constructor() {
-        this.HomeScreenAudio = new Audio("audio/Mii Camel.mp3");
-        this.RaceAudio = new Audio("audio/Camel Mall.mp3");
-        this.HomeScreenAudio.loop = true;
-        this.RaceAudio.loop = true;
-    }
-    startAudio() {
-        if (this.currentAudio == "HomeScreenAudio") {
-            this.RaceAudio.pause();
-            this.RaceAudio.currentTime = 0;
-            this.HomeScreenAudio.play();
-        }
-        else if (this.currentAudio == "RaceAudio") {
-            this.HomeScreenAudio.pause();
-            this.HomeScreenAudio.currentTime = 0;
-            this.RaceAudio.play();
-        }
-        else {
-            this.HomeScreenAudio.pause();
-            this.HomeScreenAudio.currentTime = 0;
-            this.RaceAudio.pause();
-            this.RaceAudio.currentTime = 0;
-        }
-    }
-    setAudio(audioName) {
-        this.currentAudio = audioName;
-    }
-}
-class Countdown {
-    constructor() {
-        this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);
-        this._ctx = this._canvas.getContext('2d');
-    }
-    _ctx;
-    _canvas;
-    displayCountdown(seconds) {
-        this._ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
-        const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
-        this._ctx.font = "240px Garamond";
-        this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
+    createCanvases() {
+        CanvasService.createCanvas('3', CanvasNames.Recruitment);
+        CanvasService.createCanvas('1', CanvasNames.RaceBackground);
+        CanvasService.createCanvas('2', CanvasNames.RaceCamel);
+        CanvasService.createCanvas('4', CanvasNames.MapOverview);
+        CanvasService.createCanvas('1', CanvasNames.GymCamel);
+        CanvasService.createCanvas('0', CanvasNames.GymBackground);
+        CanvasService.createCanvas('0', CanvasNames.PopupCanvas);
+        CanvasService.createCanvas('5', CanvasNames.RaceSelection);
+        CanvasService.createCanvas('6', CanvasNames.Countdown);
+        CanvasService.createCanvas('7', CanvasNames.CamelManagement);
+        CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
     }
 }
 class GymDrawing {
@@ -1137,6 +845,41 @@ class Gym {
         }
     }
 }
+class LoadingScreen {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
+        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
+    }
+    _canvas;
+    _btnService;
+    startFreshGame = () => {
+        GameState.Reset();
+        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
+    };
+    loadSavedGame = () => {
+        GameState.LoadIfExists();
+        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
+    };
+    drawLoadingScreen() {
+        const ctx = this._canvas.getContext("2d");
+        const img = new Image();
+        img.src = './graphics/camel-oasis.jpg';
+        ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const radius = 50;
+        const backgroundColour = '#cc807a';
+        const borderColour = '#f2ada7';
+        const textColour = '#fff';
+        if (GameState.GetExists()) {
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.loadSavedGame, 'Load saved game');
+        }
+        else {
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+        }
+    }
+}
 class CamelSkillCommands {
     levelUpSkill(camel, skill) {
         const toNextLevel = skill.getXpToNextLevel();
@@ -1153,12 +896,13 @@ class CamelSkillComponent {
         this._camelSkillDrawing = _camelSkillDrawing;
         this._camelSkillCommands = _camelSkillCommands;
     }
-    load(camel) {
+    load() {
+        CanvasService.showCanvas(CanvasNames.CamelManagement);
         this._camelSkillDrawing.drawPage(camel, (camelSkill) => this.levelUpSkill(camel, camelSkill));
     }
     levelUpSkill = (camel, skill) => {
         this._camelSkillCommands.levelUpSkill(camel, skill);
-        this.load(camel);
+        this.load();
     };
 }
 class CamelSkillDrawing {
@@ -1279,6 +1023,19 @@ class Camel {
         }
     }
 }
+class ManagementStartup {
+    _musicService;
+    _navigatorService;
+    constructor(_musicService, _navigatorService) {
+        this._musicService = _musicService;
+        this._navigatorService = _navigatorService;
+    }
+    registerComponents() {
+        const camelSkillDrawing = new CamelSkillDrawing(this._navigatorService);
+        const camelSkillCommands = new CamelSkillCommands();
+        camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+    }
+}
 class CamelSelectComponent {
     _selectFunc;
     constructor(_selectFunc) {
@@ -1327,6 +1084,93 @@ class CamelSelectComponent {
         list.appendChild(listItem);
     }
 }
+class MapOverview {
+    static showMap() {
+        CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
+        CanvasService.showCanvas(CanvasNames.MapOverview);
+        GameState.Save();
+    }
+    static hideMap() {
+        CanvasService.hideCanvas(CanvasNames.MapOverview);
+    }
+    static getMousePosition(event) {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    }
+    static renderMap() {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        const ctx = canvas?.getContext("2d");
+        if (!ctx)
+            return;
+        const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
+        let rect = {
+            x: 0,
+            y: 0,
+            width: GlobalStaticConstants.innerHeight / 0.815,
+            height: GlobalStaticConstants.innerHeight
+        };
+        if (scaleToWidth) {
+            rect = {
+                x: 0,
+                y: 0,
+                width: GlobalStaticConstants.innerWidth,
+                height: 0.815 * GlobalStaticConstants.innerWidth
+            };
+        }
+        const img = new Image();
+        img.src = './graphics/camelmap-nobreed-v3.svg';
+        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
+        canvas.addEventListener('click', (event) => {
+            const mousePosition = this.getMousePosition(event);
+            // Hire
+            if (mousePosition.x < rect.width / 3 && mousePosition.y < 7 * rect.height / 16) {
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d"));
+                CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
+            }
+            // Gym
+            else if (mousePosition.x > 11 * rect.width / 32 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y < 3 * rect.height / 8) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
+                    return;
+                }
+                CanvasService.showAllCanvas();
+                this.hideMap();
+                CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
+                CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
+                (new GymDrawing(navigatorService)).drawGym();
+            }
+            else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
+                if (!!camel && camel.agility.level > 20) {
+                    GameState.cashMoney += 1000;
+                    CashMoneyService.drawCashMoney(ctx);
+                }
+            }
+            // Race
+            else if (mousePosition.x < rect.width / 3 && mousePosition.y > rect.height / 2) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
+                    return;
+                }
+                navigatorService.requestPageNavigation(Page.raceSelection);
+            }
+            // Management
+            else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
+                if (!camel) {
+                    PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
+                    return;
+                }
+                navigatorService.requestPageNavigation(Page.management);
+            }
+        }, false);
+        CashMoneyService.drawCashMoney(ctx);
+    }
+}
 class NavigatorService {
     _pageLoaded = false;
     _currentPage = Page.loading;
@@ -1355,13 +1199,13 @@ class NavigatorService {
                     this.navigateToOverview();
                     break;
                 case Page.management:
-                    this.navigateToManagement();
+                    camelSkillComponent.load();
                     break;
                 case Page.raceSelection:
-                    this.navigateToRaceSelection();
+                    raceSelection.load();
                     break;
                 case Page.race:
-                    this.navigateToRace();
+                    raceComponent.load();
                     break;
                 case Page.raceCamelSelect:
                     raceCamelSelectComponent.load();
@@ -1386,22 +1230,6 @@ class NavigatorService {
         MapOverview.showMap();
         MapOverview.renderMap();
     }
-    navigateToManagement() {
-        CanvasService.showCanvas(CanvasNames.CamelManagement);
-        camelSkillComponent.load(camel);
-    }
-    navigateToRaceSelection() {
-        CanvasService.showCanvas(CanvasNames.RaceSelection);
-        raceSelection.drawSelectionScreen();
-    }
-    navigateToRace() {
-        CanvasService.showCanvas(CanvasNames.RaceBackground);
-        CanvasService.showCanvas(CanvasNames.RaceCamel);
-        CanvasService.showCanvas(CanvasNames.Countdown);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
-    }
 }
 var Page;
 (function (Page) {
@@ -1418,6 +1246,114 @@ var Difficulty;
     Difficulty[Difficulty["Normal"] = 1] = "Normal";
     Difficulty[Difficulty["Hard"] = 2] = "Hard";
 })(Difficulty || (Difficulty = {}));
+class LeaderboardService {
+    ctx;
+    constructor(ctx) {
+        this.ctx = ctx;
+        this._camelCubeService = new CubeService(ctx);
+    }
+    _camelCubeService;
+    sortCamels(a, b) {
+        if (b.finalPosition && !a.finalPosition) {
+            return 1;
+        }
+        if (!b.finalPosition && a.finalPosition) {
+            return -1;
+        }
+        if (!b.finalPosition && !a.finalPosition) {
+            return b.completionPercentage - a.completionPercentage;
+        }
+        return a.finalPosition - b.finalPosition;
+    }
+    drawLeaderboard() {
+        const cols = Math.ceil(race.racingCamels.length / 5);
+        let height = 0;
+        race.racingCamels.sort((a, b) => this.sortCamels(a, b)).forEach(racingCamel => {
+            this.drawCamel(racingCamel, height);
+            height -= 5;
+        });
+    }
+    isCamelUserOwned(racingCamel) {
+        return racingCamel == camel;
+    }
+    componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+    getProgressBarColour(color1, color2, weight) {
+        var w1 = weight;
+        var w2 = 1 - w1;
+        var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+            Math.round(color1[1] * w1 + color2[1] * w2),
+            Math.round(color1[2] * w1 + color2[2] * w2)];
+        return "#" + this.componentToHex(rgb[0]) + this.componentToHex(rgb[1]) + this.componentToHex(rgb[2]);
+    }
+    drawCamel(camel, heightOffset) {
+        const x = 5.5;
+        const y = -6.5;
+        const camelService = new CanvasCamelService(this.ctx);
+        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+        if (this.isCamelUserOwned(camel.camel)) {
+            this.ctx.fillStyle = '#96876e';
+            this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
+        }
+        this.ctx.fillStyle = '#000';
+        this.ctx.font = '10pt Garamond';
+        const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = '#fff';
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+        const colour = this.getProgressBarColour([255, 238, 150], [61, 204, 83], 1 - camel.completionPercentage);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = colour;
+        this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+}
+class RaceComponent {
+    _raceDrawing;
+    _raceSimulation;
+    _leaderboardService;
+    _countdown;
+    constructor(_raceDrawing, _raceSimulation, _leaderboardService, _countdown) {
+        this._raceDrawing = _raceDrawing;
+        this._raceSimulation = _raceSimulation;
+        this._leaderboardService = _leaderboardService;
+        this._countdown = _countdown;
+    }
+    load() {
+        CanvasService.showCanvas(CanvasNames.RaceBackground);
+        CanvasService.showCanvas(CanvasNames.RaceCamel);
+        CanvasService.showCanvas(CanvasNames.Countdown);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
+        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
+        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
+    }
+    handleRaceLoop(timeStamp) {
+        if (!!race && race.inProgress) {
+            this._raceSimulation.simulateRaceStep(race);
+            this._raceDrawing.drawCamels(race);
+            this._leaderboardService.drawLeaderboard();
+        }
+        if (!!race && race.triggered) {
+            if (!race.initialised) {
+                this._raceDrawing.drawRaceCourse(race);
+                race.triggeredTimestamp = timeStamp;
+                this._raceDrawing.drawCamels(race);
+                race.initialised = true;
+            }
+            this._countdown.displayCountdown(8000 - (timeStamp - race.triggeredTimestamp));
+            if (timeStamp - race.triggeredTimestamp >= 7500) {
+                CanvasService.hideCanvas(CanvasNames.Countdown);
+                race.triggered = false;
+                this._raceSimulation.startRace(race);
+            }
+        }
+    }
+}
 class RaceDrawing {
     constructor() {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
@@ -1588,8 +1524,10 @@ class RaceDrawing {
 }
 class RaceSelection {
     _navigator;
-    constructor(_navigator) {
+    _raceSimulation;
+    constructor(_navigator, _raceSimulation) {
         this._navigator = _navigator;
+        this._raceSimulation = _raceSimulation;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d');
         this._btnService = new CanvasBtnService(this._canvas, this._navigator);
@@ -1597,6 +1535,10 @@ class RaceSelection {
     _ctx;
     _canvas;
     _btnService;
+    load() {
+        CanvasService.showCanvas(CanvasNames.RaceSelection);
+        this.drawSelectionScreen();
+    }
     drawSelectionScreen() {
         this._btnService.removeEventListeners();
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
@@ -1623,12 +1565,16 @@ class RaceSelection {
         PopupService.showLoading();
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
+            race = this._raceSimulation.createRace(camel, raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
     }
 }
 class RaceSimulation {
+    _musicService;
+    constructor(_musicService) {
+        this._musicService = _musicService;
+    }
     _nextPosition = 1;
     createRace(enteringCamel, raceLength, prizeCashMoney, raceSize, difficulty) {
         const camelsInRace = [enteringCamel];
@@ -1722,8 +1668,8 @@ class RaceSimulation {
         this._nextPosition = 1;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         camel.unspentXp += xpGained;
-        musicService.setAudio('HomeScreenAudio');
-        musicService.startAudio();
+        this._musicService.setAudio('HomeScreenAudio');
+        this._musicService.startAudio();
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
@@ -1781,6 +1727,38 @@ class RaceTrackCreator {
         return Array.from(track);
     }
 }
+class RacingStartup {
+    _musicService;
+    _navigatorService;
+    constructor(_musicService, _navigatorService) {
+        this._musicService = _musicService;
+        this._navigatorService = _navigatorService;
+    }
+    registerComponents() {
+        const raceSimulation = new RaceSimulation(this._musicService);
+        this.registerRaceCamelSelectComponent();
+        this.registerRaceSelection(raceSimulation);
+        this.registerRaceComponent(raceSimulation);
+    }
+    registerRaceCamelSelectComponent() {
+        const selectRaceCamelFunc = (camel) => {
+            navigatorService.requestPageNavigation(Page.race);
+            this._musicService.setAudio("RaceAudio");
+            this._musicService.startAudio();
+            race.triggered = true;
+        };
+        raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
+    }
+    registerRaceSelection(raceSimulation) {
+        raceSelection = new RaceSelection(navigatorService, raceSimulation);
+    }
+    registerRaceComponent(raceSimulation) {
+        const leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
+        const raceDrawing = new RaceDrawing();
+        const countdown = new Countdown();
+        raceComponent = new RaceComponent(raceDrawing, raceSimulation, leaderboardService, countdown);
+    }
+}
 class Race {
     length;
     track;
@@ -1799,6 +1777,7 @@ class Race {
     initialised = false;
     inProgress = false;
     winner;
+    triggeredTimestamp = 0;
 }
 class RacingCamel {
     camel;
@@ -1841,6 +1820,84 @@ class RacingCamel {
         if (this._jumpHeight == 0) {
             this.startJump();
         }
+    }
+}
+class RecruitmentService {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
+        this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
+        this._ctx = this._canvas.getContext('2d');
+        this._camelCubeService = new CubeService(this._ctx);
+        this.drawInitCanvas();
+    }
+    _canvas;
+    _ctx;
+    _camelCubeService;
+    _recruitedCamel = false;
+    handleEvent = () => {
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+        document.removeEventListener("redirectToMap", this.handleEvent);
+    };
+    leaveRecruitmentArea = () => {
+        document.addEventListener("redirectToMap", this.handleEvent, false);
+    };
+    validateEnoughCashMoney(cost) {
+        return GameState.cashMoney - cost >= 0;
+    }
+    leaveRecruitmentAreaIfSuccessfulRecruitment = () => {
+        if (this._recruitedCamel) {
+            this._recruitedCamel = false;
+            this.leaveRecruitmentArea();
+        }
+    };
+    tryBuyCamel(cost) {
+        if (!this.validateEnoughCashMoney(cost)) {
+            PopupService.drawAlertPopup('Not enough cash money!');
+            return;
+        }
+        GameState.cashMoney = GameState.cashMoney - cost;
+        const quality = cost / 100 - 1;
+        camel = new Camel(++GameState.lastUsedId, quality);
+        PopupService.drawAlertPopup(`Recruited ${camel.name}!`);
+        this._recruitedCamel = true;
+    }
+    spendHighCashMoney = () => {
+        this.tryBuyCamel(300);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
+    };
+    spendMediumCashMoney = () => {
+        this.tryBuyCamel(200);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
+    };
+    spendLowCashMoney = () => {
+        this.tryBuyCamel(100);
+        this.leaveRecruitmentAreaIfSuccessfulRecruitment();
+    };
+    drawInitCanvas() {
+        this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
+        this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const btnService = new CanvasBtnService(this._canvas, this._navigator);
+        const camelService = new CanvasCamelService(this._ctx);
+        const radius = 25;
+        btnService.drawBackButton(Page.mapOverview);
+        const btnWidth = 550;
+        const btnHeight = 50;
+        let btnX = 240;
+        let btnY = 250;
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#cc807a');
+        btnX = 840;
+        btnY = 250;
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#debb49');
+        btnX = 540;
+        btnY = 650;
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, 40, '#509124');
+        CashMoneyService.drawCashMoney(this._ctx);
     }
 }
 class CamelSkill {

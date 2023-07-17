@@ -31,13 +31,13 @@ class NavigatorService {
                     this.navigateToOverview();
                     break;
                 case Page.management:
-                    this.navigateToManagement();
+                    camelSkillComponent.load();
                     break;
                 case Page.raceSelection:
-                    this.navigateToRaceSelection();
+                    raceSelection.load();
                     break;
                 case Page.race:
-                    this.navigateToRace();
+                    raceComponent.load();
                     break;
                 case Page.raceCamelSelect:
                     raceCamelSelectComponent.load();
@@ -66,25 +66,5 @@ class NavigatorService {
     private navigateToOverview() {
         MapOverview.showMap();
         MapOverview.renderMap();
-    }
-
-    private navigateToManagement() {
-        CanvasService.showCanvas(CanvasNames.CamelManagement);
-        camelSkillComponent.load(camel);
-    }
-
-    private navigateToRaceSelection() {
-        CanvasService.showCanvas(CanvasNames.RaceSelection);
-        raceSelection.drawSelectionScreen();
-    }
-
-    private navigateToRace() {
-        CanvasService.showCanvas(CanvasNames.RaceBackground);
-        CanvasService.showCanvas(CanvasNames.RaceCamel);
-        CanvasService.showCanvas(CanvasNames.Countdown);
-
-        CanvasService.bringCanvasToTop(CanvasNames.RaceBackground);
-        CanvasService.bringCanvasToTop(CanvasNames.RaceCamel);
-        CanvasService.bringCanvasToTop(CanvasNames.Countdown);
     }
 }

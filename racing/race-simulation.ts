@@ -1,4 +1,5 @@
 class RaceSimulation {
+    constructor(private readonly _musicService: MusicService) { }
     private _nextPosition: number = 1;
 
     createRace(
@@ -123,8 +124,8 @@ class RaceSimulation {
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         camel.unspentXp += xpGained;
 
-        musicService.setAudio('HomeScreenAudio');
-        musicService.startAudio();
+        this._musicService.setAudio('HomeScreenAudio');
+        this._musicService.startAudio();
 
         CanvasService.hideAllCanvas();
         MapOverview.showMap();

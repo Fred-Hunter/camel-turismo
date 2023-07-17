@@ -16,4 +16,5 @@ class Race {
     initialised: boolean = false;
     inProgress: boolean = false;
     winner: undefined;
+    triggeredTimestamp: number = 0;
 }

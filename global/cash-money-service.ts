@@ -1,7 +1,7 @@
 class CashMoneyService {
     public static drawCashMoney(ctx: CanvasRenderingContext2D): void {
         var img = new Image();
-        img.src = './egyptian-pound.jpg';
+        img.src = './assets/egyptian-pound.jpg';
         img.onload = function() {
             ctx.drawImage(img, GlobalStaticConstants.innerWidth - 450, GlobalStaticConstants.innerHeight - 150, 400, 125);
             ctx.fillStyle = '#e8be9e';
