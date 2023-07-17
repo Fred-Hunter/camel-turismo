@@ -13,7 +13,6 @@ let gymDrawing: GymDrawing;
 let race: Race;
 let countdown: Countdown;
 let raceTriggeredTimestamp: number;
-let initMapLoadRequested = false;
 
 let leaderboardService: LeaderboardService;
 
@@ -94,22 +93,6 @@ function gameLoop(timeStamp: number) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
-
-        if (initMapLoadRequested) {
-            initMapLoadRequested = false;
-
-            // Map
-            CanvasService.hideAllCanvas();
-            MapOverview.showMap();
-            MapOverview.renderMap();
-
-            if (!camel) {
-                PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
-            }
-            else {
-                PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
-            }
-        }
 
         navigatorService.doNavigation();
 

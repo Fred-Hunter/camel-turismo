@@ -7,14 +7,18 @@ class LoadingScreen {
     private _canvas: HTMLCanvasElement;
     private _btnService: CanvasBtnService;
 
-    private startFreshGame() {
+    private startFreshGame = () => {
         GameState.Reset();
-        initMapLoadRequested = true;
+        this._navigator.requestPageNavigation(
+            Page.mapOverview, 
+            () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
     }
 
-    private loadSavedGame() {
+    private loadSavedGame = () => {
         GameState.LoadIfExists();
-        initMapLoadRequested = true;
+        this._navigator.requestPageNavigation(
+            Page.mapOverview, 
+            () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
     }
 
     drawLoadingScreen() {

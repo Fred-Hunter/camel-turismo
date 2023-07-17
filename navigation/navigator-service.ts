@@ -1,12 +1,14 @@
 class NavigatorService {
     private _pageLoaded = false;
     private _currentPage = Page.loading;
+    private _postNavigationFunc: () => void = () => {};
 
-    public requestPageNavigation(page: Page): void {
+    public requestPageNavigation(page: Page, postNavigationFunc?: () => void): void {
         if (!this.canNavigate(page)) {
             return;
         }
 
+        this._postNavigationFunc = postNavigationFunc ?? (() => {});
         this._pageLoaded = false
         this._currentPage = page;
     }
@@ -42,6 +44,7 @@ class NavigatorService {
                     break;
             }
 
+            this._postNavigationFunc();
             this._pageLoaded = true;
         }
     }

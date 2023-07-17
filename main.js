@@ -408,14 +408,14 @@ class LoadingScreen {
     }
     _canvas;
     _btnService;
-    startFreshGame() {
+    startFreshGame = () => {
         GameState.Reset();
-        initMapLoadRequested = true;
-    }
-    loadSavedGame() {
+        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
+    };
+    loadSavedGame = () => {
         GameState.LoadIfExists();
-        initMapLoadRequested = true;
-    }
+        this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
+    };
     drawLoadingScreen() {
         const ctx = this._canvas.getContext("2d");
         const img = new Image();
@@ -447,7 +447,6 @@ let gymDrawing;
 let race;
 let countdown;
 let raceTriggeredTimestamp;
-let initMapLoadRequested = false;
 let leaderboardService;
 // Audio
 let musicService;
@@ -506,19 +505,6 @@ function gameLoop(timeStamp) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
-        if (initMapLoadRequested) {
-            initMapLoadRequested = false;
-            // Map
-            CanvasService.hideAllCanvas();
-            MapOverview.showMap();
-            MapOverview.renderMap();
-            if (!camel) {
-                PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!");
-            }
-            else {
-                PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!");
-            }
-        }
         navigatorService.doNavigation();
         if (!!race && race.inProgress) {
             raceSimulation.simulateRaceStep(race);
@@ -1344,10 +1330,12 @@ class CamelSelectComponent {
 class NavigatorService {
     _pageLoaded = false;
     _currentPage = Page.loading;
-    requestPageNavigation(page) {
+    _postNavigationFunc = () => { };
+    requestPageNavigation(page, postNavigationFunc) {
         if (!this.canNavigate(page)) {
             return;
         }
+        this._postNavigationFunc = postNavigationFunc ?? (() => { });
         this._pageLoaded = false;
         this._currentPage = page;
     }
@@ -1379,6 +1367,7 @@ class NavigatorService {
                     raceCamelSelectComponent.load();
                     break;
             }
+            this._postNavigationFunc();
             this._pageLoaded = true;
         }
     }
