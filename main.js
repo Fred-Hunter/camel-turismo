@@ -560,7 +560,7 @@ class Startup {
     registerComponents() {
         const racingStartup = new RacingStartup(this._musicService, this._navigatorService);
         racingStartup.registerComponents();
-        const managementStartup = new RacingStartup(this._musicService, this._navigatorService);
+        const managementStartup = new ManagementStartup(this._musicService, this._navigatorService);
         managementStartup.registerComponents();
         recruitmentService = new RecruitmentService(navigatorService);
         loadingScreen = new LoadingScreen(navigatorService);
