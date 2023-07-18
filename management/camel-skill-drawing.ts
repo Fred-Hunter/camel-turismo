@@ -44,6 +44,7 @@ class CamelSkillDrawing {
         this.drawSkill(camel.agility, xPadding, yPadding + height, levelUpSkillFunc);
         this.drawSkill(camel.sprintSpeed, xPadding, yPadding + 2 * height, levelUpSkillFunc);
         this.drawSkill(camel.stamina, xPadding, yPadding + 3 * height, levelUpSkillFunc);
+        this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);
     }
 
     private drawSkill(skill: CamelSkill, x: number, y: number, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {        
@@ -65,5 +66,63 @@ class CamelSkillDrawing {
             '#fff',
             () => levelUpSkillFunc(skill),
             `+`);
+    }
+
+    private drawSkillStar(skills: CamelSkill[], x: number, y: number) {        
+        const maxRadius = 99;
+        x -= maxRadius;
+        const numberOfSkills = skills.length;
+        let points: any[] = [];
+
+        // Draw ring
+        this._ctx.strokeStyle = GlobalStaticConstants.mediumColour;
+        this._ctx.beginPath();
+        this._ctx.arc(x, y, maxRadius, 0, 2 * Math.PI);
+        this._ctx.stroke();
+
+        this._ctx.lineWidth = 2;
+        this._ctx.strokeStyle = "black";
+        this._ctx.fillStyle = "black";
+
+        skills.forEach( (s, i) => {
+
+            // Calculate point
+            const angle =  2 * Math.PI * i / numberOfSkills;
+            const radius = maxRadius * s.level / 100;
+            const spotX = (r: number) => x + r * Math.cos(angle);
+            const spotY = (r: number) => y + r * Math.sin(angle);
+            points?.push({x: spotX(radius), y: spotY(radius)});
+
+            // Draw point
+            this._ctx.beginPath();
+            this._ctx.moveTo(spotX(radius), spotY(radius));
+            this._ctx.arc(spotX(radius), spotY(radius), 2, 0, 2 * Math.PI);
+            this._ctx.stroke();
+            this._ctx.fill();
+
+            // Draw label
+            const labelLength = this._ctx.measureText(s.name).width + 10;
+            this._ctx.fillText(s.name, spotX(1) < x ? spotX(maxRadius) - 5 - labelLength : spotX(maxRadius) + 5 , spotY(maxRadius));
+
+        });
+
+        // Draw and fill shape
+        this._ctx.beginPath();
+        points.forEach( p => {
+            this._ctx.lineTo(p.x, p.y);
+        })
+        this._ctx.lineTo(points[0].x, points[0].y);
+        this._ctx.stroke();
+        this._ctx.fillStyle = GlobalStaticConstants.mediumColour;
+        this._ctx.fill();
+        
+        // Draw center
+        this._ctx.beginPath();
+        this._ctx.moveTo(x, y);
+        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        this._ctx.stroke();
+        this._ctx.fillStyle = "black";
+        this._ctx.fill();
+
     }
 }
