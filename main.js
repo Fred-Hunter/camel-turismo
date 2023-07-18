@@ -1377,12 +1377,12 @@ class LeaderboardService {
 }
 class RaceComponent {
     _raceDrawing;
-    _raceSimulation;
+    _raceManagement;
     _leaderboardService;
     _countdown;
-    constructor(_raceDrawing, _raceSimulation, _leaderboardService, _countdown) {
+    constructor(_raceDrawing, _raceManagement, _leaderboardService, _countdown) {
         this._raceDrawing = _raceDrawing;
-        this._raceSimulation = _raceSimulation;
+        this._raceManagement = _raceManagement;
         this._leaderboardService = _leaderboardService;
         this._countdown = _countdown;
     }
@@ -1395,24 +1395,29 @@ class RaceComponent {
         CanvasService.bringCanvasToTop(CanvasNames.Countdown);
     }
     handleRaceLoop(timeStamp) {
-        if (!!race && race.inProgress) {
-            this._raceSimulation.simulateRaceStep(race);
+        if (!race || race.raceState === RaceState.none) {
+            return;
+        }
+        if (race.raceState === RaceState.inProgress) {
+            this._raceManagement.simulateRaceStep(race);
             this._raceDrawing.drawCamels(race);
             this._leaderboardService.drawLeaderboard();
         }
-        if (!!race && race.triggered) {
-            if (!race.initialised) {
-                this._raceDrawing.drawRaceCourse(race);
-                race.triggeredTimestamp = timeStamp;
-                this._raceDrawing.drawCamels(race);
-                race.initialised = true;
-            }
+        if (race.raceState === RaceState.triggered) {
+            this._raceDrawing.drawRaceCourse(race);
+            race.triggeredTimestamp = timeStamp;
+            this._raceDrawing.drawCamels(race);
+            race.raceState = RaceState.initialised;
+        }
+        if (race.raceState === RaceState.initialised) {
             this._countdown.displayCountdown(8000 - (timeStamp - race.triggeredTimestamp));
             if (timeStamp - race.triggeredTimestamp >= 7500) {
                 CanvasService.hideCanvas(CanvasNames.Countdown);
-                race.triggered = false;
-                this._raceSimulation.startRace(race);
+                this._raceManagement.startRace(race);
             }
+        }
+        if (race.raceState === RaceState.finished) {
+            this._raceManagement.handleFinishedRace(race);
         }
     }
 }
@@ -1586,12 +1591,102 @@ class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 1.5, -1.5);
     }
 }
+class RaceManagement {
+    _musicService;
+    _raceSimulation;
+    constructor(_musicService, _raceSimulation) {
+        this._musicService = _musicService;
+        this._raceSimulation = _raceSimulation;
+    }
+    addCamelToRace(camel, race) {
+        const racingCamel = new RacingCamel(camel);
+        race.racingCamels.push(racingCamel);
+    }
+    addCpuCamelsToRace(raceSize, competitorQuality, race) {
+        for (let i = 0; i < raceSize; i++) {
+            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
+            this.addCamelToRace(competitorCamel, race);
+        }
+    }
+    createRace(raceLength, prizeCashMoney, raceSize, difficulty) {
+        let competitorQuality;
+        if (difficulty === Difficulty.Easy) {
+            competitorQuality = InitCamelQuality.High;
+        }
+        else if (difficulty === Difficulty.Normal) {
+            competitorQuality = InitCamelQuality.Cpu1;
+        }
+        else {
+            competitorQuality = InitCamelQuality.Cpu5;
+        }
+        const trackCreator = new RaceTrackCreator();
+        const track = trackCreator.CreateTrack(raceLength);
+        const race = new Race(raceLength, track, prizeCashMoney);
+        this.addCpuCamelsToRace(raceSize, competitorQuality, race);
+        return race;
+    }
+    startRace(race) {
+        if (race.length <= 0) {
+            throw new Error('Tried to start a race with bad length');
+        }
+        if (race.racingCamels.length === 0) {
+            throw new Error('Tried to start a race with no camels');
+        }
+        race.raceState = RaceState.inProgress;
+        this._raceSimulation.startRace(race);
+    }
+    getPositionDisplay(position) {
+        switch (position) {
+            case 1:
+                return '1st';
+            case 2:
+                return '2nd';
+            case 3:
+                return '3rd';
+            default:
+                return `${position}th`;
+        }
+    }
+    simulateRaceStep(race) {
+        this._raceSimulation.simulateRaceStep(race);
+    }
+    handleFinishedRace(race) {
+        let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
+        position = position ??
+            1 +
+                race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel);
+        const prizeCashMoney = this.getPrizeMoney(race, position);
+        GameState.cashMoney += prizeCashMoney;
+        const xpGained = (race.racingCamels.length - position + 1) * 100;
+        GameState.camel.unspentXp += xpGained;
+        race.raceState = RaceState.none;
+        this._musicService.setAudio('HomeScreenAudio');
+        this._musicService.startAudio();
+        CanvasService.hideAllCanvas();
+        MapOverview.showMap();
+        MapOverview.renderMap();
+        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
+    }
+    getPrizeMoney(race, position) {
+        const prizePool = race.prizeCashMoney;
+        if (position === 1) {
+            return prizePool * 0.75;
+        }
+        if (position === 2) {
+            return prizePool * 0.2;
+        }
+        if (position === 3) {
+            return prizePool * 0.05;
+        }
+        return 0;
+    }
+}
 class RaceSelection {
     _navigator;
-    _raceSimulation;
-    constructor(_navigator, _raceSimulation) {
+    _raceManagement;
+    constructor(_navigator, _raceManagement) {
         this._navigator = _navigator;
-        this._raceSimulation = _raceSimulation;
+        this._raceManagement = _raceManagement;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d');
         this._btnService = new CanvasBtnService(this._canvas, this._navigator);
@@ -1629,45 +1724,16 @@ class RaceSelection {
         PopupService.showLoading();
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = this._raceSimulation.createRace(GameState.camel, raceLength, prizeMoney, raceSize, difficulty);
+            race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
     }
 }
 class RaceSimulation {
-    _musicService;
-    constructor(_musicService) {
-        this._musicService = _musicService;
-    }
+    constructor() { }
     _nextPosition = 1;
-    createRace(enteringCamel, raceLength, prizeCashMoney, raceSize, difficulty) {
-        const camelsInRace = [enteringCamel];
-        let competitorQuality;
-        if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.High;
-        }
-        else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Cpu1;
-        }
-        else {
-            competitorQuality = InitCamelQuality.Cpu5;
-        }
-        for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
-            camelsInRace.push(competitorCamel);
-        }
-        const trackCreator = new RaceTrackCreator();
-        const track = trackCreator.CreateTrack(raceLength);
-        return new Race(raceLength, camelsInRace, track, prizeCashMoney);
-    }
     startRace(race) {
-        if (race.length <= 0) {
-            throw new Error('Tried to start a race with bad length');
-        }
-        if (race.racingCamels.length === 0) {
-            throw new Error('Tried to start a race with no camels');
-        }
-        race.inProgress = true;
+        this._nextPosition = 1;
         race.racingCamels.forEach(x => x.startJump());
     }
     simulateRaceStep(race) {
@@ -1701,56 +1767,14 @@ class RaceSimulation {
             if (racingCamel.completionPercentage >= 1) {
                 racingCamel.finalPosition = this._nextPosition++;
                 if (race.racingCamels.filter(o => o.finalPosition).length >= 3) {
-                    this.handleFinishedRace(race);
+                    race.raceState = RaceState.finished;
+                    return;
                 }
             }
             if (hasSprint) {
                 racingCamel.stamina -= GameState.secondsPassed * staminaDecreasePerSecond;
             }
         });
-    }
-    getPositionDisplay(position) {
-        switch (position) {
-            case 1:
-                return '1st';
-            case 2:
-                return '2nd';
-            case 3:
-                return '3rd';
-            default:
-                return `${position}th`;
-        }
-    }
-    handleFinishedRace(race) {
-        race.inProgress = false;
-        let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
-        position = position ??
-            1 +
-                race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel);
-        const prizeCashMoney = this.getPrizeMoney(race, position);
-        GameState.cashMoney += prizeCashMoney;
-        this._nextPosition = 1;
-        const xpGained = (race.racingCamels.length - position + 1) * 100;
-        GameState.camel.unspentXp += xpGained;
-        this._musicService.setAudio('HomeScreenAudio');
-        this._musicService.startAudio();
-        CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
-        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
-    }
-    getPrizeMoney(race, position) {
-        const prizePool = race.prizeCashMoney;
-        if (position === 1) {
-            return prizePool * 0.75;
-        }
-        if (position === 2) {
-            return prizePool * 0.2;
-        }
-        if (position === 3) {
-            return prizePool * 0.05;
-        }
-        return 0;
     }
 }
 class RaceTrackCreator {
@@ -1799,29 +1823,31 @@ class RacingStartup {
         this._navigatorService = _navigatorService;
     }
     registerComponents() {
-        const raceSimulation = new RaceSimulation(this._musicService);
-        this.registerRaceCamelSelectComponent();
-        this.registerRaceSelection(raceSimulation);
-        this.registerRaceComponent(raceSimulation);
+        const raceSimulation = new RaceSimulation();
+        const raceManagement = new RaceManagement(this._musicService, raceSimulation);
+        this.registerRaceCamelSelectComponent(raceManagement);
+        this.registerRaceSelection(raceManagement);
+        this.registerRaceComponent(raceManagement);
     }
-    registerRaceCamelSelectComponent() {
+    registerRaceCamelSelectComponent(raceManagement) {
         const selectRaceCamelFunc = (camel) => {
             GameState.camel = camel;
+            raceManagement.addCamelToRace(camel, race);
             this._navigatorService.requestPageNavigation(Page.race);
             this._musicService.setAudio("RaceAudio");
             this._musicService.startAudio();
-            race.triggered = true;
+            race.raceState = RaceState.triggered;
         };
         raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     }
-    registerRaceSelection(raceSimulation) {
-        raceSelection = new RaceSelection(this._navigatorService, raceSimulation);
+    registerRaceSelection(raceManagement) {
+        raceSelection = new RaceSelection(this._navigatorService, raceManagement);
     }
-    registerRaceComponent(raceSimulation) {
+    registerRaceComponent(raceManagement) {
         const leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
         const raceDrawing = new RaceDrawing();
         const countdown = new Countdown();
-        raceComponent = new RaceComponent(raceDrawing, raceSimulation, leaderboardService, countdown);
+        raceComponent = new RaceComponent(raceDrawing, raceManagement, leaderboardService, countdown);
     }
 }
 class Countdown {
@@ -1839,23 +1865,25 @@ class Countdown {
         this._ctx.fillText(Math.floor(seconds / 1000).toString(), middleX - 30, middleY);
     }
 }
+var RaceState;
+(function (RaceState) {
+    RaceState[RaceState["none"] = 0] = "none";
+    RaceState[RaceState["triggered"] = 1] = "triggered";
+    RaceState[RaceState["initialised"] = 2] = "initialised";
+    RaceState[RaceState["inProgress"] = 3] = "inProgress";
+    RaceState[RaceState["finished"] = 4] = "finished";
+})(RaceState || (RaceState = {}));
 class Race {
     length;
     track;
     prizeCashMoney;
-    constructor(length, camels, track, prizeCashMoney) {
+    constructor(length, track, prizeCashMoney) {
         this.length = length;
         this.track = track;
         this.prizeCashMoney = prizeCashMoney;
-        camels.forEach(camel => {
-            const racingCamel = new RacingCamel(camel);
-            this.racingCamels.push(racingCamel);
-        });
     }
     racingCamels = [];
-    triggered = false;
-    initialised = false;
-    inProgress = false;
+    raceState = RaceState.none;
     winner;
     triggeredTimestamp = 0;
 }

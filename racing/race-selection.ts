@@ -1,7 +1,7 @@
 class RaceSelection {
     constructor(
         private readonly _navigator: NavigatorService,
-        private readonly _raceSimulation: RaceSimulation
+        private readonly _raceManagement: RaceManagement
     ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d')!;
@@ -63,7 +63,7 @@ class RaceSelection {
 
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = this._raceSimulation.createRace(GameState.camel!, raceLength, prizeMoney, raceSize, difficulty);
+            race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
 

@@ -1,7 +1,7 @@
 class RaceComponent {
     constructor(
         private readonly _raceDrawing: RaceDrawing,
-        private readonly _raceSimulation: RaceSimulation,
+        private readonly _raceManagement: RaceManagement,
         private readonly _leaderboardService: LeaderboardService,
         private readonly _countdown: Countdown)
      { }
@@ -17,27 +17,34 @@ class RaceComponent {
     }
 
     public handleRaceLoop(timeStamp: number): void {
-        if (!!race && race.inProgress) {
-            this._raceSimulation.simulateRaceStep(race);
+        if (!race || race.raceState === RaceState.none) {
+            return;
+        }
+        
+        if (race.raceState === RaceState.inProgress) {
+            this._raceManagement.simulateRaceStep(race);
             this._raceDrawing.drawCamels(race);
             this._leaderboardService.drawLeaderboard();
         }
 
-        if (!!race && race.triggered) {
-            if (!race.initialised) {
-                this._raceDrawing.drawRaceCourse(race);
-                race.triggeredTimestamp = timeStamp;
-                this._raceDrawing.drawCamels(race);
-                race.initialised = true;
-            }
+        if (race.raceState === RaceState.triggered) {
+            this._raceDrawing.drawRaceCourse(race);
+            race.triggeredTimestamp = timeStamp;
+            this._raceDrawing.drawCamels(race);
+            race.raceState = RaceState.initialised;
+        }
 
+        if (race.raceState === RaceState.initialised) {
             this._countdown.displayCountdown(8000 - (timeStamp - race.triggeredTimestamp));
 
             if (timeStamp - race.triggeredTimestamp >= 7500) {
                 CanvasService.hideCanvas(CanvasNames.Countdown);
-                race.triggered = false
-                this._raceSimulation.startRace(race);
+                this._raceManagement.startRace(race);
             }
+        }
+
+        if (race.raceState === RaceState.finished) {
+            this._raceManagement.handleFinishedRace(race);
         }
     }
 }
