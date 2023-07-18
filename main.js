@@ -954,7 +954,8 @@ class CamelSkillDrawing {
     }
     drawSkillStar(skills, x, y) {
         const maxRadius = 99;
-        x -= maxRadius;
+        // Center for small screens, otherwise offset from edge
+        x = x > 2 * maxRadius ? 2 * maxRadius : x;
         const numberOfSkills = skills.length;
         let points = [];
         // Draw ring
