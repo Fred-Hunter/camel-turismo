@@ -51,7 +51,10 @@ class LeaderboardService {
         const y = -6.5;
         const camelService = new CanvasCamelService(this.ctx);
 
-        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);this.ctx.fillStyle = '#96876e';
+        
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillText(`${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10);
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
