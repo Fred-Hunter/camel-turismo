@@ -157,14 +157,14 @@ class CanvasCamelService {
     }
     _cubeService;
     drawCamelIsoCoords(xCoord, yCoord, size, colour, height = 0) {
-        const scaleFactor = GlobalStaticConstants.baseCubeSize * 4 / 5;
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / scaleFactor));
+        const scaleFactor = GlobalStaticConstants.baseCubeSize / 5;
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, -3 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, -2 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, -2 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, -size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, -size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, 0);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, 0);
     }
     drawCamelScreenCoords(xCoord, yCoord, size, colour) {
         const isoCoords = ImportantService.ConvertRealToCoord(xCoord, yCoord, size);
