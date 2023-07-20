@@ -79,8 +79,6 @@ class CamelSkillDrawing {
 
         // Center for small screens, otherwise offset from edge
         x = x > 2 * maxRadius ? 2 * maxRadius : x;
-        const numberOfSkills = skills.length;
-        let points: any[] = [];
 
         // Draw ring
         this._ctx.strokeStyle = GlobalStaticConstants.mediumColour;
@@ -91,6 +89,23 @@ class CamelSkillDrawing {
         this._ctx.lineWidth = 2;
         this._ctx.strokeStyle = "black";
         this._ctx.fillStyle = "black";
+
+        this.drawPotentialOnStar(skills, maxRadius, x, y);
+        this.drawSkillsOnStar(skills, maxRadius, x, y);
+
+        // Draw center
+        this._ctx.beginPath();
+        this._ctx.moveTo(x, y);
+        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        this._ctx.stroke();
+        this._ctx.fillStyle = "black";
+        this._ctx.fill();
+
+    }
+
+    private drawSkillsOnStar(skills: CamelSkill[], maxRadius: number, x: number, y: number) {
+        const numberOfSkills = skills.length;
+        let points: any[] = [];
 
         skills.forEach((s, i) => {
 
@@ -119,18 +134,47 @@ class CamelSkillDrawing {
         points.forEach(p => {
             this._ctx.lineTo(p.x, p.y);
         })
+
         this._ctx.lineTo(points[0].x, points[0].y);
         this._ctx.stroke();
         this._ctx.fillStyle = GlobalStaticConstants.mediumColour;
         this._ctx.fill();
+    }
 
-        // Draw center
+    private drawPotentialOnStar(skills: CamelSkill[], maxRadius: number, x: number, y: number) {
+        const numberOfSkills = skills.length;
+        let points: any[] = [];
+
+        this._ctx.save();
+        this._ctx.fillStyle = GlobalStaticConstants.lightColour;
+        this._ctx.strokeStyle = GlobalStaticConstants.lightColour;
+
+        skills.forEach((s, i) => {
+            // Calculate point
+            const angle = 2 * Math.PI * i / numberOfSkills;
+            const radius = maxRadius * s.potential / 100;
+            const spotX = (r: number) => x + r * Math.cos(angle);
+            const spotY = (r: number) => y + r * Math.sin(angle);
+            points?.push({ x: spotX(radius), y: spotY(radius) });
+
+            // Draw point
+            this._ctx.beginPath();
+            this._ctx.moveTo(spotX(radius), spotY(radius));
+            this._ctx.arc(spotX(radius), spotY(radius), 2, 0, 2 * Math.PI);
+            this._ctx.stroke();
+            this._ctx.fill();
+        });
+
+        // Draw and fill shape
         this._ctx.beginPath();
-        this._ctx.moveTo(x, y);
-        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
-        this._ctx.stroke();
-        this._ctx.fillStyle = "black";
-        this._ctx.fill();
+        points.forEach(p => {
+            this._ctx.lineTo(p.x, p.y);
+        })
 
+        this._ctx.lineTo(points[0].x, points[0].y);
+        this._ctx.stroke();
+
+        this._ctx.fill();
+        this._ctx.restore();
     }
 }
