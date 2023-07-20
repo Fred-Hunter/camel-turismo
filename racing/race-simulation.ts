@@ -1,4 +1,4 @@
-class RaceSimulationV2 {
+class RaceSimulation {
     constructor() { }
     private _nextPosition: number = 1;
 
@@ -16,11 +16,19 @@ class RaceSimulationV2 {
 
             racingCamel.handleJumpTick();
 
+            // Multipliers
             const speedMultiplier = 1 / 10;
-            const staminaMultiplier = 0.8;
+            const staminaMultiplier = 0.6;
             const agilityMultiplier = 6;
-            const finalSpeedMultiplier = 1.5;
-            const starterSpeed = 2;
+            const intelligenceMultiplier = 3;
+
+            const finalSpeedMultiplier = 0.8;
+
+            // Offsets
+            const speedOffset = 10;
+            const agilityOffset = 0;
+            const staminaOffset = 10;
+            const intelligenceOffset = 20;
 
 
             let speed = 0;
@@ -29,13 +37,13 @@ class RaceSimulationV2 {
 
             const sprintDuration = this.GetVariantNumber(6, 2);
 
-            const sprintingSpeed = starterSpeed + racingCamel.camel.sprintSpeed.level * speedMultiplier;
+            const sprintingSpeed = speedOffset + racingCamel.camel.sprintSpeed.level * speedMultiplier;
             const baseSpeed = 0.5 * sprintingSpeed;
             const deadSpeed = 0.25;
-            const accelerationRate = agilityMultiplier * racingCamel.agility / 100;
-            const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + 10) * staminaMultiplier);
-            const baseInconsistancyRate = 150; // TODO new skill just dropped?
-            let inconsistancyRate = baseInconsistancyRate;
+            const accelerationRate = agilityOffset + agilityMultiplier * racingCamel.agility / 100;
+            const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + staminaOffset) * staminaMultiplier);
+            const baseInconsistancyRate = intelligenceMultiplier + intelligenceOffset; // TODO new skill just dropped?
+            let inconsistancyRate = baseInconsistancyRate * racingCamel.completionPercentage / 10;
             let form = 0;
 
 
@@ -66,15 +74,16 @@ class RaceSimulationV2 {
             }
 
             // Now we spice things up
-            if (racingCamel.completionPercentage > 50) inconsistancyRate *= 2;
-            racingCamel.form += this.GetVariantNumber(speed === deadSpeed ? inconsistancyRate / 40 : 0, inconsistancyRate / 10);
-            racingCamel.form *= 0.90;
+            const bias = speed === deadSpeed ? inconsistancyRate / 40 : 0;
+
+            racingCamel.form += this.GetVariantNumber(bias, inconsistancyRate / 10);
+            racingCamel.form *= 0.95;
             speed += form;
 
             speed = Math.max(speed, deadSpeed); // still walking
             speed *= finalSpeedMultiplier;
 
-            racingCamel.currentSpeed = speed
+            racingCamel.currentSpeed = speed;
 
             const newCompletedDistance = completedDistance + GameState.secondsPassed * speed;
 

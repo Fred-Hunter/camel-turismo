@@ -5,7 +5,7 @@ class RacingStartup {
         ) { }
 
     public registerComponents() {
-        const raceSimulation = new RaceSimulationV2();
+        const raceSimulation = new RaceSimulation();
         const raceManagement = new RaceManagement(this._musicService, raceSimulation);
         
         this.registerRaceCamelSelectComponent(raceManagement);

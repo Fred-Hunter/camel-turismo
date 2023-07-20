@@ -16,7 +16,7 @@ class Camel {
             return;
         }
 
-        const sprintSpeed: number = Math.ceil(Math.random() * 10 * (quality + 1));
+        const sprintSpeed: number = Math.ceil(10 * (quality + 1) / 2 * (1 + Math.random()));
         const agility: number = Math.ceil(Math.random() * 10 * (quality + 1));
         const stamina: number = Math.ceil(Math.random() * 10 * (quality + 1));
 

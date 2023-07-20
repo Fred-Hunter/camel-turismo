@@ -54,7 +54,7 @@ class LeaderboardService {
         camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);this.ctx.fillStyle = '#96876e';
         
         this.ctx.fillStyle = 'red';
-        this.ctx.fillText(`${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10);
+        this.ctx.fillText(`${camel.camel.sprintSpeed.level}:${camel.agility}:${camel.stamina}:${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 130, 70 - heightOffset * 10);
 
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';

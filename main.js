@@ -1032,7 +1032,7 @@ class Camel {
         if (quality === InitCamelQuality.None) {
             return;
         }
-        const sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
+        const sprintSpeed = Math.ceil(10 * (quality + 1) / 2 * (1 + Math.random()));
         const agility = Math.ceil(Math.random() * 10 * (quality + 1));
         const stamina = Math.ceil(Math.random() * 10 * (quality + 1));
         this.agility.level = agility;
@@ -1358,7 +1358,7 @@ class LeaderboardService {
         camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
         this.ctx.fillStyle = '#96876e';
         this.ctx.fillStyle = 'red';
-        this.ctx.fillText(`${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10);
+        this.ctx.fillText(`${camel.camel.sprintSpeed.level}:${camel.agility}:${camel.stamina}:${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 130, 70 - heightOffset * 10);
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = '#96876e';
             this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
@@ -1746,70 +1746,28 @@ class RaceSimulation {
                 return;
             }
             racingCamel.handleJumpTick();
-            const remainingDistance = race.length * (1 - racingCamel.completionPercentage);
-            const distancePerSecondWhileSprinting = racingCamel.camel.sprintSpeed.level / 5;
-            const distancePerSecondWhileWalking = 0.25 * racingCamel.camel.sprintSpeed.level / 5;
-            const staminaDecreasePerSecond = 6;
-            let tryToSprint = false;
-            if (racingCamel.camel.temperament === CamelTemperament.Aggressive) {
-                tryToSprint = true;
-            }
-            else if (racingCamel.camel.temperament === CamelTemperament.Temperamental) {
-                tryToSprint = Math.random() < 0.5;
-            }
-            else {
-                const secondsToFinish = remainingDistance / distancePerSecondWhileSprinting;
-                const canSprintToEnd = racingCamel.stamina - secondsToFinish * staminaDecreasePerSecond >= -2;
-                tryToSprint = canSprintToEnd;
-            }
-            const hasSprint = racingCamel.stamina - GameState.secondsPassed * staminaDecreasePerSecond >= 0 && tryToSprint;
-            const baseDistancePerSecond = hasSprint ? distancePerSecondWhileSprinting : distancePerSecondWhileWalking;
-            const distancePerSecond = baseDistancePerSecond + (Math.random() - 0.5);
-            const completedDistance = race.length * racingCamel.completionPercentage;
-            const newCompletedDistance = completedDistance + GameState.secondsPassed * distancePerSecond;
-            racingCamel.completionPercentage = newCompletedDistance / race.length;
-            if (racingCamel.completionPercentage >= 1) {
-                racingCamel.finalPosition = this._nextPosition++;
-                if (race.racingCamels.filter(o => o.finalPosition).length >= 3) {
-                    race.raceState = RaceState.finished;
-                    return;
-                }
-            }
-            if (hasSprint) {
-                racingCamel.stamina -= GameState.secondsPassed * staminaDecreasePerSecond;
-            }
-        });
-    }
-}
-class RaceSimulationV2 {
-    constructor() { }
-    _nextPosition = 1;
-    startRace(race) {
-        this._nextPosition = 1;
-        race.racingCamels.forEach(x => x.startJump());
-    }
-    simulateRaceStep(race) {
-        race.racingCamels.forEach(racingCamel => {
-            if (racingCamel.finalPosition) {
-                return;
-            }
-            racingCamel.handleJumpTick();
+            // Multipliers
             const speedMultiplier = 1 / 10;
-            const staminaMultiplier = 0.8;
+            const staminaMultiplier = 0.6;
             const agilityMultiplier = 6;
-            const finalSpeedMultiplier = 1.5;
-            const starterSpeed = 2;
+            const intelligenceMultiplier = 3;
+            const finalSpeedMultiplier = 0.8;
+            // Offsets
+            const speedOffset = 10;
+            const agilityOffset = 0;
+            const staminaOffset = 10;
+            const intelligenceOffset = 20;
             let speed = 0;
             const remainingDistance = race.length * (1 - racingCamel.completionPercentage);
             const completedDistance = race.length * racingCamel.completionPercentage;
             const sprintDuration = this.GetVariantNumber(6, 2);
-            const sprintingSpeed = starterSpeed + racingCamel.camel.sprintSpeed.level * speedMultiplier;
+            const sprintingSpeed = speedOffset + racingCamel.camel.sprintSpeed.level * speedMultiplier;
             const baseSpeed = 0.5 * sprintingSpeed;
             const deadSpeed = 0.25;
-            const accelerationRate = agilityMultiplier * racingCamel.agility / 100;
-            const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + 10) * staminaMultiplier);
-            const baseInconsistancyRate = 150; // TODO new skill just dropped?
-            let inconsistancyRate = baseInconsistancyRate;
+            const accelerationRate = agilityOffset + agilityMultiplier * racingCamel.agility / 100;
+            const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + staminaOffset) * staminaMultiplier);
+            const baseInconsistancyRate = intelligenceMultiplier + intelligenceOffset; // TODO new skill just dropped?
+            let inconsistancyRate = baseInconsistancyRate * racingCamel.completionPercentage / 10;
             let form = 0;
             if (racingCamel.camel.temperament === CamelTemperament.Aggressive) {
                 // Initial sprint
@@ -1833,10 +1791,9 @@ class RaceSimulationV2 {
                 }
             }
             // Now we spice things up
-            if (racingCamel.completionPercentage > 50)
-                inconsistancyRate *= 2;
-            racingCamel.form += this.GetVariantNumber(speed === deadSpeed ? inconsistancyRate / 40 : 0, inconsistancyRate / 10);
-            racingCamel.form *= 0.90;
+            const bias = speed === deadSpeed ? inconsistancyRate / 40 : 0;
+            racingCamel.form += this.GetVariantNumber(bias, inconsistancyRate / 10);
+            racingCamel.form *= 0.95;
             speed += form;
             speed = Math.max(speed, deadSpeed); // still walking
             speed *= finalSpeedMultiplier;
@@ -1902,7 +1859,7 @@ class RacingStartup {
         this._navigatorService = _navigatorService;
     }
     registerComponents() {
-        const raceSimulation = new RaceSimulationV2();
+        const raceSimulation = new RaceSimulation();
         const raceManagement = new RaceManagement(this._musicService, raceSimulation);
         this.registerRaceCamelSelectComponent(raceManagement);
         this.registerRaceSelection(raceManagement);

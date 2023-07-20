@@ -1,7 +1,7 @@
 class RaceManagement {
     constructor(
         private readonly _musicService: MusicService,
-        private readonly _raceSimulation: RaceSimulationV2) { }
+        private readonly _raceSimulation: RaceSimulation) { }
 
     addCamelToRace(camel: Camel, race: Race) {
         const racingCamel = new RacingCamel(camel);
