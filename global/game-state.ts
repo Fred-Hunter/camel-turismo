@@ -9,7 +9,7 @@ interface GameStateObject {
 
 class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 0;
+    private static _version: number = 1;
 
     // Camel
     public static camel: Camel | undefined;

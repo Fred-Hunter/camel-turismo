@@ -333,7 +333,7 @@ class CubeService {
 }
 class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 0;
+    static _version = 1;
     // Camel
     static camel;
     static camels = [];
@@ -989,7 +989,6 @@ class CamelSkillCreator {
     generateSkillWithQuality(skillType, quality) {
         const level = Math.ceil(Math.random() * 10 * (quality + 1));
         const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
-        // TODO randomise
         const potentialRange = levelCurve.maxSkillLevel - level;
         const potential = level + Math.floor(Math.random() * potentialRange);
         const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
@@ -1058,7 +1057,6 @@ class Camel {
         return Math.floor(skillLevelSum / potentialSkillLevels.length);
     }
     get potentialDescription() {
-        debugger;
         const potentialLevel = this.potentialLevel;
         if (potentialLevel <= 10)
             return 'Dismal underachiever';

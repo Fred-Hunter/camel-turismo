@@ -56,7 +56,6 @@ class Camel {
     }
 
     public get potentialDescription(): string {
-        debugger;
         const potentialLevel = this.potentialLevel;
 
         if(potentialLevel <= 10) return 'Dismal underachiever';

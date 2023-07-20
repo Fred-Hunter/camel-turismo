@@ -8,7 +8,6 @@ class CamelSkillCreator {
         const level: number = Math.ceil(Math.random() * 10 * (quality + 1));
         const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
         
-        // TODO randomise
         const potentialRange = levelCurve.maxSkillLevel - level;
         const potential = level + Math.floor(Math.random() * potentialRange);
         const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
