@@ -92,6 +92,8 @@ class MapOverview {
             }
         }, false);
 
+        CalendarOverviewDrawing.drawCalendarOverview(canvas);
+
         CashMoneyService.drawCashMoney(ctx);
     }
 }

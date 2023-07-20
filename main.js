@@ -71,6 +71,131 @@ class MusicService {
         this.currentAudio = audioName;
     }
 }
+class CalendarDetailsDrawing {
+    static drawCalendarDetails() {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.CalendarDetails);
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const numberOfColumns = 6;
+        const numberOfRows = 5;
+        const calendarXStart = GlobalStaticConstants.innerWidth / 10;
+        const calendarYStart = GlobalStaticConstants.innerHeight / 5;
+        const calendarWidth = 4 * GlobalStaticConstants.innerWidth / 5;
+        const calendarHeight = 7 * GlobalStaticConstants.innerHeight / 10;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(calendarXStart - 2, calendarYStart - 2, calendarWidth + 4, calendarHeight + 4);
+        const calendar = CalendarService.getCalendar();
+        const standardTileFillColour = this.getStandardTileColour(calendar.Season);
+        ctx.fillStyle = standardTileFillColour;
+        ctx.font = '40pt Garamond';
+        ctx.textAlign = 'center';
+        ctx.fillText(CalendarService.getSeasonAsString(calendar.Season), GlobalStaticConstants.innerWidth / 2, calendarYStart / 2, GlobalStaticConstants.innerWidth);
+        ctx.font = '12pt Garamond';
+        const currentDay = calendar.Day;
+        for (let column = 0; column < numberOfColumns; column++) {
+            for (let row = 0; row < numberOfRows; row++) {
+                const x = calendarXStart + (column * calendarWidth / (numberOfColumns)) + 2;
+                const y = calendarYStart + (row * calendarHeight / (numberOfRows)) + 2;
+                const width = (calendarWidth / numberOfColumns) - 4;
+                const height = (calendarHeight / numberOfRows) - 4;
+                const day = column + 1 + row * numberOfColumns;
+                if (day === currentDay) {
+                    ctx.fillStyle = this.getCurrentDayTileColour(calendar.Season);
+                }
+                ctx.fillRect(x, y, width, height);
+                ctx.fillStyle = '#fff';
+                ctx.fillText(day.toString(), x + width / 10, y + height / 5);
+                ctx.fillStyle = standardTileFillColour;
+            }
+        }
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        btnService.drawBackButton(Page.mapOverview);
+    }
+    static getStandardTileColour(season) {
+        return CalendarService.getSeasonDarkerColour(season);
+    }
+    static getCurrentDayTileColour(season) {
+        return CalendarService.getSeasonLighterColour(season);
+    }
+}
+class CalendarOverviewDrawing {
+    static drawCalendarOverview(canvas) {
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const calendar = CalendarService.getCalendar();
+        btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 10, GlobalStaticConstants.innerHeight / 10, 5 * GlobalStaticConstants.innerWidth / 20, 2 * GlobalStaticConstants.innerHeight / 10, 10, 10, CalendarService.getSeasonDarkerColour(calendar.Season), CalendarService.getSeasonLighterColour(calendar.Season), '#fff', () => globalServices.navigatorService.requestPageNavigation(Page.calendarDetails), ['Day ' + calendar.Day.toString(), CalendarService.getSeasonAsString(calendar.Season)]);
+    }
+}
+class CalendarService {
+    static getCalendar() {
+        if (!GameState.calendar) {
+            GameState.calendar = new Calendar();
+        }
+        return GameState.calendar;
+    }
+    static getSeasonAsString(season) {
+        switch (season) {
+            case Season.Spring:
+                return 'Spring';
+            case Season.Summer:
+                return 'Summer';
+            case Season.Autumn:
+                return 'Autumn';
+            case Season.Winter:
+                return 'Winter';
+            default:
+                return '';
+        }
+    }
+    static getSeasonDarkerColour(season) {
+        switch (season) {
+            case Season.Spring:
+                return '#61ab4b';
+            case Season.Summer:
+                return '#e3c036';
+            case Season.Autumn:
+                return '#ed7e39';
+            default:
+                return '#246';
+        }
+    }
+    static getSeasonLighterColour(season) {
+        switch (season) {
+            case Season.Spring:
+                return '#91d97c';
+            case Season.Summer:
+                return '#fce37c';
+            case Season.Autumn:
+                return '#ffaa75';
+            default:
+                return '#4b7bab';
+        }
+    }
+}
+class Calendar {
+    constructor() {
+        this.Day = 1;
+        this.Season = Season.Spring;
+    }
+    _numberOfDaysInASeason = 30;
+    Day;
+    Season;
+    moveToNextDay() {
+        if (this.Day === this._numberOfDaysInASeason) {
+            this.Day = 1;
+            this.Season = (this.Season + 1) % 4;
+            return;
+        }
+        this.Day++;
+    }
+}
+var Season;
+(function (Season) {
+    Season[Season["Spring"] = 0] = "Spring";
+    Season[Season["Summer"] = 1] = "Summer";
+    Season[Season["Autumn"] = 2] = "Autumn";
+    Season[Season["Winter"] = 3] = "Winter";
+})(Season || (Season = {}));
 class CanvasBtnService {
     canvas;
     _navigator;
@@ -93,28 +218,36 @@ class CanvasBtnService {
     drawBackButton(targetPage) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), 'Back');
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
     }
-    drawBtn = (context, rect, radius, backgroundColour, borderColour, fontColour, text) => {
+    drawBtn = (context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text) => {
         context.save();
         context.beginPath();
         context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 5;
+        context.lineWidth = borderWidth;
         context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Garamond';
         context.fillStyle = fontColour;
         context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        if (text.length < 2) {
+            context.fillText(text[0], rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        }
+        else {
+            let lineHeight = 0.25;
+            text.forEach(line => {
+                context.fillText(line, rect.x + rect.width / 2, rect.y + ++lineHeight * 1.25 * rect.height / 4, rect.width - 10);
+            });
+        }
         context.restore();
     };
-    displayHoverState = (context, rect, radius, borderColour, fontColour, text) => {
-        this.drawBtn(context, rect, radius, borderColour, borderColour, fontColour, text);
+    displayHoverState = (context, rect, radius, borderWidth, borderColour, fontColour, text) => {
+        this.drawBtn(context, rect, radius, borderWidth, borderColour, borderColour, fontColour, text);
     };
-    createBtn(xStart, yStart, width, height, radius, backgroundColour, borderColour, fontColour, onclickFunction, text) {
+    createBtn(xStart, yStart, width, height, radius, borderWidth, backgroundColour, borderColour, fontColour, onclickFunction, text) {
         var rect = {
             x: xStart,
             y: yStart,
@@ -134,15 +267,15 @@ class CanvasBtnService {
         const mouseMoveEventHandler = (event) => {
             let mousePos = this.getMousePosition(event);
             if (this.isInside(mousePos, rect)) {
-                this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
+                this.displayHoverState(context, rect, radius, borderWidth, borderColour, fontColour, text);
             }
             else {
-                this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+                this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
             }
         };
         this.mouseMoveEventListeners.push(mouseMoveEventHandler);
         this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
-        this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+        this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
     }
     removeEventListeners() {
         this.clickEventListeners.forEach(o => {
@@ -189,6 +322,7 @@ class CanvasNames {
     static Countdown = 'countdown';
     static CamelManagement = 'camel-management';
     static LoadingScreen = 'loading-screen';
+    static CalendarDetails = 'calendar-details';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -339,6 +473,8 @@ class GameState {
     static camels = [];
     static secondsPassed = 0; // done
     static oldTimeStamp = 0; // done
+    // Calendar
+    static calendar;
     // Recruitment
     static lastUsedId = 0; // done
     static cashMoney = 100; // done
@@ -349,7 +485,8 @@ class GameState {
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
-            cashMoney: GameState.cashMoney
+            cashMoney: GameState.cashMoney,
+            calendar: GameState.calendar
         };
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -381,6 +518,7 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+        GameState.calendar = gameState.calendar;
     }
     static loadCamel(camelCreator, serialisedCamel) {
         const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
@@ -577,6 +715,7 @@ class Startup {
         CanvasService.createCanvas('6', CanvasNames.Countdown);
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
+        CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
     }
     createGlobalServices() {
         const navigatorService = new NavigatorService();
@@ -612,9 +751,10 @@ class GymDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.drawFloor();
         this.drawTreadmill();
+        const borderWidth = 5;
         const buttonService = new CanvasBtnService(this._camelCanvas, this._navigatorService);
-        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(GameState.camel), "Start session");
-        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, borderWidth, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(GameState.camel), ["Start session"]);
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, borderWidth, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, ["Back to map"]);
     }
     exitGym(trainSession) {
         if (trainSession) {
@@ -878,15 +1018,16 @@ class LoadingScreen {
         img.src = './graphics/camel-oasis.jpg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const radius = 50;
+        const borderWidth = 5;
         const backgroundColour = '#cc807a';
         const borderColour = '#f2ada7';
         const textColour = '#fff';
         if (GameState.GetExists()) {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
-            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.loadSavedGame, 'Load saved game');
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
+            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.loadSavedGame, ['Load saved game']);
         }
         else {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
         }
     }
 }
@@ -1200,7 +1341,7 @@ class CamelSkillDrawing {
         this._ctx.fillText(`${skill.name}: ${level}`, x, y);
         if (xpToNextLevel > 0) {
             this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
-            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), `+`);
+            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, 5, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), [`+`]);
         }
     }
     drawSkillStar(skills, x, y) {
@@ -1432,6 +1573,7 @@ class MapOverview {
                 globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
             }
         }, false);
+        CalendarOverviewDrawing.drawCalendarOverview(canvas);
         CashMoneyService.drawCashMoney(ctx);
     }
 }
@@ -1477,6 +1619,9 @@ class NavigatorService {
                 case Page.managementSelect:
                     camelManagementSelectComponent.load();
                     break;
+                case Page.calendarDetails:
+                    this.navigateToCalendarDetails();
+                    break;
             }
             this._postNavigationFunc();
             this._pageLoaded = true;
@@ -1493,6 +1638,10 @@ class NavigatorService {
         CanvasService.showCanvas(CanvasNames.LoadingScreen);
         loadingScreen.drawLoadingScreen();
     }
+    navigateToCalendarDetails() {
+        CanvasService.showCanvas(CanvasNames.CalendarDetails);
+        CalendarDetailsDrawing.drawCalendarDetails();
+    }
     navigateToOverview() {
         MapOverview.showMap();
         MapOverview.renderMap();
@@ -1507,6 +1656,7 @@ var Page;
     Page[Page["race"] = 4] = "race";
     Page[Page["raceCamelSelect"] = 5] = "raceCamelSelect";
     Page[Page["raceSelection"] = 6] = "raceSelection";
+    Page[Page["calendarDetails"] = 7] = "calendarDetails";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
@@ -1858,6 +2008,9 @@ class RaceManagement {
     simulateRaceStep(race) {
         this._raceSimulation.simulateRaceStep(race);
     }
+    updateCalendar() {
+        GameState.calendar.moveToNextDay();
+    }
     handleFinishedRace(race) {
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
         position = position ??
@@ -1870,6 +2023,7 @@ class RaceManagement {
         race.raceState = RaceState.none;
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
+        this.updateCalendar();
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
@@ -1911,15 +2065,16 @@ class RaceSelection {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const radius = 25;
+        const borderWidth = 5;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
         this._btnService.drawBackButton(Page.mapOverview);
-        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
-        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
-        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
+        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', enterStreetRace, ['Street race | Entry $0 | Prize $100']);
+        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, borderWidth, '#debb49', '#f5d671', '#fff', enterLocalDerby, ['Local derby | Entry $200 | Prize $500']);
+        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, borderWidth, '#569929', '#7ac24a', '#fff', enterWorldCup, ['World cup | Entry $300 | Prize $10000']);
         CashMoneyService.drawCashMoney(this._ctx);
     }
     selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
@@ -2204,17 +2359,18 @@ class RecruitmentService {
         const camelSize = Math.round(GlobalStaticConstants.baseCubeSize * 4 / 5);
         const btnWidth = 550;
         const btnHeight = 50;
+        const borderWidth = 5;
         let btnX = 240;
         let btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, ['Recruit lowly camel - $100']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#cc807a');
         btnX = 840;
         btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, ['Recruit mediocre camel - $200']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#debb49');
         btnX = 540;
         btnY = 650;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, ['Recruit high camel - $300']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
     }

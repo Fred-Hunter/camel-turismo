@@ -4,7 +4,8 @@ interface GameStateObject {
     secondsPassed: number,
     oldTimeStamp: number,
     lastUsedId: number,
-    cashMoney: number
+    cashMoney: number,
+    calendar: Calendar
 }
 
 class GameState {
@@ -17,6 +18,9 @@ class GameState {
     public static secondsPassed: number = 0; // done
     public static oldTimeStamp: number = 0; // done
 
+    // Calendar
+    public static calendar: Calendar;
+
     // Recruitment
     public static lastUsedId: number = 0; // done
     public static cashMoney: number = 100; // done
@@ -28,7 +32,8 @@ class GameState {
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
-            cashMoney: GameState.cashMoney
+            cashMoney: GameState.cashMoney,
+            calendar: GameState.calendar
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -67,6 +72,7 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+        GameState.calendar = gameState.calendar;
     }
 
     private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {

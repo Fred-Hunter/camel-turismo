@@ -30,6 +30,7 @@ class Startup {
         CanvasService.createCanvas('6', CanvasNames.Countdown);
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
+        CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
     }
 
     public createGlobalServices(): GlobalServices {

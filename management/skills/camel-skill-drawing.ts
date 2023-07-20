@@ -66,11 +66,12 @@ class CamelSkillDrawing {
                 30,
                 30,
                 0,
+                5,
                 '#cc807a',
                 '#f2ada7',
                 '#fff',
                 () => levelUpSkillFunc(skill),
-                `+`);
+                [`+`]);
         }
     }
 

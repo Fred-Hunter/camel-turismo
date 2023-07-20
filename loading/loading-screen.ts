@@ -29,6 +29,7 @@ class LoadingScreen {
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         const radius = 50;
+        const borderWidth = 5;
 
         const backgroundColour = '#cc807a';
         const borderColour = '#f2ada7';
@@ -41,11 +42,12 @@ class LoadingScreen {
                 GlobalStaticConstants.innerWidth/4,
                 GlobalStaticConstants.innerHeight/10,
                 radius,
+                borderWidth,
                 backgroundColour,
                 borderColour,
                 textColour,
                 this.startFreshGame,
-                'New game');
+                ['New game']);
             
             this._btnService.createBtn(
                 7*GlobalStaticConstants.innerWidth/12,
@@ -53,11 +55,12 @@ class LoadingScreen {
                 GlobalStaticConstants.innerWidth/4,
                 GlobalStaticConstants.innerHeight/10,
                 radius,
+                borderWidth,
                 backgroundColour,
                 borderColour,
                 textColour,
                 this.loadSavedGame,
-                'Load saved game');
+                ['Load saved game']);
         } else {
             this._btnService.createBtn(
                 GlobalStaticConstants.innerWidth/3,
@@ -65,11 +68,12 @@ class LoadingScreen {
                 GlobalStaticConstants.innerWidth/3,
                 GlobalStaticConstants.innerHeight/10,
                 radius,
+                borderWidth,
                 backgroundColour,
                 borderColour,
                 textColour,
                 this.startFreshGame,
-                'New game');
+                ['New game']);
         }
     }
 }

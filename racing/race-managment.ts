@@ -77,6 +77,10 @@ class RaceManagement {
         this._raceSimulation.simulateRaceStep(race);
     }
 
+    updateCalendar() {
+        GameState.calendar.moveToNextDay();
+    }
+
     handleFinishedRace(race: Race) {
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
 
@@ -95,6 +99,8 @@ class RaceManagement {
 
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
+
+        this.updateCalendar();
 
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
