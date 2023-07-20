@@ -3,7 +3,8 @@ class CanvasBtnService {
         public canvas: HTMLCanvasElement,
         private readonly _navigator: NavigatorService) { }
 
-    eventListeners: Array<(event: MouseEvent) => void> = [];
+    clickEventListeners: Array<(event: MouseEvent) => void> = [];
+    mouseMoveEventListeners: Array<(event: MouseEvent) => void> = [];
 
     getMousePosition(event: any) {
         var rect = this.canvas.getBoundingClientRect();
@@ -22,25 +23,27 @@ class CanvasBtnService {
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
         this.createBtn(
-            maxX / 40, 
+            maxX / 40,
             maxY - 100,
             100,
             50,
             0,
+            5,
             '#cc807a',
-            '#f2ada7', 
+            '#f2ada7',
             '#fff',
             () => this._navigator.requestPageNavigation(targetPage),
-            'Back');
+            ['Back']);
     }
 
     drawBtn = (context: CanvasRenderingContext2D,
         rect: any,
         radius: number,
+        borderWidth: number,
         backgroundColour: string,
         borderColour: string,
         fontColour: string,
-        text: string) => {
+        text: string[]) => {
 
         context.save();
 
@@ -48,14 +51,21 @@ class CanvasBtnService {
         context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 5;
+        context.lineWidth = borderWidth;
         context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Garamond';
         context.fillStyle = fontColour;
         context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        if (text.length < 2) {
+            context.fillText(text[0], rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        } else {
+            let lineHeight = 0.25;
+            text.forEach(line => {
+                context.fillText(line, rect.x + rect.width / 2, rect.y + ++lineHeight * 1.25 * rect.height / 4, rect.width - 10);
+            });
+        }
 
         context.restore();
     }
@@ -63,10 +73,11 @@ class CanvasBtnService {
     displayHoverState = (context: CanvasRenderingContext2D,
         rect: any,
         radius: number,
+        borderWidth: number,
         borderColour: string,
         fontColour: string,
-        text: string) => {
-        this.drawBtn(context, rect, radius, borderColour, borderColour, fontColour, text);
+        text: string[]) => {
+        this.drawBtn(context, rect, radius, borderWidth, borderColour, borderColour, fontColour, text);
     }
 
     createBtn(
@@ -75,11 +86,12 @@ class CanvasBtnService {
         width: number,
         height: number,
         radius: number,
+        borderWidth: number,
         backgroundColour: string,
         borderColour: string,
         fontColour: string,
         onclickFunction: any,
-        text: string) {
+        text: string[]) {
         var rect = {
             x: xStart,
             y: yStart,
@@ -90,36 +102,44 @@ class CanvasBtnService {
         // Binding the click event on the canvas
         var context = this.canvas.getContext('2d')!;
 
-        const handler = (event: MouseEvent) => {
+        const clickHandler = (event: MouseEvent) => {
             let mousePos = this.getMousePosition(event);
 
             if (this.isInside(mousePos, rect)) {
                 onclickFunction();
             }
-        }
+        };
 
-        this.eventListeners.push(handler);
+        this.clickEventListeners.push(clickHandler);
+        this.canvas.addEventListener('click', clickHandler, false);
 
-        this.canvas.addEventListener('click', handler, false);
-
-        this.canvas.addEventListener('mousemove', (event) => {
+        const mouseMoveEventHandler = (event: MouseEvent) => {
             let mousePos = this.getMousePosition(event);
 
             if (this.isInside(mousePos, rect)) {
-                this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
+                this.displayHoverState(context, rect, radius, borderWidth, borderColour, fontColour, text);
             } else {
-                this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+                this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
             }
-        }, false);
+        };
 
-        this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+        this.mouseMoveEventListeners.push(mouseMoveEventHandler);
+        this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
+
+        this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
     }
 
     removeEventListeners() {
-        this.eventListeners.forEach(o => {
+        this.clickEventListeners.forEach(o => {
             this.canvas.removeEventListener('click', o, false)
-            });
-            
-        this.eventListeners = [];
+        });
+
+        this.clickEventListeners = [];
+
+        this.mouseMoveEventListeners.forEach(o => {
+            this.canvas.removeEventListener('mousemove', o, false)
+        });
+
+        this.mouseMoveEventListeners = [];
     }
 }

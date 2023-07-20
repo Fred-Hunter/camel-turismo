@@ -25,6 +25,7 @@ class RaceSelection {
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         const radius = 25;
+        const borderWidth = 5;
 
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
@@ -35,11 +36,11 @@ class RaceSelection {
 
         this._btnService.drawBackButton(Page.mapOverview);
 
-        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
+        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', enterStreetRace, ['Street race | Entry $0 | Prize $100']);
 
-        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
+        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, borderWidth, '#debb49', '#f5d671', '#fff', enterLocalDerby, ['Local derby | Entry $200 | Prize $500']);
 
-        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
+        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, borderWidth, '#569929', '#7ac24a', '#fff', enterWorldCup, ['World cup | Entry $300 | Prize $10000']);
 
         CashMoneyService.drawCashMoney(this._ctx);
     }

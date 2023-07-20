@@ -5,5 +5,6 @@ enum Page {
     managementSelect,
     race,
     raceCamelSelect,
-    raceSelection
+    raceSelection,
+    calendarDetails
 }

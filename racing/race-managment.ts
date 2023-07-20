@@ -1,7 +1,9 @@
 class RaceManagement {
     constructor(
         private readonly _musicService: MusicService,
-        private readonly _raceSimulation: RaceSimulation) { }
+        private readonly _raceSimulation: RaceSimulation,
+        private readonly _camelCreator: CamelCreator,
+    ) { }
 
     addCamelToRace(camel: Camel, race: Race) {
         const racingCamel = new RacingCamel(camel);
@@ -13,8 +15,8 @@ class RaceManagement {
         competitorQuality: InitCamelQuality,
         race: Race) {
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
-            
+            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
+
             this.addCamelToRace(competitorCamel, race);
         }
     }
@@ -75,6 +77,10 @@ class RaceManagement {
         this._raceSimulation.simulateRaceStep(race);
     }
 
+    updateCalendar() {
+        GameState.calendar.moveToNextDay();
+    }
+
     handleFinishedRace(race: Race) {
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
 
@@ -93,6 +99,8 @@ class RaceManagement {
 
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
+
+        this.updateCalendar();
 
         CanvasService.hideAllCanvas();
         MapOverview.showMap();

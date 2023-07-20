@@ -29,8 +29,12 @@ class CamelSkillDrawing {
         const nameText = `${camel.name}`;
         const nameTextLength = this._ctx.measureText(nameText).width;
 
+        const xpText = `XP: ${camel.unspentXp}`;
+        const xpTextLength = this._ctx.measureText(xpText).width;
+
         this._ctx.fillText(nameText, x, y);
-        this._ctx.fillText(`XP: ${camel.unspentXp}`, x + nameTextLength + 20, y);
+        this._ctx.fillText(xpText, x + nameTextLength + 20, y);
+        this._ctx.fillText(camel.potentialDescription, x + nameTextLength + xpTextLength + 40, y);
     }
 
     private drawSkills(camel: Camel, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {
@@ -47,34 +51,35 @@ class CamelSkillDrawing {
         this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);
     }
 
-    private drawSkill(skill: CamelSkill, x: number, y: number, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {        
+    private drawSkill(skill: CamelSkill, x: number, y: number, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {
         const level = skill.level;
         const xpToNextLevel = skill.getXpToNextLevel();
 
         this._ctx.fillText(`${skill.name}: ${level}`, x, y);
 
-        this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
+        if (xpToNextLevel > 0) {
+            this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
 
-        this._btnService.createBtn(
-            x + 270, 
-            y - 20, 
-            30, 
-            30, 
-            0,
-            '#cc807a',
-            '#f2ada7', 
-            '#fff',
-            () => levelUpSkillFunc(skill),
-            `+`);
+            this._btnService.createBtn(
+                x + 270,
+                y - 20,
+                30,
+                30,
+                0,
+                5,
+                '#cc807a',
+                '#f2ada7',
+                '#fff',
+                () => levelUpSkillFunc(skill),
+                [`+`]);
+        }
     }
 
-    private drawSkillStar(skills: CamelSkill[], x: number, y: number) {        
+    private drawSkillStar(skills: CamelSkill[], x: number, y: number) {
         const maxRadius = 99;
 
         // Center for small screens, otherwise offset from edge
         x = x > 2 * maxRadius ? 2 * maxRadius : x;
-        const numberOfSkills = skills.length;
-        let points: any[] = [];
 
         // Draw ring
         this._ctx.strokeStyle = GlobalStaticConstants.mediumColour;
@@ -86,14 +91,31 @@ class CamelSkillDrawing {
         this._ctx.strokeStyle = "black";
         this._ctx.fillStyle = "black";
 
-        skills.forEach( (s, i) => {
+        this.drawPotentialOnStar(skills, maxRadius, x, y);
+        this.drawSkillsOnStar(skills, maxRadius, x, y);
+
+        // Draw center
+        this._ctx.beginPath();
+        this._ctx.moveTo(x, y);
+        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        this._ctx.stroke();
+        this._ctx.fillStyle = "black";
+        this._ctx.fill();
+
+    }
+
+    private drawSkillsOnStar(skills: CamelSkill[], maxRadius: number, x: number, y: number) {
+        const numberOfSkills = skills.length;
+        let points: any[] = [];
+
+        skills.forEach((s, i) => {
 
             // Calculate point
-            const angle =  2 * Math.PI * i / numberOfSkills;
+            const angle = 2 * Math.PI * i / numberOfSkills;
             const radius = maxRadius * s.level / 100;
             const spotX = (r: number) => x + r * Math.cos(angle);
             const spotY = (r: number) => y + r * Math.sin(angle);
-            points?.push({x: spotX(radius), y: spotY(radius)});
+            points?.push({ x: spotX(radius), y: spotY(radius) });
 
             // Draw point
             this._ctx.beginPath();
@@ -104,27 +126,56 @@ class CamelSkillDrawing {
 
             // Draw label
             const labelLength = this._ctx.measureText(s.name).width + 10;
-            this._ctx.fillText(s.name, spotX(1) < x ? spotX(maxRadius) - 5 - labelLength : spotX(maxRadius) + 5 , spotY(maxRadius));
+            this._ctx.fillText(s.name, spotX(1) < x ? spotX(maxRadius) - 5 - labelLength : spotX(maxRadius) + 5, spotY(maxRadius));
 
         });
 
         // Draw and fill shape
         this._ctx.beginPath();
-        points.forEach( p => {
+        points.forEach(p => {
             this._ctx.lineTo(p.x, p.y);
         })
+
         this._ctx.lineTo(points[0].x, points[0].y);
         this._ctx.stroke();
         this._ctx.fillStyle = GlobalStaticConstants.mediumColour;
         this._ctx.fill();
-        
-        // Draw center
-        this._ctx.beginPath();
-        this._ctx.moveTo(x, y);
-        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
-        this._ctx.stroke();
-        this._ctx.fillStyle = "black";
-        this._ctx.fill();
+    }
 
+    private drawPotentialOnStar(skills: CamelSkill[], maxRadius: number, x: number, y: number) {
+        const numberOfSkills = skills.length;
+        let points: any[] = [];
+
+        this._ctx.save();
+        this._ctx.fillStyle = GlobalStaticConstants.lightColour;
+        this._ctx.strokeStyle = GlobalStaticConstants.lightColour;
+
+        skills.forEach((s, i) => {
+            // Calculate point
+            const angle = 2 * Math.PI * i / numberOfSkills;
+            const radius = maxRadius * s.potential / 100;
+            const spotX = (r: number) => x + r * Math.cos(angle);
+            const spotY = (r: number) => y + r * Math.sin(angle);
+            points?.push({ x: spotX(radius), y: spotY(radius) });
+
+            // Draw point
+            this._ctx.beginPath();
+            this._ctx.moveTo(spotX(radius), spotY(radius));
+            this._ctx.arc(spotX(radius), spotY(radius), 2, 0, 2 * Math.PI);
+            this._ctx.stroke();
+            this._ctx.fill();
+        });
+
+        // Draw and fill shape
+        this._ctx.beginPath();
+        points.forEach(p => {
+            this._ctx.lineTo(p.x, p.y);
+        })
+
+        this._ctx.lineTo(points[0].x, points[0].y);
+        this._ctx.stroke();
+
+        this._ctx.fill();
+        this._ctx.restore();
     }
 }

@@ -4,18 +4,22 @@ interface GameStateObject {
     secondsPassed: number,
     oldTimeStamp: number,
     lastUsedId: number,
-    cashMoney: number
+    cashMoney: number,
+    calendar: Calendar
 }
 
 class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 0;
+    private static _version: number = 2;
 
     // Camel
     public static camel: Camel | undefined;
     public static camels: Camel[] = [];
     public static secondsPassed: number = 0; // done
     public static oldTimeStamp: number = 0; // done
+
+    // Calendar
+    public static calendar: Calendar;
 
     // Recruitment
     public static lastUsedId: number = 0; // done
@@ -28,7 +32,8 @@ class GameState {
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
-            cashMoney: GameState.cashMoney
+            cashMoney: GameState.cashMoney,
+            calendar: GameState.calendar
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -56,7 +61,7 @@ class GameState {
         if (gameState.camel === undefined) return;
 
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(camel));
+        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
 
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];
@@ -67,19 +72,12 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+
+        GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
     }
 
-    private static loadCamel(serialisedCamel: Camel) {
-        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
-
-        camel.colour = serialisedCamel.colour;
-        camel.name = serialisedCamel.name;
-        camel.temperament = serialisedCamel.temperament;
-        camel.unspentXp = serialisedCamel.unspentXp;
-
-        camel.agility.addXp(serialisedCamel.agility.currentXp);
-        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
-        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+    private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {
+        const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
 
         GameState.camels.push(camel);
     }

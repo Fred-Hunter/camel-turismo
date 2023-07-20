@@ -69,7 +69,7 @@ class PopupService {
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
 
                 if (navigateBackToMap) {
-                    navigatorService.requestPageNavigation(Page.mapOverview);
+                    globalServices.navigatorService.requestPageNavigation(Page.mapOverview);
                 }
             }
         });

@@ -45,6 +45,9 @@ class NavigatorService {
                 case Page.managementSelect:
                     camelManagementSelectComponent.load();
                     break;
+                case Page.calendarDetails:
+                    this.navigateToCalendarDetails();
+                    break;
             }
 
             this._postNavigationFunc();
@@ -64,6 +67,11 @@ class NavigatorService {
     private navigateToLoading() {
         CanvasService.showCanvas(CanvasNames.LoadingScreen);
         loadingScreen.drawLoadingScreen();
+    }
+
+    private navigateToCalendarDetails() {
+        CanvasService.showCanvas(CanvasNames.CalendarDetails);
+        CalendarDetailsDrawing.drawCalendarDetails();
     }
 
     private navigateToOverview() {

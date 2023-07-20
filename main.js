@@ -1,8 +1,8 @@
 "use strict";
 // Game state
 let race;
-// Navigation TODO should not be available globally
-let navigatorService;
+// Global service
+let globalServices;
 // Components
 // Recruitment
 let recruitmentService;
@@ -16,20 +16,19 @@ let raceCamelSelectComponent;
 // Loading
 let loadingScreen;
 function init() {
-    navigatorService = new NavigatorService();
-    const musicService = new MusicService();
-    const startup = new Startup(musicService, navigatorService);
+    const startup = new Startup();
+    globalServices = startup.createGlobalServices();
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
-    navigatorService.doNavigation();
+    globalServices.navigatorService.doNavigation();
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
-        navigatorService.doNavigation();
+        globalServices.navigatorService.doNavigation();
         raceComponent.handleRaceLoop(timeStamp);
     }
     catch (exception) {
@@ -72,6 +71,131 @@ class MusicService {
         this.currentAudio = audioName;
     }
 }
+class CalendarDetailsDrawing {
+    static drawCalendarDetails() {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.CalendarDetails);
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = GlobalStaticConstants.backgroundColour;
+        ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const numberOfColumns = 6;
+        const numberOfRows = 5;
+        const calendarXStart = GlobalStaticConstants.innerWidth / 10;
+        const calendarYStart = GlobalStaticConstants.innerHeight / 5;
+        const calendarWidth = 4 * GlobalStaticConstants.innerWidth / 5;
+        const calendarHeight = 7 * GlobalStaticConstants.innerHeight / 10;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(calendarXStart - 2, calendarYStart - 2, calendarWidth + 4, calendarHeight + 4);
+        const calendar = CalendarService.getCalendar();
+        const standardTileFillColour = this.getStandardTileColour(calendar.Season);
+        ctx.fillStyle = standardTileFillColour;
+        ctx.font = '40pt Garamond';
+        ctx.textAlign = 'center';
+        ctx.fillText(CalendarService.getSeasonAsString(calendar.Season), GlobalStaticConstants.innerWidth / 2, calendarYStart / 2, GlobalStaticConstants.innerWidth);
+        ctx.font = '12pt Garamond';
+        const currentDay = calendar.Day;
+        for (let column = 0; column < numberOfColumns; column++) {
+            for (let row = 0; row < numberOfRows; row++) {
+                const x = calendarXStart + (column * calendarWidth / (numberOfColumns)) + 2;
+                const y = calendarYStart + (row * calendarHeight / (numberOfRows)) + 2;
+                const width = (calendarWidth / numberOfColumns) - 4;
+                const height = (calendarHeight / numberOfRows) - 4;
+                const day = column + 1 + row * numberOfColumns;
+                if (day === currentDay) {
+                    ctx.fillStyle = this.getCurrentDayTileColour(calendar.Season);
+                }
+                ctx.fillRect(x, y, width, height);
+                ctx.fillStyle = '#fff';
+                ctx.fillText(day.toString(), x + width / 10, y + height / 5);
+                ctx.fillStyle = standardTileFillColour;
+            }
+        }
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        btnService.drawBackButton(Page.mapOverview);
+    }
+    static getStandardTileColour(season) {
+        return CalendarService.getSeasonDarkerColour(season);
+    }
+    static getCurrentDayTileColour(season) {
+        return CalendarService.getSeasonLighterColour(season);
+    }
+}
+class CalendarOverviewDrawing {
+    static drawCalendarOverview(canvas) {
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const calendar = CalendarService.getCalendar();
+        btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 10, GlobalStaticConstants.innerHeight / 10, 5 * GlobalStaticConstants.innerWidth / 20, 2 * GlobalStaticConstants.innerHeight / 10, 10, 10, CalendarService.getSeasonDarkerColour(calendar.Season), CalendarService.getSeasonLighterColour(calendar.Season), '#fff', () => globalServices.navigatorService.requestPageNavigation(Page.calendarDetails), ['Day ' + calendar.Day.toString(), CalendarService.getSeasonAsString(calendar.Season)]);
+    }
+}
+class CalendarService {
+    static getCalendar() {
+        if (!GameState.calendar) {
+            GameState.calendar = new Calendar();
+        }
+        return GameState.calendar;
+    }
+    static getSeasonAsString(season) {
+        switch (season) {
+            case Season.Spring:
+                return 'Spring';
+            case Season.Summer:
+                return 'Summer';
+            case Season.Autumn:
+                return 'Autumn';
+            case Season.Winter:
+                return 'Winter';
+            default:
+                return '';
+        }
+    }
+    static getSeasonDarkerColour(season) {
+        switch (season) {
+            case Season.Spring:
+                return '#61ab4b';
+            case Season.Summer:
+                return '#e3c036';
+            case Season.Autumn:
+                return '#ed7e39';
+            default:
+                return '#246';
+        }
+    }
+    static getSeasonLighterColour(season) {
+        switch (season) {
+            case Season.Spring:
+                return '#91d97c';
+            case Season.Summer:
+                return '#fce37c';
+            case Season.Autumn:
+                return '#ffaa75';
+            default:
+                return '#4b7bab';
+        }
+    }
+}
+class Calendar {
+    constructor(startDay = 1, season = Season.Spring) {
+        this.Day = startDay;
+        this.Season = season;
+    }
+    _numberOfDaysInASeason = 30;
+    Day;
+    Season;
+    moveToNextDay() {
+        if (this.Day === this._numberOfDaysInASeason) {
+            this.Day = 1;
+            this.Season = (this.Season + 1) % 4;
+            return;
+        }
+        this.Day++;
+    }
+}
+var Season;
+(function (Season) {
+    Season[Season["Spring"] = 0] = "Spring";
+    Season[Season["Summer"] = 1] = "Summer";
+    Season[Season["Autumn"] = 2] = "Autumn";
+    Season[Season["Winter"] = 3] = "Winter";
+})(Season || (Season = {}));
 class CanvasBtnService {
     canvas;
     _navigator;
@@ -79,7 +203,8 @@ class CanvasBtnService {
         this.canvas = canvas;
         this._navigator = _navigator;
     }
-    eventListeners = [];
+    clickEventListeners = [];
+    mouseMoveEventListeners = [];
     getMousePosition(event) {
         var rect = this.canvas.getBoundingClientRect();
         return {
@@ -93,28 +218,36 @@ class CanvasBtnService {
     drawBackButton(targetPage) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), 'Back');
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
     }
-    drawBtn = (context, rect, radius, backgroundColour, borderColour, fontColour, text) => {
+    drawBtn = (context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text) => {
         context.save();
         context.beginPath();
         context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
         context.fillStyle = backgroundColour;
         context.fill();
-        context.lineWidth = 5;
+        context.lineWidth = borderWidth;
         context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
         context.font = '30pt Garamond';
         context.fillStyle = fontColour;
         context.textAlign = "center";
-        context.fillText(text, rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        if (text.length < 2) {
+            context.fillText(text[0], rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
+        }
+        else {
+            let lineHeight = 0.25;
+            text.forEach(line => {
+                context.fillText(line, rect.x + rect.width / 2, rect.y + ++lineHeight * 1.25 * rect.height / 4, rect.width - 10);
+            });
+        }
         context.restore();
     };
-    displayHoverState = (context, rect, radius, borderColour, fontColour, text) => {
-        this.drawBtn(context, rect, radius, borderColour, borderColour, fontColour, text);
+    displayHoverState = (context, rect, radius, borderWidth, borderColour, fontColour, text) => {
+        this.drawBtn(context, rect, radius, borderWidth, borderColour, borderColour, fontColour, text);
     };
-    createBtn(xStart, yStart, width, height, radius, backgroundColour, borderColour, fontColour, onclickFunction, text) {
+    createBtn(xStart, yStart, width, height, radius, borderWidth, backgroundColour, borderColour, fontColour, onclickFunction, text) {
         var rect = {
             x: xStart,
             y: yStart,
@@ -123,30 +256,36 @@ class CanvasBtnService {
         };
         // Binding the click event on the canvas
         var context = this.canvas.getContext('2d');
-        const handler = (event) => {
+        const clickHandler = (event) => {
             let mousePos = this.getMousePosition(event);
             if (this.isInside(mousePos, rect)) {
                 onclickFunction();
             }
         };
-        this.eventListeners.push(handler);
-        this.canvas.addEventListener('click', handler, false);
-        this.canvas.addEventListener('mousemove', (event) => {
+        this.clickEventListeners.push(clickHandler);
+        this.canvas.addEventListener('click', clickHandler, false);
+        const mouseMoveEventHandler = (event) => {
             let mousePos = this.getMousePosition(event);
             if (this.isInside(mousePos, rect)) {
-                this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
+                this.displayHoverState(context, rect, radius, borderWidth, borderColour, fontColour, text);
             }
             else {
-                this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+                this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
             }
-        }, false);
-        this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
+        };
+        this.mouseMoveEventListeners.push(mouseMoveEventHandler);
+        this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
+        this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
     }
     removeEventListeners() {
-        this.eventListeners.forEach(o => {
+        this.clickEventListeners.forEach(o => {
             this.canvas.removeEventListener('click', o, false);
         });
-        this.eventListeners = [];
+        this.clickEventListeners = [];
+        this.mouseMoveEventListeners.forEach(o => {
+            this.canvas.removeEventListener('mousemove', o, false);
+        });
+        this.mouseMoveEventListeners = [];
     }
 }
 class CanvasCamelService {
@@ -157,14 +296,14 @@ class CanvasCamelService {
     }
     _cubeService;
     drawCamelIsoCoords(xCoord, yCoord, size, colour, height = 0) {
-        const scaleFactor = GlobalStaticConstants.baseCubeSize * 4 / 5;
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, Math.round(-10 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(-6 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-6 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(-2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, Math.round(-2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, Math.round(2 * size / scaleFactor));
-        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, Math.round(2 * size / scaleFactor));
+        const scaleFactor = GlobalStaticConstants.baseCubeSize / 5;
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1.5, 0, -3 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, -2 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, -2 * size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, -size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 2, 0, -size / scaleFactor);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 0, 0, 0);
+        this._cubeService.drawCube(xCoord, yCoord, size, colour, height + 1, 0, 0);
     }
     drawCamelScreenCoords(xCoord, yCoord, size, colour) {
         const isoCoords = ImportantService.ConvertRealToCoord(xCoord, yCoord, size);
@@ -183,6 +322,7 @@ class CanvasNames {
     static Countdown = 'countdown';
     static CamelManagement = 'camel-management';
     static LoadingScreen = 'loading-screen';
+    static CalendarDetails = 'calendar-details';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -327,12 +467,14 @@ class CubeService {
 }
 class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 0;
+    static _version = 2;
     // Camel
     static camel;
     static camels = [];
     static secondsPassed = 0; // done
     static oldTimeStamp = 0; // done
+    // Calendar
+    static calendar;
     // Recruitment
     static lastUsedId = 0; // done
     static cashMoney = 100; // done
@@ -343,7 +485,8 @@ class GameState {
             secondsPassed: GameState.secondsPassed,
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
-            cashMoney: GameState.cashMoney
+            cashMoney: GameState.cashMoney,
+            calendar: GameState.calendar
         };
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -366,7 +509,7 @@ class GameState {
         if (gameState.camel === undefined)
             return;
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(camel));
+        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];
         }
@@ -375,16 +518,10 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+        GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
     }
-    static loadCamel(serialisedCamel) {
-        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
-        camel.colour = serialisedCamel.colour;
-        camel.name = serialisedCamel.name;
-        camel.temperament = serialisedCamel.temperament;
-        camel.unspentXp = serialisedCamel.unspentXp;
-        camel.agility.addXp(serialisedCamel.agility.currentXp);
-        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
-        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+    static loadCamel(camelCreator, serialisedCamel) {
+        const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
         GameState.camels.push(camel);
     }
     static getItemKey() {
@@ -395,6 +532,7 @@ class GlobalStaticConstants {
     static backgroundColour = "#e8d7a7";
     static highlightColour = "#432818";
     static mediumColour = "#bb9457";
+    static lightColour = "#ccb693";
     static innerWidth = window.innerWidth;
     static innerHeight = window.innerHeight;
     static devicePixelRatio = window.devicePixelRatio;
@@ -478,7 +616,7 @@ class PopupService {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
                 if (navigateBackToMap) {
-                    navigatorService.requestPageNavigation(Page.mapOverview);
+                    globalServices.navigatorService.requestPageNavigation(Page.mapOverview);
                 }
             }
         });
@@ -551,23 +689,18 @@ class PopupService {
     }
 }
 class Startup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
-    }
+    constructor() { }
     registerComponents() {
-        const racingStartup = new RacingStartup(this._musicService, this._navigatorService);
+        const racingStartup = new RacingStartup(globalServices);
         racingStartup.registerComponents();
-        const managementStartup = new ManagementStartup(this._musicService, this._navigatorService);
+        const managementStartup = new ManagementStartup(globalServices);
         managementStartup.registerComponents();
-        recruitmentService = new RecruitmentService(navigatorService);
-        loadingScreen = new LoadingScreen(navigatorService);
+        recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
+        loadingScreen = new LoadingScreen(globalServices.navigatorService);
     }
     registerAudio() {
         window.addEventListener('keydown', () => {
-            this._musicService.startAudio();
+            globalServices.musicService.startAudio();
         });
     }
     createCanvases() {
@@ -582,6 +715,20 @@ class Startup {
         CanvasService.createCanvas('6', CanvasNames.Countdown);
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
+        CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
+    }
+    createGlobalServices() {
+        const navigatorService = new NavigatorService();
+        const musicService = new MusicService();
+        const camelPropertyGenerator = new CamelPropertyGenerator();
+        const levelCurveFactor = new LevelCurveFactory();
+        const camelSkillCreator = new CamelSkillCreator(levelCurveFactor);
+        const camelCreator = new CamelCreator(camelPropertyGenerator, camelSkillCreator);
+        return {
+            musicService,
+            navigatorService,
+            camelCreator
+        };
     }
 }
 class GymDrawing {
@@ -604,9 +751,10 @@ class GymDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.drawFloor();
         this.drawTreadmill();
+        const borderWidth = 5;
         const buttonService = new CanvasBtnService(this._camelCanvas, this._navigatorService);
-        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(GameState.camel), "Start session");
-        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, "Back to map");
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2, 550, 50, 25, borderWidth, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => this._trainSession = Gym.getTreadmillSession(GameState.camel), ["Start session"]);
+        buttonService.createBtn((this._camelCanvas.width / GlobalStaticConstants.devicePixelRatio) / 2, GlobalStaticConstants.innerHeight / 2 + 100, 550, 50, 25, borderWidth, GlobalStaticConstants.backgroundColour, GlobalStaticConstants.mediumColour, "black", () => { this.exitGym(this._trainSession); }, ["Back to map"]);
     }
     exitGym(trainSession) {
         if (trainSession) {
@@ -870,16 +1018,255 @@ class LoadingScreen {
         img.src = './graphics/camel-oasis.jpg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const radius = 50;
+        const borderWidth = 5;
         const backgroundColour = '#cc807a';
         const borderColour = '#f2ada7';
         const textColour = '#fff';
         if (GameState.GetExists()) {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
-            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.loadSavedGame, 'Load saved game');
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
+            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.loadSavedGame, ['Load saved game']);
         }
         else {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, backgroundColour, borderColour, textColour, this.startFreshGame, 'New game');
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
         }
+    }
+}
+class ManagementStartup {
+    _globalServices;
+    constructor(_globalServices) {
+        this._globalServices = _globalServices;
+    }
+    registerComponents() {
+        const camelSkillDrawing = new CamelSkillDrawing(this._globalServices.navigatorService);
+        const camelSkillCommands = new CamelSkillCommands();
+        camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+        const selectCamelFunc = (camel) => {
+            GameState.camel = camel;
+            this._globalServices.navigatorService.requestPageNavigation(Page.management);
+        };
+        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
+    }
+}
+class CamelCreator {
+    _camelPropertyGenerator;
+    _camelSkillCreator;
+    constructor(_camelPropertyGenerator, _camelSkillCreator) {
+        this._camelPropertyGenerator = _camelPropertyGenerator;
+        this._camelSkillCreator = _camelSkillCreator;
+    }
+    createRandomCamelWithQuality(quality) {
+        const agility = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.agility, quality);
+        const sprintSpeed = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.sprintSpeed, quality);
+        const stamina = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.stamina, quality);
+        const camelInitProperties = {
+            colour: this._camelPropertyGenerator.generateColour(),
+            name: this._camelPropertyGenerator.generateName(),
+            skills: {
+                agility: agility,
+                sprintSpeed: sprintSpeed,
+                stamina: stamina,
+            },
+            temperament: this._camelPropertyGenerator.generateTemperament(),
+            unspentXp: 0,
+        };
+        const camel = new Camel(++GameState.lastUsedId, camelInitProperties);
+        return camel;
+    }
+    createCamelFromSerialisedCamel(serialisedCamel) {
+        const camelInitProperties = {
+            colour: serialisedCamel.colour,
+            name: serialisedCamel.name,
+            skills: {
+                agility: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.agility),
+                sprintSpeed: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.sprintSpeed),
+                stamina: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.stamina),
+            },
+            temperament: this._camelPropertyGenerator.generateTemperament(),
+            unspentXp: serialisedCamel.unspentXp,
+        };
+        return new Camel(serialisedCamel.id, camelInitProperties);
+    }
+}
+class CamelPropertyGenerator {
+    generateColour() {
+        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 7);
+    }
+    generateName() {
+        const adjectives = [
+            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
+            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
+            "Amber", "Crimson", "Harmony", "Marble", "Opal",
+            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
+        ];
+        const nouns = [
+            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
+            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
+            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
+            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
+        ];
+        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        return randomAdjective + " " + randomNoun;
+    }
+    generateTemperament() {
+        if (Math.random() < 0.25) {
+            return CamelTemperament.Aggressive;
+        }
+        else if (Math.random() < 0.5) {
+            return CamelTemperament.Temperamental;
+        }
+        else if (Math.random() < 0.75) {
+            return CamelTemperament.Calm;
+        }
+        else {
+            return CamelTemperament.Mild;
+        }
+    }
+}
+class CamelSkillCreator {
+    _levelCurveFactory;
+    constructor(_levelCurveFactory) {
+        this._levelCurveFactory = _levelCurveFactory;
+    }
+    generateSkillWithQuality(skillType, quality) {
+        const level = Math.ceil(Math.random() * 10 * (quality + 1));
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        const potentialRange = levelCurve.maxSkillLevel - level;
+        const potential = level + Math.floor(Math.random() * potentialRange);
+        const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
+        return new CamelSkill(skillType, levelCurve, potential, initialXp);
+    }
+    generateSkillFromSerialisedSkill(serialisedSkill) {
+        const xp = serialisedSkill.currentXp;
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        return new CamelSkill(serialisedSkill.skillType, levelCurve, serialisedSkill.potential, xp);
+    }
+}
+var CamelTemperament;
+(function (CamelTemperament) {
+    CamelTemperament[CamelTemperament["Calm"] = 0] = "Calm";
+    CamelTemperament[CamelTemperament["Mild"] = 1] = "Mild";
+    CamelTemperament[CamelTemperament["Temperamental"] = 2] = "Temperamental";
+    CamelTemperament[CamelTemperament["Aggressive"] = 3] = "Aggressive";
+})(CamelTemperament || (CamelTemperament = {}));
+var InitCamelQuality;
+(function (InitCamelQuality) {
+    InitCamelQuality[InitCamelQuality["None"] = 0] = "None";
+    InitCamelQuality[InitCamelQuality["Low"] = 1] = "Low";
+    InitCamelQuality[InitCamelQuality["Medium"] = 2] = "Medium";
+    InitCamelQuality[InitCamelQuality["High"] = 3] = "High";
+    InitCamelQuality[InitCamelQuality["Cpu1"] = 4] = "Cpu1";
+    InitCamelQuality[InitCamelQuality["Cpu2"] = 5] = "Cpu2";
+    InitCamelQuality[InitCamelQuality["Cpu3"] = 6] = "Cpu3";
+    InitCamelQuality[InitCamelQuality["Cpu4"] = 7] = "Cpu4";
+    InitCamelQuality[InitCamelQuality["Cpu5"] = 8] = "Cpu5";
+})(InitCamelQuality || (InitCamelQuality = {}));
+class Camel {
+    id;
+    constructor(id, camelInitProperties) {
+        this.id = id;
+        this.colour = camelInitProperties.colour;
+        this.name = camelInitProperties.name;
+        this.temperament = camelInitProperties.temperament;
+        this.unspentXp = camelInitProperties.unspentXp;
+        this.agility = camelInitProperties.skills.agility;
+        this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
+        this.stamina = camelInitProperties.skills.stamina;
+    }
+    colour;
+    name;
+    temperament;
+    unspentXp;
+    agility;
+    sprintSpeed;
+    stamina;
+    get level() {
+        const skillLevels = [
+            this.agility.level,
+            this.sprintSpeed.level,
+            this.stamina.level
+        ];
+        const skillLevelSum = skillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+        return Math.floor(skillLevelSum / skillLevels.length);
+    }
+    get potentialLevel() {
+        const potentialSkillLevels = [
+            this.agility.potential,
+            this.sprintSpeed.potential,
+            this.stamina.potential
+        ];
+        const skillLevelSum = potentialSkillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+        return Math.floor(skillLevelSum / potentialSkillLevels.length);
+    }
+    get potentialDescription() {
+        const potentialLevel = this.potentialLevel;
+        if (potentialLevel <= 10)
+            return 'Dismal underachiever';
+        else if (potentialLevel <= 20)
+            return 'Dismal underachiever';
+        else if (potentialLevel <= 30)
+            return 'Struggling competitor';
+        else if (potentialLevel <= 40)
+            return 'Modest hopeless case';
+        else if (potentialLevel <= 50)
+            return 'Developing talent';
+        else if (potentialLevel <= 60)
+            return 'Breakthrough prospect';
+        else if (potentialLevel <= 70)
+            return 'Frontrunner in training';
+        else if (potentialLevel <= 80)
+            return 'Elite championship aspirant';
+        else if (potentialLevel <= 90)
+            return 'Future racing star';
+        else
+            return 'Legendary camel in the making';
+    }
+}
+class CamelSelectComponent {
+    _selectFunc;
+    constructor(_selectFunc) {
+        this._selectFunc = _selectFunc;
+    }
+    load() {
+        const camelSelectSection = document.getElementById('camel-select');
+        if (!camelSelectSection) {
+            throw new Error('No camel select element');
+        }
+        camelSelectSection.style.display = 'flex';
+        this.createSelectList(camelSelectSection);
+    }
+    createSelectList(camelSelectSection) {
+        const heading = document.createElement('h1');
+        heading.appendChild(document.createTextNode('Choose camel'));
+        camelSelectSection.appendChild(heading);
+        const list = document.createElement('ul');
+        camelSelectSection.appendChild(list);
+        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
+    }
+    addCamelToList(list, camel) {
+        const listItem = document.createElement('li');
+        listItem.onclick = () => this._selectFunc(camel);
+        const camelPictureContainer = document.createElement('div');
+        camelPictureContainer.classList.add('camel__picture-container');
+        const camelPicture = document.createElement('div');
+        camelPicture.classList.add('camel__picture');
+        camelPicture.style.color = camel.colour;
+        camelPicture.style.backgroundColor = camel.colour;
+        camelPictureContainer.appendChild(camelPicture);
+        const camelName = document.createElement('div');
+        camelName.classList.add('camel__name');
+        camelName.appendChild(document.createTextNode(camel.name));
+        const camelStats = document.createElement('div');
+        camelStats.classList.add('camel__stats');
+        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
+        const camelSelect = document.createElement('button');
+        camelSelect.classList.add('camel__select');
+        camelSelect.classList.add('chevron');
+        listItem.appendChild(camelPictureContainer);
+        listItem.appendChild(camelName);
+        listItem.appendChild(camelStats);
+        listItem.appendChild(camelSelect);
+        list.appendChild(listItem);
     }
 }
 class CamelSkillCommands {
@@ -932,8 +1319,11 @@ class CamelSkillDrawing {
     drawOverview(camel, x, y) {
         const nameText = `${camel.name}`;
         const nameTextLength = this._ctx.measureText(nameText).width;
+        const xpText = `XP: ${camel.unspentXp}`;
+        const xpTextLength = this._ctx.measureText(xpText).width;
         this._ctx.fillText(nameText, x, y);
-        this._ctx.fillText(`XP: ${camel.unspentXp}`, x + nameTextLength + 20, y);
+        this._ctx.fillText(xpText, x + nameTextLength + 20, y);
+        this._ctx.fillText(camel.potentialDescription, x + nameTextLength + xpTextLength + 40, y);
     }
     drawSkills(camel, levelUpSkillFunc) {
         const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
@@ -949,15 +1339,15 @@ class CamelSkillDrawing {
         const level = skill.level;
         const xpToNextLevel = skill.getXpToNextLevel();
         this._ctx.fillText(`${skill.name}: ${level}`, x, y);
-        this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
-        this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), `+`);
+        if (xpToNextLevel > 0) {
+            this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
+            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, 5, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), [`+`]);
+        }
     }
     drawSkillStar(skills, x, y) {
         const maxRadius = 99;
         // Center for small screens, otherwise offset from edge
         x = x > 2 * maxRadius ? 2 * maxRadius : x;
-        const numberOfSkills = skills.length;
-        let points = [];
         // Draw ring
         this._ctx.strokeStyle = GlobalStaticConstants.mediumColour;
         this._ctx.beginPath();
@@ -966,6 +1356,19 @@ class CamelSkillDrawing {
         this._ctx.lineWidth = 2;
         this._ctx.strokeStyle = "black";
         this._ctx.fillStyle = "black";
+        this.drawPotentialOnStar(skills, maxRadius, x, y);
+        this.drawSkillsOnStar(skills, maxRadius, x, y);
+        // Draw center
+        this._ctx.beginPath();
+        this._ctx.moveTo(x, y);
+        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        this._ctx.stroke();
+        this._ctx.fillStyle = "black";
+        this._ctx.fill();
+    }
+    drawSkillsOnStar(skills, maxRadius, x, y) {
+        const numberOfSkills = skills.length;
+        let points = [];
         skills.forEach((s, i) => {
             // Calculate point
             const angle = 2 * Math.PI * i / numberOfSkills;
@@ -992,13 +1395,36 @@ class CamelSkillDrawing {
         this._ctx.stroke();
         this._ctx.fillStyle = GlobalStaticConstants.mediumColour;
         this._ctx.fill();
-        // Draw center
+    }
+    drawPotentialOnStar(skills, maxRadius, x, y) {
+        const numberOfSkills = skills.length;
+        let points = [];
+        this._ctx.save();
+        this._ctx.fillStyle = GlobalStaticConstants.lightColour;
+        this._ctx.strokeStyle = GlobalStaticConstants.lightColour;
+        skills.forEach((s, i) => {
+            // Calculate point
+            const angle = 2 * Math.PI * i / numberOfSkills;
+            const radius = maxRadius * s.potential / 100;
+            const spotX = (r) => x + r * Math.cos(angle);
+            const spotY = (r) => y + r * Math.sin(angle);
+            points?.push({ x: spotX(radius), y: spotY(radius) });
+            // Draw point
+            this._ctx.beginPath();
+            this._ctx.moveTo(spotX(radius), spotY(radius));
+            this._ctx.arc(spotX(radius), spotY(radius), 2, 0, 2 * Math.PI);
+            this._ctx.stroke();
+            this._ctx.fill();
+        });
+        // Draw and fill shape
         this._ctx.beginPath();
-        this._ctx.moveTo(x, y);
-        this._ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        points.forEach(p => {
+            this._ctx.lineTo(p.x, p.y);
+        });
+        this._ctx.lineTo(points[0].x, points[0].y);
         this._ctx.stroke();
-        this._ctx.fillStyle = "black";
         this._ctx.fill();
+        this._ctx.restore();
     }
 }
 class CamelSkillQueries {
@@ -1006,141 +1432,61 @@ class CamelSkillQueries {
         return [camel.agility, camel.sprintSpeed, camel.stamina];
     }
 }
-var CamelTemperament;
-(function (CamelTemperament) {
-    CamelTemperament[CamelTemperament["Calm"] = 0] = "Calm";
-    CamelTemperament[CamelTemperament["Mild"] = 1] = "Mild";
-    CamelTemperament[CamelTemperament["Temperamental"] = 2] = "Temperamental";
-    CamelTemperament[CamelTemperament["Aggressive"] = 3] = "Aggressive";
-})(CamelTemperament || (CamelTemperament = {}));
-var InitCamelQuality;
-(function (InitCamelQuality) {
-    InitCamelQuality[InitCamelQuality["None"] = 0] = "None";
-    InitCamelQuality[InitCamelQuality["Low"] = 1] = "Low";
-    InitCamelQuality[InitCamelQuality["Medium"] = 2] = "Medium";
-    InitCamelQuality[InitCamelQuality["High"] = 3] = "High";
-    InitCamelQuality[InitCamelQuality["Cpu1"] = 4] = "Cpu1";
-    InitCamelQuality[InitCamelQuality["Cpu2"] = 5] = "Cpu2";
-    InitCamelQuality[InitCamelQuality["Cpu3"] = 6] = "Cpu3";
-    InitCamelQuality[InitCamelQuality["Cpu4"] = 7] = "Cpu4";
-    InitCamelQuality[InitCamelQuality["Cpu5"] = 8] = "Cpu5";
-})(InitCamelQuality || (InitCamelQuality = {}));
-class Camel {
-    id;
-    constructor(id, quality) {
-        this.id = id;
-        if (quality === InitCamelQuality.None) {
-            return;
-        }
-        const sprintSpeed = Math.ceil(10 * (quality + 1) / 2 * (1 + Math.random()));
-        const agility = Math.ceil(Math.random() * 10 * (quality + 1));
-        const stamina = Math.ceil(Math.random() * 10 * (quality + 1));
-        this.agility.level = agility;
-        this.sprintSpeed.level = sprintSpeed;
-        this.stamina.level = stamina;
+var CamelSkillType;
+(function (CamelSkillType) {
+    CamelSkillType[CamelSkillType["agility"] = 0] = "agility";
+    CamelSkillType[CamelSkillType["sprintSpeed"] = 1] = "sprintSpeed";
+    CamelSkillType[CamelSkillType["stamina"] = 2] = "stamina";
+})(CamelSkillType || (CamelSkillType = {}));
+class CamelSkill {
+    skillType;
+    levelCurve;
+    potential;
+    constructor(skillType, levelCurve, potential, initialXp) {
+        this.skillType = skillType;
+        this.levelCurve = levelCurve;
+        this.potential = potential;
+        this.potential = Math.min(potential, levelCurve.maxSkillLevel);
+        this.potential = Math.max(potential, levelCurve.minSkillLevel);
+        this.addXp(initialXp);
     }
-    colour = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
-    agility = new CamelSkill('Agility');
-    sprintSpeed = new CamelSkill('SprintSpeed');
-    stamina = new CamelSkill('Stamina');
-    name = this.generateName();
-    temperament = this.generateTemperament();
-    unspentXp = 0;
-    generateName() {
-        const adjectives = [
-            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
-            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
-            "Amber", "Crimson", "Harmony", "Marble", "Opal",
-            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
-        ];
-        const nouns = [
-            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
-            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
-            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
-            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
-        ];
-        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-        return randomAdjective + " " + randomNoun;
+    currentXp = 0;
+    get name() {
+        switch (this.skillType) {
+            case CamelSkillType.agility: return 'Agility';
+            case CamelSkillType.sprintSpeed: return 'Sprint speed';
+            case CamelSkillType.stamina: return 'Stamina';
+        }
     }
-    generateTemperament() {
-        if (Math.random() < 0.25) {
-            return CamelTemperament.Aggressive;
+    get level() {
+        return this.levelCurve.getLevelFromXp(this.currentXp, this.potential);
+    }
+    getXpToNextLevel() {
+        if (this.level === this.potential) {
+            return 0;
         }
-        else if (Math.random() < 0.5) {
-            return CamelTemperament.Temperamental;
+        return this.levelCurve.getXpRequiredForLevel(this.level + 1, this.potential) - this.currentXp;
+    }
+    addXp(value) {
+        if (value < 0) {
+            throw Error('Cannot add negative xp');
         }
-        else if (Math.random() < 0.75) {
-            return CamelTemperament.Calm;
-        }
-        else {
-            return CamelTemperament.Mild;
-        }
+        this.currentXp += value;
     }
 }
-class ManagementStartup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
+class DefaultLevelCurve {
+    get minSkillLevel() { return 1; }
+    get maxSkillLevel() { return 99; }
+    getXpRequiredForLevel(level, potential) {
+        return (level - 1) * 100;
     }
-    registerComponents() {
-        const camelSkillDrawing = new CamelSkillDrawing(this._navigatorService);
-        const camelSkillCommands = new CamelSkillCommands();
-        camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
-        const selectCamelFunc = (camel) => {
-            GameState.camel = camel;
-            this._navigatorService.requestPageNavigation(Page.management);
-        };
-        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
+    getLevelFromXp(xp, potential) {
+        return Math.min(potential, Math.floor(xp / 100) + 1);
     }
 }
-class CamelSelectComponent {
-    _selectFunc;
-    constructor(_selectFunc) {
-        this._selectFunc = _selectFunc;
-    }
-    load() {
-        const camelSelectSection = document.getElementById('camel-select');
-        if (!camelSelectSection) {
-            throw new Error('No camel select element');
-        }
-        camelSelectSection.style.display = 'flex';
-        this.createSelectList(camelSelectSection);
-    }
-    createSelectList(camelSelectSection) {
-        const heading = document.createElement('h1');
-        heading.appendChild(document.createTextNode('Choose camel'));
-        camelSelectSection.appendChild(heading);
-        const list = document.createElement('ul');
-        camelSelectSection.appendChild(list);
-        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
-    }
-    addCamelToList(list, camel) {
-        const listItem = document.createElement('li');
-        listItem.onclick = () => this._selectFunc(camel);
-        const camelPictureContainer = document.createElement('div');
-        camelPictureContainer.classList.add('camel__picture-container');
-        const camelPicture = document.createElement('div');
-        camelPicture.classList.add('camel__picture');
-        camelPicture.style.color = camel.colour;
-        camelPicture.style.backgroundColor = camel.colour;
-        camelPictureContainer.appendChild(camelPicture);
-        const camelName = document.createElement('div');
-        camelName.classList.add('camel__name');
-        camelName.appendChild(document.createTextNode(camel.name));
-        const camelStats = document.createElement('div');
-        camelStats.classList.add('camel__stats');
-        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
-        const camelSelect = document.createElement('button');
-        camelSelect.classList.add('camel__select');
-        camelSelect.classList.add('chevron');
-        listItem.appendChild(camelPictureContainer);
-        listItem.appendChild(camelName);
-        listItem.appendChild(camelStats);
-        listItem.appendChild(camelSelect);
-        list.appendChild(listItem);
+class LevelCurveFactory {
+    getDefaultLevelCurve() {
+        return new DefaultLevelCurve();
     }
 }
 class MapOverview {
@@ -1202,7 +1548,7 @@ class MapOverview {
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                 CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                (new GymDrawing(navigatorService)).drawGym();
+                (new GymDrawing(globalServices.navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
                 if (!!GameState.camel && GameState.camel.agility.level > 20) {
@@ -1216,7 +1562,7 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
-                navigatorService.requestPageNavigation(Page.raceSelection);
+                globalServices.navigatorService.requestPageNavigation(Page.raceSelection);
             }
             // Management
             else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
@@ -1224,9 +1570,10 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                     return;
                 }
-                navigatorService.requestPageNavigation(Page.managementSelect);
+                globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
             }
         }, false);
+        CalendarOverviewDrawing.drawCalendarOverview(canvas);
         CashMoneyService.drawCashMoney(ctx);
     }
 }
@@ -1272,6 +1619,9 @@ class NavigatorService {
                 case Page.managementSelect:
                     camelManagementSelectComponent.load();
                     break;
+                case Page.calendarDetails:
+                    this.navigateToCalendarDetails();
+                    break;
             }
             this._postNavigationFunc();
             this._pageLoaded = true;
@@ -1288,6 +1638,10 @@ class NavigatorService {
         CanvasService.showCanvas(CanvasNames.LoadingScreen);
         loadingScreen.drawLoadingScreen();
     }
+    navigateToCalendarDetails() {
+        CanvasService.showCanvas(CanvasNames.CalendarDetails);
+        CalendarDetailsDrawing.drawCalendarDetails();
+    }
     navigateToOverview() {
         MapOverview.showMap();
         MapOverview.renderMap();
@@ -1302,6 +1656,7 @@ var Page;
     Page[Page["race"] = 4] = "race";
     Page[Page["raceCamelSelect"] = 5] = "raceCamelSelect";
     Page[Page["raceSelection"] = 6] = "raceSelection";
+    Page[Page["calendarDetails"] = 7] = "calendarDetails";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
@@ -1554,53 +1909,55 @@ class RaceDrawing {
     }
     drawNegativeYCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, camel.jumpHeight);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, 1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, 1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, 2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, 2);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, camel.jumpHeight, 0, 3);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, 3);
     }
     drawNegativeXCamel(newXCoord, newYCoord, camel, size) {
         const xCoord = newXCoord;
         const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, -2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 2, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 3, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 3, -1.5);
+    }
+    drawPositiveYCamel(newXCoord, newYCoord, camel, size) {
+        const xCoord = newXCoord + 0.25;
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, 0);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, 1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, 1);
+        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0, 2);
+    }
+    drawPositiveXCamel(newXCoord, newYCoord, camel, size) {
+        const xCoord = newXCoord;
+        const yCoord = newYCoord + 0.5;
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, -1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
-    }
-    drawPositiveYCamel(newXCoord, newYCoord, camel, size) {
-        const xCoord = newXCoord + 0.25;
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -3);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 2 + camel.jumpHeight, 0, -2);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0, -1);
-        this.camelCubeService.drawCube(xCoord, newYCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 0);
-    }
-    drawPositiveXCamel(newXCoord, newYCoord, camel, size) {
-        const xCoord = newXCoord;
-        const yCoord = newYCoord + 0.5;
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -1.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 2 + camel.jumpHeight, -0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 0.5, -1.5);
-        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 1.5, -1.5);
+        this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 2, -1.5);
     }
 }
 class RaceManagement {
     _musicService;
     _raceSimulation;
-    constructor(_musicService, _raceSimulation) {
+    _camelCreator;
+    constructor(_musicService, _raceSimulation, _camelCreator) {
         this._musicService = _musicService;
         this._raceSimulation = _raceSimulation;
+        this._camelCreator = _camelCreator;
     }
     addCamelToRace(camel, race) {
         const racingCamel = new RacingCamel(camel);
@@ -1608,7 +1965,7 @@ class RaceManagement {
     }
     addCpuCamelsToRace(raceSize, competitorQuality, race) {
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
+            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
             this.addCamelToRace(competitorCamel, race);
         }
     }
@@ -1654,6 +2011,9 @@ class RaceManagement {
     simulateRaceStep(race) {
         this._raceSimulation.simulateRaceStep(race);
     }
+    updateCalendar() {
+        GameState.calendar.moveToNextDay();
+    }
     handleFinishedRace(race) {
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
         position = position ??
@@ -1666,6 +2026,7 @@ class RaceManagement {
         race.raceState = RaceState.none;
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
+        this.updateCalendar();
         CanvasService.hideAllCanvas();
         MapOverview.showMap();
         MapOverview.renderMap();
@@ -1707,15 +2068,16 @@ class RaceSelection {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const radius = 25;
+        const borderWidth = 5;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const middleY = this._canvas.height / GlobalStaticConstants.devicePixelRatio / 2;
         this._btnService.drawBackButton(Page.mapOverview);
-        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, '#cc807a', '#f2ada7', '#fff', enterStreetRace, 'Street race | Entry $0 | Prize $100');
-        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, '#debb49', '#f5d671', '#fff', enterLocalDerby, 'Local derby | Entry $200 | Prize $500');
-        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, '#569929', '#7ac24a', '#fff', enterWorldCup, 'World cup | Entry $300 | Prize $10000');
+        this._btnService.createBtn(middleX - 400, middleY / 2, 800, 50, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', enterStreetRace, ['Street race | Entry $0 | Prize $100']);
+        this._btnService.createBtn(middleX - 400, middleY, 800, 50, radius, borderWidth, '#debb49', '#f5d671', '#fff', enterLocalDerby, ['Local derby | Entry $200 | Prize $500']);
+        this._btnService.createBtn(middleX - 400, middleY * 4 / 3, 800, 50, radius, borderWidth, '#569929', '#7ac24a', '#fff', enterWorldCup, ['World cup | Entry $300 | Prize $10000']);
         CashMoneyService.drawCashMoney(this._ctx);
     }
     selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
@@ -1852,15 +2214,13 @@ class RaceTrackCreator {
     }
 }
 class RacingStartup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
+    _globalServices;
+    constructor(_globalServices) {
+        this._globalServices = _globalServices;
     }
     registerComponents() {
         const raceSimulation = new RaceSimulation();
-        const raceManagement = new RaceManagement(this._musicService, raceSimulation);
+        const raceManagement = new RaceManagement(this._globalServices.musicService, raceSimulation, this._globalServices.camelCreator);
         this.registerRaceCamelSelectComponent(raceManagement);
         this.registerRaceSelection(raceManagement);
         this.registerRaceComponent(raceManagement);
@@ -1869,15 +2229,15 @@ class RacingStartup {
         const selectRaceCamelFunc = (camel) => {
             GameState.camel = camel;
             raceManagement.addCamelToRace(camel, race);
-            this._navigatorService.requestPageNavigation(Page.race);
-            this._musicService.setAudio("RaceAudio");
-            this._musicService.startAudio();
+            this._globalServices.navigatorService.requestPageNavigation(Page.race);
+            this._globalServices.musicService.setAudio("RaceAudio");
+            this._globalServices.musicService.startAudio();
             race.raceState = RaceState.triggered;
         };
         raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     }
     registerRaceSelection(raceManagement) {
-        raceSelection = new RaceSelection(this._navigatorService, raceManagement);
+        raceSelection = new RaceSelection(this._globalServices.navigatorService, raceManagement);
     }
     registerRaceComponent(raceManagement) {
         const leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
@@ -1972,8 +2332,10 @@ class RacingCamel {
 }
 class RecruitmentService {
     _navigator;
-    constructor(_navigator) {
+    _camelCreator;
+    constructor(_navigator, _camelCreator) {
         this._navigator = _navigator;
+        this._camelCreator = _camelCreator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d');
         this._camelCubeService = new CubeService(this._ctx);
@@ -2008,7 +2370,8 @@ class RecruitmentService {
         }
         GameState.cashMoney = GameState.cashMoney - cost;
         const quality = cost / 100;
-        GameState.camel = new Camel(++GameState.lastUsedId, quality);
+        GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);
+        ;
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
@@ -2035,67 +2398,19 @@ class RecruitmentService {
         const camelSize = Math.round(GlobalStaticConstants.baseCubeSize * 4 / 5);
         const btnWidth = 550;
         const btnHeight = 50;
+        const borderWidth = 5;
         let btnX = 240;
         let btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, 'Recruit lowly camel - $100');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, ['Recruit lowly camel - $100']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#cc807a');
         btnX = 840;
         btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, 'Recruit mediocre camel - $200');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, ['Recruit mediocre camel - $200']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#debb49');
         btnX = 540;
         btnY = 650;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, ['Recruit high camel - $300']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
-    }
-}
-class CamelSkill {
-    _name;
-    _initialXP;
-    constructor(_name, _initialXP = 0) {
-        this._name = _name;
-        this._initialXP = _initialXP;
-        if (_initialXP < 0) {
-            throw Error('Cannot create camel skill with negative xp');
-        }
-        this.currentXp = _initialXP;
-        this._level = this.getLevelFromXp(_initialXP);
-    }
-    currentXp = 0;
-    _minSkillLevel = 1;
-    _maxSkillLevel = 99;
-    _level = 0;
-    get name() {
-        return this._name;
-    }
-    getXpRequiredForLevel(level) {
-        return (level - 1) * 100;
-    }
-    getLevelFromXp(xp) {
-        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
-    }
-    set level(level) {
-        let flooredLevel = Math.floor(level);
-        flooredLevel = Math.max(level, this._minSkillLevel);
-        flooredLevel = Math.min(level, this._maxSkillLevel);
-        this._level = flooredLevel;
-        this.currentXp = this.getXpRequiredForLevel(flooredLevel);
-    }
-    get level() {
-        return this._level;
-    }
-    getXpToNextLevel() {
-        if (this._level === this._maxSkillLevel) {
-            return 0;
-        }
-        return this.getXpRequiredForLevel(this.level + 1) - this.currentXp;
-    }
-    addXp(value) {
-        if (value < 0) {
-            throw Error('Cannot add negative xp');
-        }
-        this.currentXp += value;
-        this._level = this.getLevelFromXp(this.currentXp);
     }
 }
