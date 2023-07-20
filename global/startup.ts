@@ -1,23 +1,20 @@
 class Startup {
-    constructor(
-        private readonly _musicService: MusicService,
-        private readonly _navigatorService: NavigatorService
-        ) { }
+    constructor() { }
 
     public registerComponents() {
-        const racingStartup = new RacingStartup(this._musicService, this._navigatorService);
+        const racingStartup = new RacingStartup(globalServices);
         racingStartup.registerComponents();
 
-        const managementStartup = new ManagementStartup(this._musicService, this._navigatorService);
+        const managementStartup = new ManagementStartup(globalServices);
         managementStartup.registerComponents();
 
-        recruitmentService = new RecruitmentService(navigatorService);
-        loadingScreen = new LoadingScreen(navigatorService);
+        recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
+        loadingScreen = new LoadingScreen(globalServices.navigatorService);
     }
 
     public registerAudio() {
         window.addEventListener('keydown', () => {
-            this._musicService.startAudio();
+            globalServices.musicService.startAudio();
         })
     }
 
@@ -33,5 +30,21 @@ class Startup {
         CanvasService.createCanvas('6', CanvasNames.Countdown);
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
+    }
+
+    public createGlobalServices(): GlobalServices {
+        const navigatorService = new NavigatorService();
+        const musicService = new MusicService();
+
+        const camelPropertyGenerator = new CamelPropertyGenerator();
+        const levelCurveFactor = new LevelCurveFactory();
+        const camelSkillCreator = new CamelSkillCreator(levelCurveFactor);
+        const camelCreator = new CamelCreator(camelPropertyGenerator, camelSkillCreator);
+
+        return {
+            musicService,
+            navigatorService,
+            camelCreator
+        }
     }
 }

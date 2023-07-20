@@ -1,8 +1,8 @@
 "use strict";
 // Game state
 let race;
-// Navigation TODO should not be available globally
-let navigatorService;
+// Global service
+let globalServices;
 // Components
 // Recruitment
 let recruitmentService;
@@ -16,20 +16,19 @@ let raceCamelSelectComponent;
 // Loading
 let loadingScreen;
 function init() {
-    navigatorService = new NavigatorService();
-    const musicService = new MusicService();
-    const startup = new Startup(musicService, navigatorService);
+    const startup = new Startup();
+    globalServices = startup.createGlobalServices();
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
-    navigatorService.doNavigation();
+    globalServices.navigatorService.doNavigation();
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {
     try {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
-        navigatorService.doNavigation();
+        globalServices.navigatorService.doNavigation();
         raceComponent.handleRaceLoop(timeStamp);
     }
     catch (exception) {
@@ -366,7 +365,7 @@ class GameState {
         if (gameState.camel === undefined)
             return;
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(camel));
+        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];
         }
@@ -376,15 +375,8 @@ class GameState {
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
     }
-    static loadCamel(serialisedCamel) {
-        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
-        camel.colour = serialisedCamel.colour;
-        camel.name = serialisedCamel.name;
-        camel.temperament = serialisedCamel.temperament;
-        camel.unspentXp = serialisedCamel.unspentXp;
-        camel.agility.addXp(serialisedCamel.agility.currentXp);
-        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
-        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+    static loadCamel(camelCreator, serialisedCamel) {
+        const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
         GameState.camels.push(camel);
     }
     static getItemKey() {
@@ -478,7 +470,7 @@ class PopupService {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
                 if (navigateBackToMap) {
-                    navigatorService.requestPageNavigation(Page.mapOverview);
+                    globalServices.navigatorService.requestPageNavigation(Page.mapOverview);
                 }
             }
         });
@@ -551,23 +543,18 @@ class PopupService {
     }
 }
 class Startup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
-    }
+    constructor() { }
     registerComponents() {
-        const racingStartup = new RacingStartup(this._musicService, this._navigatorService);
+        const racingStartup = new RacingStartup(globalServices);
         racingStartup.registerComponents();
-        const managementStartup = new ManagementStartup(this._musicService, this._navigatorService);
+        const managementStartup = new ManagementStartup(globalServices);
         managementStartup.registerComponents();
-        recruitmentService = new RecruitmentService(navigatorService);
-        loadingScreen = new LoadingScreen(navigatorService);
+        recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
+        loadingScreen = new LoadingScreen(globalServices.navigatorService);
     }
     registerAudio() {
         window.addEventListener('keydown', () => {
-            this._musicService.startAudio();
+            globalServices.musicService.startAudio();
         });
     }
     createCanvases() {
@@ -582,6 +569,19 @@ class Startup {
         CanvasService.createCanvas('6', CanvasNames.Countdown);
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
+    }
+    createGlobalServices() {
+        const navigatorService = new NavigatorService();
+        const musicService = new MusicService();
+        const camelPropertyGenerator = new CamelPropertyGenerator();
+        const levelCurveFactor = new LevelCurveFactory();
+        const camelSkillCreator = new CamelSkillCreator(levelCurveFactor);
+        const camelCreator = new CamelCreator(camelPropertyGenerator, camelSkillCreator);
+        return {
+            musicService,
+            navigatorService,
+            camelCreator
+        };
     }
 }
 class GymDrawing {
@@ -882,6 +882,184 @@ class LoadingScreen {
         }
     }
 }
+class ManagementStartup {
+    _globalServices;
+    constructor(_globalServices) {
+        this._globalServices = _globalServices;
+    }
+    registerComponents() {
+        const camelSkillDrawing = new CamelSkillDrawing(this._globalServices.navigatorService);
+        const camelSkillCommands = new CamelSkillCommands();
+        camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
+        const selectCamelFunc = (camel) => {
+            GameState.camel = camel;
+            this._globalServices.navigatorService.requestPageNavigation(Page.management);
+        };
+        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
+    }
+}
+class CamelCreator {
+    _camelPropertyGenerator;
+    _camelSkillCreator;
+    constructor(_camelPropertyGenerator, _camelSkillCreator) {
+        this._camelPropertyGenerator = _camelPropertyGenerator;
+        this._camelSkillCreator = _camelSkillCreator;
+    }
+    createRandomCamelWithQuality(quality) {
+        const agility = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.agility, quality);
+        const sprintSpeed = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.sprintSpeed, quality);
+        const stamina = this._camelSkillCreator.generateSkillWithQuality(CamelSkillType.stamina, quality);
+        const camelInitProperties = {
+            colour: this._camelPropertyGenerator.generateColour(),
+            name: this._camelPropertyGenerator.generateName(),
+            skills: {
+                agility: agility,
+                sprintSpeed: sprintSpeed,
+                stamina: stamina,
+            },
+            temperament: this._camelPropertyGenerator.generateTemperament(),
+            unspentXp: 0,
+        };
+        const camel = new Camel(++GameState.lastUsedId, camelInitProperties);
+        return camel;
+    }
+    createCamelFromSerialisedCamel(serialisedCamel) {
+        const camelInitProperties = {
+            colour: serialisedCamel.colour,
+            name: serialisedCamel.name,
+            skills: {
+                agility: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.agility),
+                sprintSpeed: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.sprintSpeed),
+                stamina: this._camelSkillCreator.generateSkillFromSerialisedSkill(serialisedCamel.stamina),
+            },
+            temperament: this._camelPropertyGenerator.generateTemperament(),
+            unspentXp: serialisedCamel.unspentXp,
+        };
+        return new Camel(serialisedCamel.id, camelInitProperties);
+    }
+}
+class CamelPropertyGenerator {
+    generateColour() {
+        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 6);
+    }
+    generateName() {
+        const adjectives = [
+            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
+            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
+            "Amber", "Crimson", "Harmony", "Marble", "Opal",
+            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
+        ];
+        const nouns = [
+            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
+            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
+            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
+            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
+        ];
+        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        return randomAdjective + " " + randomNoun;
+    }
+    generateTemperament() {
+        if (Math.random() < 0.25) {
+            return CamelTemperament.Aggressive;
+        }
+        else if (Math.random() < 0.5) {
+            return CamelTemperament.Temperamental;
+        }
+        else if (Math.random() < 0.75) {
+            return CamelTemperament.Calm;
+        }
+        else {
+            return CamelTemperament.Mild;
+        }
+    }
+}
+var CamelTemperament;
+(function (CamelTemperament) {
+    CamelTemperament[CamelTemperament["Calm"] = 0] = "Calm";
+    CamelTemperament[CamelTemperament["Mild"] = 1] = "Mild";
+    CamelTemperament[CamelTemperament["Temperamental"] = 2] = "Temperamental";
+    CamelTemperament[CamelTemperament["Aggressive"] = 3] = "Aggressive";
+})(CamelTemperament || (CamelTemperament = {}));
+var InitCamelQuality;
+(function (InitCamelQuality) {
+    InitCamelQuality[InitCamelQuality["None"] = 0] = "None";
+    InitCamelQuality[InitCamelQuality["Low"] = 1] = "Low";
+    InitCamelQuality[InitCamelQuality["Medium"] = 2] = "Medium";
+    InitCamelQuality[InitCamelQuality["High"] = 3] = "High";
+    InitCamelQuality[InitCamelQuality["Cpu1"] = 4] = "Cpu1";
+    InitCamelQuality[InitCamelQuality["Cpu2"] = 5] = "Cpu2";
+    InitCamelQuality[InitCamelQuality["Cpu3"] = 6] = "Cpu3";
+    InitCamelQuality[InitCamelQuality["Cpu4"] = 7] = "Cpu4";
+    InitCamelQuality[InitCamelQuality["Cpu5"] = 8] = "Cpu5";
+})(InitCamelQuality || (InitCamelQuality = {}));
+class Camel {
+    id;
+    constructor(id, camelInitProperties) {
+        this.id = id;
+        this.colour = camelInitProperties.colour;
+        this.name = camelInitProperties.name;
+        this.temperament = camelInitProperties.temperament;
+        this.unspentXp = camelInitProperties.unspentXp;
+        this.agility = camelInitProperties.skills.agility;
+        this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
+        this.stamina = camelInitProperties.skills.sprintSpeed;
+    }
+    colour;
+    name;
+    temperament;
+    unspentXp;
+    agility;
+    sprintSpeed;
+    stamina;
+}
+class CamelSelectComponent {
+    _selectFunc;
+    constructor(_selectFunc) {
+        this._selectFunc = _selectFunc;
+    }
+    load() {
+        const camelSelectSection = document.getElementById('camel-select');
+        if (!camelSelectSection) {
+            throw new Error('No camel select element');
+        }
+        camelSelectSection.style.display = 'flex';
+        this.createSelectList(camelSelectSection);
+    }
+    createSelectList(camelSelectSection) {
+        const heading = document.createElement('h1');
+        heading.appendChild(document.createTextNode('Choose camel'));
+        camelSelectSection.appendChild(heading);
+        const list = document.createElement('ul');
+        camelSelectSection.appendChild(list);
+        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
+    }
+    addCamelToList(list, camel) {
+        const listItem = document.createElement('li');
+        listItem.onclick = () => this._selectFunc(camel);
+        const camelPictureContainer = document.createElement('div');
+        camelPictureContainer.classList.add('camel__picture-container');
+        const camelPicture = document.createElement('div');
+        camelPicture.classList.add('camel__picture');
+        camelPicture.style.color = camel.colour;
+        camelPicture.style.backgroundColor = camel.colour;
+        camelPictureContainer.appendChild(camelPicture);
+        const camelName = document.createElement('div');
+        camelName.classList.add('camel__name');
+        camelName.appendChild(document.createTextNode(camel.name));
+        const camelStats = document.createElement('div');
+        camelStats.classList.add('camel__stats');
+        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
+        const camelSelect = document.createElement('button');
+        camelSelect.classList.add('camel__select');
+        camelSelect.classList.add('chevron');
+        listItem.appendChild(camelPictureContainer);
+        listItem.appendChild(camelName);
+        listItem.appendChild(camelStats);
+        listItem.appendChild(camelSelect);
+        list.appendChild(listItem);
+    }
+}
 class CamelSkillCommands {
     levelUpSkill(camel, skill) {
         const toNextLevel = skill.getXpToNextLevel();
@@ -906,6 +1084,24 @@ class CamelSkillComponent {
         this._camelSkillCommands.levelUpSkill(camel, skill);
         this.load();
     };
+}
+class CamelSkillCreator {
+    _levelCurveFactory;
+    constructor(_levelCurveFactory) {
+        this._levelCurveFactory = _levelCurveFactory;
+    }
+    generateSkillWithQuality(skillType, quality) {
+        const level = Math.ceil(Math.random() * 10 * (quality + 1));
+        const potential = level + 10;
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
+        return new CamelSkill(skillType, levelCurve, potential, initialXp);
+    }
+    generateSkillFromSerialisedSkill(serialisedSkill) {
+        const xp = serialisedSkill.currentXp;
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        return new CamelSkill(serialisedSkill.skillType, levelCurve, serialisedSkill.potential, xp);
+    }
 }
 class CamelSkillDrawing {
     _navigator;
@@ -1006,141 +1202,56 @@ class CamelSkillQueries {
         return [camel.agility, camel.sprintSpeed, camel.stamina];
     }
 }
-var CamelTemperament;
-(function (CamelTemperament) {
-    CamelTemperament[CamelTemperament["Calm"] = 0] = "Calm";
-    CamelTemperament[CamelTemperament["Mild"] = 1] = "Mild";
-    CamelTemperament[CamelTemperament["Temperamental"] = 2] = "Temperamental";
-    CamelTemperament[CamelTemperament["Aggressive"] = 3] = "Aggressive";
-})(CamelTemperament || (CamelTemperament = {}));
-var InitCamelQuality;
-(function (InitCamelQuality) {
-    InitCamelQuality[InitCamelQuality["None"] = 0] = "None";
-    InitCamelQuality[InitCamelQuality["Low"] = 1] = "Low";
-    InitCamelQuality[InitCamelQuality["Medium"] = 2] = "Medium";
-    InitCamelQuality[InitCamelQuality["High"] = 3] = "High";
-    InitCamelQuality[InitCamelQuality["Cpu1"] = 4] = "Cpu1";
-    InitCamelQuality[InitCamelQuality["Cpu2"] = 5] = "Cpu2";
-    InitCamelQuality[InitCamelQuality["Cpu3"] = 6] = "Cpu3";
-    InitCamelQuality[InitCamelQuality["Cpu4"] = 7] = "Cpu4";
-    InitCamelQuality[InitCamelQuality["Cpu5"] = 8] = "Cpu5";
-})(InitCamelQuality || (InitCamelQuality = {}));
-class Camel {
-    id;
-    constructor(id, quality) {
-        this.id = id;
-        if (quality === InitCamelQuality.None) {
-            return;
-        }
-        const sprintSpeed = Math.ceil(Math.random() * 10 * (quality + 1));
-        const agility = Math.ceil(Math.random() * 10 * (quality + 1));
-        const stamina = Math.ceil(Math.random() * 10 * (quality + 1));
-        this.agility.level = agility;
-        this.sprintSpeed.level = sprintSpeed;
-        this.stamina.level = stamina;
+var CamelSkillType;
+(function (CamelSkillType) {
+    CamelSkillType[CamelSkillType["agility"] = 0] = "agility";
+    CamelSkillType[CamelSkillType["sprintSpeed"] = 1] = "sprintSpeed";
+    CamelSkillType[CamelSkillType["stamina"] = 2] = "stamina";
+})(CamelSkillType || (CamelSkillType = {}));
+class CamelSkill {
+    skillType;
+    levelCurve;
+    potential;
+    constructor(skillType, levelCurve, potential, initialXp) {
+        this.skillType = skillType;
+        this.levelCurve = levelCurve;
+        this.potential = potential;
+        this.addXp(initialXp);
     }
-    colour = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
-    agility = new CamelSkill('Agility');
-    sprintSpeed = new CamelSkill('SprintSpeed');
-    stamina = new CamelSkill('Stamina');
-    name = this.generateName();
-    temperament = this.generateTemperament();
-    unspentXp = 0;
-    generateName() {
-        const adjectives = [
-            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
-            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
-            "Amber", "Crimson", "Harmony", "Marble", "Opal",
-            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
-        ];
-        const nouns = [
-            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
-            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
-            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
-            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
-        ];
-        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-        return randomAdjective + " " + randomNoun;
+    currentXp = 0;
+    get name() {
+        switch (this.skillType) {
+            case CamelSkillType.agility: return 'Agility';
+            case CamelSkillType.sprintSpeed: return 'Sprint speed';
+            case CamelSkillType.stamina: return 'Stamina';
+        }
     }
-    generateTemperament() {
-        if (Math.random() < 0.25) {
-            return CamelTemperament.Aggressive;
+    get level() {
+        return this.levelCurve.getLevelFromXp(this.currentXp, this.potential);
+    }
+    getXpToNextLevel() {
+        return this.levelCurve.getXpRequiredForLevel(this.level + 1, this.potential) - this.currentXp;
+    }
+    addXp(value) {
+        if (value < 0) {
+            throw Error('Cannot add negative xp');
         }
-        else if (Math.random() < 0.5) {
-            return CamelTemperament.Temperamental;
-        }
-        else if (Math.random() < 0.75) {
-            return CamelTemperament.Calm;
-        }
-        else {
-            return CamelTemperament.Mild;
-        }
+        this.currentXp += value;
     }
 }
-class ManagementStartup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
+class DefaultLevelCurve {
+    _minSkillLevel = 1;
+    _maxSkillLevel = 99;
+    getXpRequiredForLevel(level) {
+        return (level - 1) * 100;
     }
-    registerComponents() {
-        const camelSkillDrawing = new CamelSkillDrawing(this._navigatorService);
-        const camelSkillCommands = new CamelSkillCommands();
-        camelSkillComponent = new CamelSkillComponent(camelSkillDrawing, camelSkillCommands);
-        const selectCamelFunc = (camel) => {
-            GameState.camel = camel;
-            this._navigatorService.requestPageNavigation(Page.management);
-        };
-        camelManagementSelectComponent = new CamelSelectComponent(selectCamelFunc);
+    getLevelFromXp(xp) {
+        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
     }
 }
-class CamelSelectComponent {
-    _selectFunc;
-    constructor(_selectFunc) {
-        this._selectFunc = _selectFunc;
-    }
-    load() {
-        const camelSelectSection = document.getElementById('camel-select');
-        if (!camelSelectSection) {
-            throw new Error('No camel select element');
-        }
-        camelSelectSection.style.display = 'flex';
-        this.createSelectList(camelSelectSection);
-    }
-    createSelectList(camelSelectSection) {
-        const heading = document.createElement('h1');
-        heading.appendChild(document.createTextNode('Choose camel'));
-        camelSelectSection.appendChild(heading);
-        const list = document.createElement('ul');
-        camelSelectSection.appendChild(list);
-        GameState.camels.forEach(camel => this.addCamelToList(list, camel));
-    }
-    addCamelToList(list, camel) {
-        const listItem = document.createElement('li');
-        listItem.onclick = () => this._selectFunc(camel);
-        const camelPictureContainer = document.createElement('div');
-        camelPictureContainer.classList.add('camel__picture-container');
-        const camelPicture = document.createElement('div');
-        camelPicture.classList.add('camel__picture');
-        camelPicture.style.color = camel.colour;
-        camelPicture.style.backgroundColor = camel.colour;
-        camelPictureContainer.appendChild(camelPicture);
-        const camelName = document.createElement('div');
-        camelName.classList.add('camel__name');
-        camelName.appendChild(document.createTextNode(camel.name));
-        const camelStats = document.createElement('div');
-        camelStats.classList.add('camel__stats');
-        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
-        const camelSelect = document.createElement('button');
-        camelSelect.classList.add('camel__select');
-        camelSelect.classList.add('chevron');
-        listItem.appendChild(camelPictureContainer);
-        listItem.appendChild(camelName);
-        listItem.appendChild(camelStats);
-        listItem.appendChild(camelSelect);
-        list.appendChild(listItem);
+class LevelCurveFactory {
+    getDefaultLevelCurve() {
+        return new DefaultLevelCurve();
     }
 }
 class MapOverview {
@@ -1202,7 +1313,7 @@ class MapOverview {
                 this.hideMap();
                 CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                 CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                (new GymDrawing(navigatorService)).drawGym();
+                (new GymDrawing(globalServices.navigatorService)).drawGym();
             }
             else if (mousePosition.x > 3 * rect.width / 8 && mousePosition.x < 19 * rect.width / 32 && mousePosition.y > 7 * rect.height / 16) {
                 if (!!GameState.camel && GameState.camel.agility.level > 20) {
@@ -1216,7 +1327,7 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                     return;
                 }
-                navigatorService.requestPageNavigation(Page.raceSelection);
+                globalServices.navigatorService.requestPageNavigation(Page.raceSelection);
             }
             // Management
             else if (mousePosition.x > 19 * rect.width / 32 && mousePosition.x < rect.width && mousePosition.y > 3 * rect.height / 16 && mousePosition.y < 9 * rect.height / 16) {
@@ -1224,7 +1335,7 @@ class MapOverview {
                     PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                     return;
                 }
-                navigatorService.requestPageNavigation(Page.managementSelect);
+                globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
             }
         }, false);
         CashMoneyService.drawCashMoney(ctx);
@@ -1595,9 +1706,11 @@ class RaceDrawing {
 class RaceManagement {
     _musicService;
     _raceSimulation;
-    constructor(_musicService, _raceSimulation) {
+    _camelCreator;
+    constructor(_musicService, _raceSimulation, _camelCreator) {
         this._musicService = _musicService;
         this._raceSimulation = _raceSimulation;
+        this._camelCreator = _camelCreator;
     }
     addCamelToRace(camel, race) {
         const racingCamel = new RacingCamel(camel);
@@ -1605,7 +1718,7 @@ class RaceManagement {
     }
     addCpuCamelsToRace(raceSize, competitorQuality, race) {
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = new Camel(++GameState.lastUsedId, competitorQuality);
+            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
             this.addCamelToRace(competitorCamel, race);
         }
     }
@@ -1817,15 +1930,13 @@ class RaceTrackCreator {
     }
 }
 class RacingStartup {
-    _musicService;
-    _navigatorService;
-    constructor(_musicService, _navigatorService) {
-        this._musicService = _musicService;
-        this._navigatorService = _navigatorService;
+    _globalServices;
+    constructor(_globalServices) {
+        this._globalServices = _globalServices;
     }
     registerComponents() {
         const raceSimulation = new RaceSimulation();
-        const raceManagement = new RaceManagement(this._musicService, raceSimulation);
+        const raceManagement = new RaceManagement(this._globalServices.musicService, raceSimulation, this._globalServices.camelCreator);
         this.registerRaceCamelSelectComponent(raceManagement);
         this.registerRaceSelection(raceManagement);
         this.registerRaceComponent(raceManagement);
@@ -1834,15 +1945,15 @@ class RacingStartup {
         const selectRaceCamelFunc = (camel) => {
             GameState.camel = camel;
             raceManagement.addCamelToRace(camel, race);
-            this._navigatorService.requestPageNavigation(Page.race);
-            this._musicService.setAudio("RaceAudio");
-            this._musicService.startAudio();
+            this._globalServices.navigatorService.requestPageNavigation(Page.race);
+            this._globalServices.musicService.setAudio("RaceAudio");
+            this._globalServices.musicService.startAudio();
             race.raceState = RaceState.triggered;
         };
         raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     }
     registerRaceSelection(raceManagement) {
-        raceSelection = new RaceSelection(this._navigatorService, raceManagement);
+        raceSelection = new RaceSelection(this._globalServices.navigatorService, raceManagement);
     }
     registerRaceComponent(raceManagement) {
         const leaderboardService = new LeaderboardService(CanvasService.getCanvasByName(CanvasNames.RaceCamel).getContext("2d"));
@@ -1933,8 +2044,10 @@ class RacingCamel {
 }
 class RecruitmentService {
     _navigator;
-    constructor(_navigator) {
+    _camelCreator;
+    constructor(_navigator, _camelCreator) {
         this._navigator = _navigator;
+        this._camelCreator = _camelCreator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d');
         this._camelCubeService = new CubeService(this._ctx);
@@ -1969,7 +2082,8 @@ class RecruitmentService {
         }
         GameState.cashMoney = GameState.cashMoney - cost;
         const quality = cost / 100;
-        GameState.camel = new Camel(++GameState.lastUsedId, quality);
+        GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);
+        ;
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
@@ -2009,54 +2123,5 @@ class RecruitmentService {
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, 'Recruit high camel - $300');
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
-    }
-}
-class CamelSkill {
-    _name;
-    _initialXP;
-    constructor(_name, _initialXP = 0) {
-        this._name = _name;
-        this._initialXP = _initialXP;
-        if (_initialXP < 0) {
-            throw Error('Cannot create camel skill with negative xp');
-        }
-        this.currentXp = _initialXP;
-        this._level = this.getLevelFromXp(_initialXP);
-    }
-    currentXp = 0;
-    _minSkillLevel = 1;
-    _maxSkillLevel = 99;
-    _level = 0;
-    get name() {
-        return this._name;
-    }
-    getXpRequiredForLevel(level) {
-        return (level - 1) * 100;
-    }
-    getLevelFromXp(xp) {
-        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
-    }
-    set level(level) {
-        let flooredLevel = Math.floor(level);
-        flooredLevel = Math.max(level, this._minSkillLevel);
-        flooredLevel = Math.min(level, this._maxSkillLevel);
-        this._level = flooredLevel;
-        this.currentXp = this.getXpRequiredForLevel(flooredLevel);
-    }
-    get level() {
-        return this._level;
-    }
-    getXpToNextLevel() {
-        if (this._level === this._maxSkillLevel) {
-            return 0;
-        }
-        return this.getXpRequiredForLevel(this.level + 1) - this.currentXp;
-    }
-    addXp(value) {
-        if (value < 0) {
-            throw Error('Cannot add negative xp');
-        }
-        this.currentXp += value;
-        this._level = this.getLevelFromXp(this.currentXp);
     }
 }

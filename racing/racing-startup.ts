@@ -1,12 +1,12 @@
 class RacingStartup {
-    constructor(
-        private readonly _musicService: MusicService,
-        private readonly _navigatorService: NavigatorService
-        ) { }
+    constructor(private readonly _globalServices: GlobalServices) { }
 
     public registerComponents() {
         const raceSimulation = new RaceSimulation();
-        const raceManagement = new RaceManagement(this._musicService, raceSimulation);
+        const raceManagement = new RaceManagement(
+            this._globalServices.musicService, 
+            raceSimulation,
+            this._globalServices.camelCreator);
         
         this.registerRaceCamelSelectComponent(raceManagement);
         this.registerRaceSelection(raceManagement);
@@ -18,9 +18,9 @@ class RacingStartup {
             GameState.camel = camel;
             raceManagement.addCamelToRace(camel, race);
 
-            this._navigatorService.requestPageNavigation(Page.race)
-            this._musicService.setAudio("RaceAudio");
-            this._musicService.startAudio()
+            this._globalServices.navigatorService.requestPageNavigation(Page.race)
+            this._globalServices.musicService.setAudio("RaceAudio");
+            this._globalServices.musicService.startAudio()
 
             race.raceState = RaceState.triggered;
         };
@@ -29,7 +29,7 @@ class RacingStartup {
     }
 
     private registerRaceSelection(raceManagement: RaceManagement) {
-        raceSelection = new RaceSelection(this._navigatorService, raceManagement);
+        raceSelection = new RaceSelection(this._globalServices.navigatorService, raceManagement);
     }
 
     private registerRaceComponent(raceManagement: RaceManagement) {

@@ -56,7 +56,7 @@ class GameState {
         if (gameState.camel === undefined) return;
 
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(camel));
+        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
 
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];
@@ -69,17 +69,8 @@ class GameState {
         GameState.cashMoney = gameState.cashMoney;
     }
 
-    private static loadCamel(serialisedCamel: Camel) {
-        const camel = new Camel(serialisedCamel.id, InitCamelQuality.None);
-
-        camel.colour = serialisedCamel.colour;
-        camel.name = serialisedCamel.name;
-        camel.temperament = serialisedCamel.temperament;
-        camel.unspentXp = serialisedCamel.unspentXp;
-
-        camel.agility.addXp(serialisedCamel.agility.currentXp);
-        camel.sprintSpeed.addXp(serialisedCamel.sprintSpeed.currentXp);
-        camel.stamina.addXp(serialisedCamel.stamina.currentXp);
+    private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {
+        const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
 
         GameState.camels.push(camel);
     }

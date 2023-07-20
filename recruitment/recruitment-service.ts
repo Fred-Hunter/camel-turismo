@@ -1,5 +1,8 @@
 class RecruitmentService {
-    constructor(private readonly _navigator: NavigatorService) {
+    constructor(
+        private readonly _navigator: NavigatorService,
+        private readonly _camelCreator: CamelCreator
+    ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Recruitment);
         this._ctx = this._canvas.getContext('2d')!;
         this._camelCubeService = new CubeService(this._ctx);
@@ -47,7 +50,8 @@ class RecruitmentService {
         }
         GameState.cashMoney = GameState.cashMoney - cost;
         const quality: InitCamelQuality = cost / 100;
-        GameState.camel = new Camel(++GameState.lastUsedId, quality);
+
+        GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);;
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;

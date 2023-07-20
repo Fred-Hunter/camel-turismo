@@ -1,8 +1,8 @@
 // Game state
 let race: Race;
 
-// Navigation TODO should not be available globally
-let navigatorService: NavigatorService;
+// Global service
+let globalServices: GlobalServices
 
 // Components
 // Recruitment
@@ -21,15 +21,14 @@ let raceCamelSelectComponent: CamelSelectComponent;
 let loadingScreen: LoadingScreen;
 
 function init() {
-    navigatorService = new NavigatorService();
-    const musicService = new MusicService();
-    const startup = new Startup(musicService, navigatorService);
+    const startup = new Startup();
+    globalServices = startup.createGlobalServices();
     
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
 
-    navigatorService.doNavigation();
+    globalServices.navigatorService.doNavigation();
 
     window.requestAnimationFrame(gameLoop);
 }
@@ -39,7 +38,7 @@ function gameLoop(timeStamp: number) {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
 
-        navigatorService.doNavigation();
+        globalServices.navigatorService.doNavigation();
         raceComponent.handleRaceLoop(timeStamp);
 
     } catch (exception) {
