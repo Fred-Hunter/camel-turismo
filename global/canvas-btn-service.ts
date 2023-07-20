@@ -3,7 +3,8 @@ class CanvasBtnService {
         public canvas: HTMLCanvasElement,
         private readonly _navigator: NavigatorService) { }
 
-    eventListeners: Array<(event: MouseEvent) => void> = [];
+    clickEventListeners: Array<(event: MouseEvent) => void> = [];
+    mouseMoveEventListeners: Array<(event: MouseEvent) => void> = [];
 
     getMousePosition(event: any) {
         var rect = this.canvas.getBoundingClientRect();
@@ -22,13 +23,13 @@ class CanvasBtnService {
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
         this.createBtn(
-            maxX / 40, 
+            maxX / 40,
             maxY - 100,
             100,
             50,
             0,
             '#cc807a',
-            '#f2ada7', 
+            '#f2ada7',
             '#fff',
             () => this._navigator.requestPageNavigation(targetPage),
             'Back');
@@ -90,19 +91,18 @@ class CanvasBtnService {
         // Binding the click event on the canvas
         var context = this.canvas.getContext('2d')!;
 
-        const handler = (event: MouseEvent) => {
+        const clickHandler = (event: MouseEvent) => {
             let mousePos = this.getMousePosition(event);
 
             if (this.isInside(mousePos, rect)) {
                 onclickFunction();
             }
-        }
+        };
 
-        this.eventListeners.push(handler);
+        this.clickEventListeners.push(clickHandler);
+        this.canvas.addEventListener('click', clickHandler, false);
 
-        this.canvas.addEventListener('click', handler, false);
-
-        this.canvas.addEventListener('mousemove', (event) => {
+        const mouseMoveEventHandler = (event: MouseEvent) => {
             let mousePos = this.getMousePosition(event);
 
             if (this.isInside(mousePos, rect)) {
@@ -110,16 +110,25 @@ class CanvasBtnService {
             } else {
                 this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
             }
-        }, false);
+        };
+
+        this.mouseMoveEventListeners.push(mouseMoveEventHandler);
+        this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
 
         this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
     }
 
     removeEventListeners() {
-        this.eventListeners.forEach(o => {
+        this.clickEventListeners.forEach(o => {
             this.canvas.removeEventListener('click', o, false)
-            });
-            
-        this.eventListeners = [];
+        });
+
+        this.clickEventListeners = [];
+
+        this.mouseMoveEventListeners.forEach(o => {
+            this.canvas.removeEventListener('mousemove', o, false)
+        });
+
+        this.mouseMoveEventListeners = [];
     }
 }

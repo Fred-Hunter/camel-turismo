@@ -1,6 +1,6 @@
 class CamelPropertyGenerator{
     public generateColour(): string {
-        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 6);
+        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 7);
     }
 
     public generateName(): string {

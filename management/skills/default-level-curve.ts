@@ -1,12 +1,13 @@
 class DefaultLevelCurve implements LevelCurve {
-    private readonly _minSkillLevel = 1;
-    private readonly _maxSkillLevel = 99;
+    public get minSkillLevel() { return 1; }
 
-    public getXpRequiredForLevel(level: number) {
+    public get maxSkillLevel() { return 99; }
+
+    public getXpRequiredForLevel(level: number, potential: number) {
         return (level - 1) * 100;
     }
 
-    public getLevelFromXp(xp: number) {
-        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
+    public getLevelFromXp(xp: number, potential: number) {
+        return Math.min(potential, Math.floor(xp / 100) + 1);
     }
 }

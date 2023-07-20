@@ -21,7 +21,7 @@ class Camel {
         this.unspentXp = camelInitProperties.unspentXp;
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
-        this.stamina = camelInitProperties.skills.sprintSpeed;
+        this.stamina = camelInitProperties.skills.stamina;
     }
 
     public colour: string;
@@ -32,4 +32,42 @@ class Camel {
     public agility: CamelSkill;
     public sprintSpeed: CamelSkill;
     public stamina: CamelSkill;
+
+    public get level(): number {
+        const skillLevels = [
+            this.agility.level, 
+            this.sprintSpeed.level, 
+            this.stamina.level];
+
+        const skillLevelSum = skillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+
+        return Math.floor(skillLevelSum / skillLevels.length);
+    }
+
+    public get potentialLevel(): number {
+        const potentialSkillLevels = [
+            this.agility.potential, 
+            this.sprintSpeed.potential, 
+            this.stamina.potential];
+
+        const skillLevelSum = potentialSkillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+
+        return Math.floor(skillLevelSum / potentialSkillLevels.length);
+    }
+
+    public get potentialDescription(): string {
+        debugger;
+        const potentialLevel = this.potentialLevel;
+
+        if(potentialLevel <= 10) return 'Dismal underachiever';
+        else if(potentialLevel <= 20) return 'Dismal underachiever';
+        else if(potentialLevel <= 30) return 'Struggling competitor';
+        else if(potentialLevel <= 40) return 'Modest hopeless case';
+        else if(potentialLevel <= 50) return 'Developing talent';
+        else if(potentialLevel <= 60) return 'Breakthrough prospect';
+        else if(potentialLevel <= 70) return 'Frontrunner in training';
+        else if(potentialLevel <= 80) return 'Elite championship aspirant';
+        else if(potentialLevel <= 90) return 'Future racing star';
+        else return 'Legendary camel in the making'
+    }
 }

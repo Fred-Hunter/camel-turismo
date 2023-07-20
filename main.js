@@ -78,7 +78,8 @@ class CanvasBtnService {
         this.canvas = canvas;
         this._navigator = _navigator;
     }
-    eventListeners = [];
+    clickEventListeners = [];
+    mouseMoveEventListeners = [];
     getMousePosition(event) {
         var rect = this.canvas.getBoundingClientRect();
         return {
@@ -122,15 +123,15 @@ class CanvasBtnService {
         };
         // Binding the click event on the canvas
         var context = this.canvas.getContext('2d');
-        const handler = (event) => {
+        const clickHandler = (event) => {
             let mousePos = this.getMousePosition(event);
             if (this.isInside(mousePos, rect)) {
                 onclickFunction();
             }
         };
-        this.eventListeners.push(handler);
-        this.canvas.addEventListener('click', handler, false);
-        this.canvas.addEventListener('mousemove', (event) => {
+        this.clickEventListeners.push(clickHandler);
+        this.canvas.addEventListener('click', clickHandler, false);
+        const mouseMoveEventHandler = (event) => {
             let mousePos = this.getMousePosition(event);
             if (this.isInside(mousePos, rect)) {
                 this.displayHoverState(context, rect, radius, borderColour, fontColour, text);
@@ -138,14 +139,20 @@ class CanvasBtnService {
             else {
                 this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
             }
-        }, false);
+        };
+        this.mouseMoveEventListeners.push(mouseMoveEventHandler);
+        this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
         this.drawBtn(context, rect, radius, backgroundColour, borderColour, fontColour, text);
     }
     removeEventListeners() {
-        this.eventListeners.forEach(o => {
+        this.clickEventListeners.forEach(o => {
             this.canvas.removeEventListener('click', o, false);
         });
-        this.eventListeners = [];
+        this.clickEventListeners = [];
+        this.mouseMoveEventListeners.forEach(o => {
+            this.canvas.removeEventListener('mousemove', o, false);
+        });
+        this.mouseMoveEventListeners = [];
     }
 }
 class CanvasCamelService {
@@ -940,7 +947,7 @@ class CamelCreator {
 }
 class CamelPropertyGenerator {
     generateColour() {
-        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 6);
+        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 7);
     }
     generateName() {
         const adjectives = [
@@ -974,6 +981,26 @@ class CamelPropertyGenerator {
         }
     }
 }
+class CamelSkillCreator {
+    _levelCurveFactory;
+    constructor(_levelCurveFactory) {
+        this._levelCurveFactory = _levelCurveFactory;
+    }
+    generateSkillWithQuality(skillType, quality) {
+        const level = Math.ceil(Math.random() * 10 * (quality + 1));
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        // TODO randomise
+        const potentialRange = levelCurve.maxSkillLevel - level;
+        const potential = level + Math.floor(Math.random() * potentialRange);
+        const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
+        return new CamelSkill(skillType, levelCurve, potential, initialXp);
+    }
+    generateSkillFromSerialisedSkill(serialisedSkill) {
+        const xp = serialisedSkill.currentXp;
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        return new CamelSkill(serialisedSkill.skillType, levelCurve, serialisedSkill.potential, xp);
+    }
+}
 var CamelTemperament;
 (function (CamelTemperament) {
     CamelTemperament[CamelTemperament["Calm"] = 0] = "Calm";
@@ -1003,7 +1030,7 @@ class Camel {
         this.unspentXp = camelInitProperties.unspentXp;
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
-        this.stamina = camelInitProperties.skills.sprintSpeed;
+        this.stamina = camelInitProperties.skills.stamina;
     }
     colour;
     name;
@@ -1012,6 +1039,48 @@ class Camel {
     agility;
     sprintSpeed;
     stamina;
+    get level() {
+        const skillLevels = [
+            this.agility.level,
+            this.sprintSpeed.level,
+            this.stamina.level
+        ];
+        const skillLevelSum = skillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+        return Math.floor(skillLevelSum / skillLevels.length);
+    }
+    get potentialLevel() {
+        const potentialSkillLevels = [
+            this.agility.potential,
+            this.sprintSpeed.potential,
+            this.stamina.potential
+        ];
+        const skillLevelSum = potentialSkillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
+        return Math.floor(skillLevelSum / potentialSkillLevels.length);
+    }
+    get potentialDescription() {
+        debugger;
+        const potentialLevel = this.potentialLevel;
+        if (potentialLevel <= 10)
+            return 'Dismal underachiever';
+        else if (potentialLevel <= 20)
+            return 'Dismal underachiever';
+        else if (potentialLevel <= 30)
+            return 'Struggling competitor';
+        else if (potentialLevel <= 40)
+            return 'Modest hopeless case';
+        else if (potentialLevel <= 50)
+            return 'Developing talent';
+        else if (potentialLevel <= 60)
+            return 'Breakthrough prospect';
+        else if (potentialLevel <= 70)
+            return 'Frontrunner in training';
+        else if (potentialLevel <= 80)
+            return 'Elite championship aspirant';
+        else if (potentialLevel <= 90)
+            return 'Future racing star';
+        else
+            return 'Legendary camel in the making';
+    }
 }
 class CamelSelectComponent {
     _selectFunc;
@@ -1085,24 +1154,6 @@ class CamelSkillComponent {
         this.load();
     };
 }
-class CamelSkillCreator {
-    _levelCurveFactory;
-    constructor(_levelCurveFactory) {
-        this._levelCurveFactory = _levelCurveFactory;
-    }
-    generateSkillWithQuality(skillType, quality) {
-        const level = Math.ceil(Math.random() * 10 * (quality + 1));
-        const potential = level + 10;
-        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
-        const initialXp = levelCurve.getXpRequiredForLevel(level, potential);
-        return new CamelSkill(skillType, levelCurve, potential, initialXp);
-    }
-    generateSkillFromSerialisedSkill(serialisedSkill) {
-        const xp = serialisedSkill.currentXp;
-        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
-        return new CamelSkill(serialisedSkill.skillType, levelCurve, serialisedSkill.potential, xp);
-    }
-}
 class CamelSkillDrawing {
     _navigator;
     constructor(_navigator) {
@@ -1128,8 +1179,11 @@ class CamelSkillDrawing {
     drawOverview(camel, x, y) {
         const nameText = `${camel.name}`;
         const nameTextLength = this._ctx.measureText(nameText).width;
+        const xpText = `XP: ${camel.unspentXp}`;
+        const xpTextLength = this._ctx.measureText(xpText).width;
         this._ctx.fillText(nameText, x, y);
-        this._ctx.fillText(`XP: ${camel.unspentXp}`, x + nameTextLength + 20, y);
+        this._ctx.fillText(xpText, x + nameTextLength + 20, y);
+        this._ctx.fillText(camel.potentialDescription, x + nameTextLength + xpTextLength + 40, y);
     }
     drawSkills(camel, levelUpSkillFunc) {
         const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
@@ -1145,8 +1199,10 @@ class CamelSkillDrawing {
         const level = skill.level;
         const xpToNextLevel = skill.getXpToNextLevel();
         this._ctx.fillText(`${skill.name}: ${level}`, x, y);
-        this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
-        this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), `+`);
+        if (xpToNextLevel > 0) {
+            this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
+            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), `+`);
+        }
     }
     drawSkillStar(skills, x, y) {
         const maxRadius = 99;
@@ -1216,6 +1272,8 @@ class CamelSkill {
         this.skillType = skillType;
         this.levelCurve = levelCurve;
         this.potential = potential;
+        this.potential = Math.min(potential, levelCurve.maxSkillLevel);
+        this.potential = Math.max(potential, levelCurve.minSkillLevel);
         this.addXp(initialXp);
     }
     currentXp = 0;
@@ -1230,6 +1288,9 @@ class CamelSkill {
         return this.levelCurve.getLevelFromXp(this.currentXp, this.potential);
     }
     getXpToNextLevel() {
+        if (this.level === this.potential) {
+            return 0;
+        }
         return this.levelCurve.getXpRequiredForLevel(this.level + 1, this.potential) - this.currentXp;
     }
     addXp(value) {
@@ -1240,13 +1301,13 @@ class CamelSkill {
     }
 }
 class DefaultLevelCurve {
-    _minSkillLevel = 1;
-    _maxSkillLevel = 99;
-    getXpRequiredForLevel(level) {
+    get minSkillLevel() { return 1; }
+    get maxSkillLevel() { return 99; }
+    getXpRequiredForLevel(level, potential) {
         return (level - 1) * 100;
     }
-    getLevelFromXp(xp) {
-        return Math.min(this._maxSkillLevel, Math.floor(xp / 100) + 1);
+    getLevelFromXp(xp, potential) {
+        return Math.min(potential, Math.floor(xp / 100) + 1);
     }
 }
 class LevelCurveFactory {

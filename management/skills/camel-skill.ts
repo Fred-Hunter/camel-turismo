@@ -5,9 +5,11 @@ class CamelSkill {
         public readonly potential: number,
         initialXp: number,
     ) {
+        this.potential = Math.min(potential, levelCurve.maxSkillLevel);
+        this.potential = Math.max(potential, levelCurve.minSkillLevel);
         this.addXp(initialXp);
     }
-
+    
     public currentXp = 0;
 
     public get name(): string {
@@ -23,6 +25,10 @@ class CamelSkill {
     }
 
     public getXpToNextLevel(): number {
+        if (this.level === this.potential) {
+            return 0;
+        }
+
         return this.levelCurve.getXpRequiredForLevel(this.level + 1, this.potential) - this.currentXp;
     }
 
