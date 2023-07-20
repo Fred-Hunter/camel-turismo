@@ -173,9 +173,9 @@ class CalendarService {
     }
 }
 class Calendar {
-    constructor() {
-        this.Day = 1;
-        this.Season = Season.Spring;
+    constructor(startDay = 1, season = Season.Spring) {
+        this.Day = startDay;
+        this.Season = season;
     }
     _numberOfDaysInASeason = 30;
     Day;
@@ -467,7 +467,7 @@ class CubeService {
 }
 class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 1;
+    static _version = 2;
     // Camel
     static camel;
     static camels = [];
@@ -518,7 +518,7 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
-        GameState.calendar = gameState.calendar;
+        GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
     }
     static loadCamel(camelCreator, serialisedCamel) {
         const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);

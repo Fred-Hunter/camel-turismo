@@ -1,7 +1,7 @@
 class Calendar {
-    constructor() {
-        this.Day = 1;
-        this.Season = Season.Spring;
+    constructor(startDay: number = 1, season: Season = Season.Spring) {
+        this.Day = startDay;
+        this.Season = season;
     }
 
     private readonly _numberOfDaysInASeason = 30;

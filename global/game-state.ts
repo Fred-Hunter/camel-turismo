@@ -10,7 +10,7 @@ interface GameStateObject {
 
 class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 1;
+    private static _version: number = 2;
 
     // Camel
     public static camel: Camel | undefined;
@@ -72,7 +72,8 @@ class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
-        GameState.calendar = gameState.calendar;
+
+        GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
     }
 
     private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {
