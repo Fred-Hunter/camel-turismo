@@ -111,5 +111,6 @@ class IsometricEditorComponent {
 
         this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
         this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
+        this.drawPaletteButton(btnService, maxX, maxY, 2, Colours.sand);
     }
 }

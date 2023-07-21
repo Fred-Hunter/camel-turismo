@@ -50,6 +50,8 @@ class Colours {
     ;
     static get grey() { return '#555555'; }
     ;
+    static get sand() { return '#C2B280'; }
+    ;
 }
 class CactusCoords {
     static get cactus() {
@@ -192,6 +194,332 @@ class CactusCoords {
                 "x": 4,
                 "y": 2,
                 "colour": Colours.green
+            }
+        ];
+    }
+}
+class PyramidCoords {
+    static get dilapidated() {
+        return [
+            {
+                "x": 6,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 1,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 4,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 5,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 4,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 5,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 4,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 2,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 1,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 5,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 2,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 3,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 5,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 5,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 6,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 7,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 2,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 4,
+                "colour": "#555555"
+            },
+            {
+                "x": 5,
+                "y": 5,
+                "colour": "#C2B280"
             }
         ];
     }
@@ -493,6 +821,7 @@ class IsometricEditorComponent {
         }, ['<-']);
         this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
         this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
+        this.drawPaletteButton(btnService, maxX, maxY, 2, Colours.sand);
     }
 }
 class CanvasBtnService {
@@ -2165,8 +2494,13 @@ class RaceDrawing {
                         else if (random < 6) {
                             this.drawCactus(i, j, height);
                         }
-                        else if (random < 9) {
+                        else if (random < 8) {
                             this.drawCactus2(i, j, height);
+                        }
+                        else if (random < 9) {
+                            if (height > 0.1) {
+                                this.drawPyramid(i, j, height);
+                            }
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -2313,6 +2647,11 @@ class RaceDrawing {
         var yOffset = (Math.random() - 0.5) * 0.25;
         CactusCoords.cactus2.forEach(coord => {
             this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
+    }
+    drawPyramid(x, y, height) {
+        PyramidCoords.dilapidated.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
         });
     }
 }
