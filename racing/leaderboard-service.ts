@@ -25,7 +25,7 @@ class LeaderboardService {
 		let height = 0;
 		race.racingCamels
 			.sort((a, b) => this.sortCamels(a, b))
-			.forEach((racingCamel) => {
+			.forEach(racingCamel => {
 				this.drawCamel(racingCamel, height);
 				height -= 5;
 			});
