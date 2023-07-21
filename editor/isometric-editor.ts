@@ -20,7 +20,7 @@ class IsometricEditorComponent {
 
             const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
 
-            if (coords.x2 < 0 || coords.x2 > 10 || coords.y2 < 0 || coords.y2 > 10) {
+            if (coords.y2 > 10) {
                 return;
             }
 

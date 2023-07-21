@@ -357,7 +357,7 @@ class IsometricEditorComponent {
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
             const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
-            if (coords.x2 < 0 || coords.x2 > 10 || coords.y2 < 0 || coords.y2 > 10) {
+            if (coords.y2 > 10) {
                 return;
             }
             canvas.getContext('2d').clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
