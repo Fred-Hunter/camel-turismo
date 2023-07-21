@@ -52,7 +52,7 @@ class Colours {
     ;
 }
 class CactusCoords {
-    static get default() {
+    static get cactus() {
         return [
             {
                 "x": 6,
@@ -102,6 +102,95 @@ class CactusCoords {
             {
                 "x": 1,
                 "y": 1,
+                "colour": Colours.green
+            }
+        ];
+    }
+    static get cactus2() {
+        return [
+            {
+                "x": 7,
+                "y": 7,
+                "colour": Colours.green
+            },
+            {
+                "x": 6,
+                "y": 6,
+                "colour": Colours.green
+            },
+            {
+                "x": 2,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 1,
+                "y": 3,
+                "colour": Colours.green
+            },
+            {
+                "x": 3,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 5,
+                "y": 5,
+                "colour": Colours.green
+            },
+            {
+                "x": 6,
+                "y": 5,
+                "colour": Colours.green
+            },
+            {
+                "x": 7,
+                "y": 5,
+                "colour": Colours.green
+            },
+            {
+                "x": 6,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": Colours.green
+            },
+            {
+                "x": 4,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": Colours.green
+            },
+            {
+                "x": 2,
+                "y": 2,
+                "colour": Colours.green
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "colour": Colours.green
+            },
+            {
+                "x": 0,
+                "y": 0,
+                "colour": Colours.green
+            },
+            {
+                "x": 0,
+                "y": 2,
+                "colour": Colours.green
+            },
+            {
+                "x": 4,
+                "y": 2,
                 "colour": Colours.green
             }
         ];
@@ -2073,8 +2162,11 @@ class RaceDrawing {
                         else if (random < 4) {
                             this.drawRocks(i, j, height);
                         }
-                        else if (random < 9) {
+                        else if (random < 6) {
                             this.drawCactus(i, j, height);
+                        }
+                        else if (random < 9) {
+                            this.drawCactus2(i, j, height);
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -2100,16 +2192,16 @@ class RaceDrawing {
         var xOffset = (Math.random() - 0.5) * 0.5;
         var yOffset = (Math.random() - 0.5) * 0.5;
         const size = GlobalStaticConstants.baseCubeSize / 10;
-        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, size, Colours.green, height + 5);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 1);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 2);
@@ -2117,16 +2209,16 @@ class RaceDrawing {
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 4);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 5);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, size, Colours.green, height + 5);
     }
     drawCamels(race) {
         const ctx = this._camelCanvas.getContext("2d");
@@ -2212,7 +2304,14 @@ class RaceDrawing {
     drawCactus(x, y, height) {
         var xOffset = (Math.random() - 0.5) * 0.25;
         var yOffset = (Math.random() - 0.5) * 0.25;
-        CactusCoords.default.forEach(coord => {
+        CactusCoords.cactus.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
+    }
+    drawCactus2(x, y, height) {
+        var xOffset = (Math.random() - 0.5) * 0.25;
+        var yOffset = (Math.random() - 0.5) * 0.25;
+        CactusCoords.cactus2.forEach(coord => {
             this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
         });
     }

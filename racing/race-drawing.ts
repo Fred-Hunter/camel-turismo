@@ -43,8 +43,10 @@ class RaceDrawing {
                         }
                         else if (random < 4) {
                             this.drawRocks(i, j, height);
-                        } else if (random < 9) {
+                        } else if (random < 6) {
                             this.drawCactus(i, j, height);
+                        } else if (random < 9) {
+                            this.drawCactus2(i, j, height);
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -212,7 +214,16 @@ class RaceDrawing {
         var xOffset = (Math.random() - 0.5) * 0.25;
         var yOffset = (Math.random() - 0.5) * 0.25;
 
-        CactusCoords.default.forEach(coord => {
+        CactusCoords.cactus.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
+    }
+
+    private drawCactus2(x: number, y: number, height: number): void {
+        var xOffset = (Math.random() - 0.5) * 0.25;
+        var yOffset = (Math.random() - 0.5) * 0.25;
+
+        CactusCoords.cactus2.forEach(coord => {
             this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
         });
     }
