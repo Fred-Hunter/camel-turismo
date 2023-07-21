@@ -1740,11 +1740,6 @@ class LeaderboardService {
         const camelService = new CanvasCamelService(this.ctx);
         camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
         this.ctx.fillStyle = "#96876e";
-        if (GlobalStaticConstants.debugMode) {
-            this.ctx.fillStyle = "red";
-            this.ctx.fillText(`S:${camel.camel.sprintSpeed.level} A:${camel.agility} St:${camel.stamina}`, GlobalStaticConstants.innerWidth - 130, 70 - heightOffset * 10);
-            this.ctx.fillText(`Speed:${camel.currentSpeed}`, GlobalStaticConstants.innerWidth - 130, 80 - heightOffset * 10);
-        }
         if (this.isCamelUserOwned(camel.camel)) {
             this.ctx.fillStyle = "#96876e";
             this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
@@ -1763,6 +1758,14 @@ class LeaderboardService {
         this.ctx.roundRect(GlobalStaticConstants.innerWidth - 100, 70 - heightOffset * 10, 80 * completionPercentage, 10, 5);
         this.ctx.fill();
         this.ctx.closePath();
+        if (GlobalStaticConstants.debugMode) {
+            this.ctx.save();
+            this.ctx.fillStyle = "black";
+            this.ctx.fillText(`S:${camel.camel.sprintSpeed.level} A:${camel.agility} St:${camel.stamina}`, GlobalStaticConstants.innerWidth - 130, 70 - heightOffset * 10);
+            this.ctx.fillText(`Speed:${camel.currentSpeed.toPrecision(3)}`, GlobalStaticConstants.innerWidth - 130, 80 - heightOffset * 10);
+            this.ctx.fillText(`Form:${camel.form.toPrecision(3)}`, GlobalStaticConstants.innerWidth - 130, 90 - heightOffset * 10);
+            this.ctx.restore();
+        }
     }
 }
 class RaceComponent {
@@ -2149,13 +2152,13 @@ class RaceSimulation {
             const speedOffset = 10;
             const agilityOffset = 0;
             const staminaOffset = 10;
-            const intelligenceOffset = 20;
+            const intelligenceOffset = 40;
             let speed = 0;
             const remainingDistance = race.length * (1 - racingCamel.completionPercentage);
             const completedDistance = race.length * racingCamel.completionPercentage;
             const sprintDuration = this.GetVariantNumber(6, 2);
             const sprintingSpeed = speedOffset + racingCamel.camel.sprintSpeed.level * speedMultiplier;
-            const baseSpeed = 0.5 * sprintingSpeed;
+            const baseSpeed = 0.75 * sprintingSpeed;
             const deadSpeed = 0.25;
             const accelerationRate = agilityOffset + (agilityMultiplier * racingCamel.agility) / 100;
             const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + staminaOffset) * staminaMultiplier);
@@ -2186,7 +2189,7 @@ class RaceSimulation {
             // Now we spice things up
             const bias = speed === deadSpeed ? inconsistancyRate / 40 : 0;
             racingCamel.form += this.GetVariantNumber(bias, inconsistancyRate / 10);
-            racingCamel.form *= 0.95;
+            racingCamel.form *= 0.999;
             speed += form;
             speed = Math.max(speed, deadSpeed); // still walking
             speed *= finalSpeedMultiplier;

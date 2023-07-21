@@ -28,7 +28,7 @@ class RaceSimulation {
 			const speedOffset = 10;
 			const agilityOffset = 0;
 			const staminaOffset = 10;
-			const intelligenceOffset = 20;
+			const intelligenceOffset = 40;
 
 			let speed = 0;
 			const remainingDistance = race.length * (1 - racingCamel.completionPercentage);
@@ -37,7 +37,7 @@ class RaceSimulation {
 			const sprintDuration = this.GetVariantNumber(6, 2);
 
 			const sprintingSpeed = speedOffset + racingCamel.camel.sprintSpeed.level * speedMultiplier;
-			const baseSpeed = 0.5 * sprintingSpeed;
+			const baseSpeed = 0.75 * sprintingSpeed;
 			const deadSpeed = 0.25;
 			const accelerationRate = agilityOffset + (agilityMultiplier * racingCamel.agility) / 100;
 			const decelerationRate = (1 + racingCamel.currentSpeed / 10) / ((racingCamel.stamina + staminaOffset) * staminaMultiplier);
@@ -77,7 +77,7 @@ class RaceSimulation {
 			const bias = speed === deadSpeed ? inconsistancyRate / 40 : 0;
 
 			racingCamel.form += this.GetVariantNumber(bias, inconsistancyRate / 10);
-			racingCamel.form *= 0.95;
+			racingCamel.form *= 0.999;
 			speed += form;
 
 			speed = Math.max(speed, deadSpeed); // still walking
