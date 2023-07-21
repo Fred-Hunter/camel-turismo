@@ -1,5 +1,5 @@
 class RaceTrackCreator {
-    public CreateTrack(length: number): number[][] {
+    public createTrack(length: number): number[][] {
 
         if (length <= 0) {
             throw new Error('Tried to create a track with invalid length');

@@ -37,7 +37,7 @@ class RaceManagement {
         }
 
         const trackCreator = new RaceTrackCreator();
-        const track = trackCreator.CreateTrack(raceLength);
+        const track = trackCreator.createTrack(raceLength);
 
         const race = new Race(raceLength, track, prizeCashMoney);
 

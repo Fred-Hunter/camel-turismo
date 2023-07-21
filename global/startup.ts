@@ -10,6 +10,8 @@ class Startup {
 
         recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
         loadingScreen = new LoadingScreen(globalServices.navigatorService);
+
+        this.registerDebugComponents();
     }
 
     public registerAudio() {
@@ -31,6 +33,7 @@ class Startup {
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
         CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
+        CanvasService.createCanvas('9', CanvasNames.Debug);
     }
 
     public createGlobalServices(): GlobalServices {
@@ -47,5 +50,10 @@ class Startup {
             navigatorService,
             camelCreator
         }
+    }
+
+    public registerDebugComponents() {
+        const cubeService = new CubeService(CanvasService.getCanvasByName(CanvasNames.Debug).getContext("2d")!);
+        isometricEditorComponent = new IsometricEditorComponent(cubeService);
     }
 }

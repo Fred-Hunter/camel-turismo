@@ -11,4 +11,5 @@ class CanvasNames {
     public static CamelManagement: string = 'camel-management';
     public static LoadingScreen: string = 'loading-screen';
     public static CalendarDetails: string = 'calendar-details';
+    public static Debug: string = 'debug';
 }
