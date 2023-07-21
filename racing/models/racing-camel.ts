@@ -3,11 +3,15 @@ class RacingCamel {
         public camel: Camel) { 
             this._initialVelocity = 5 + (this.camel.agility.level / 10);
             this.stamina = this.camel.stamina.level;
+            this.agility = this.camel.agility.level;
         }
 
     finalPosition: number | undefined;
     completionPercentage: number = 0;
     stamina: number = 0;
+    agility: number = 0;
+    currentSpeed: number = 0;
+    form: number = 0;
 
     private _jumpHeight = 0;
 

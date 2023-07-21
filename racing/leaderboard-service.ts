@@ -93,3 +93,4 @@ class LeaderboardService {
 		this.ctx.closePath();
 	}
 }
+

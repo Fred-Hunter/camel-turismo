@@ -10,41 +10,41 @@ class MapOverview {
 		CanvasService.hideCanvas(CanvasNames.MapOverview);
 	}
 
-    private static getMousePosition(event: any) {
-        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
-        };
-    }
+	private static getMousePosition(event: any) {
+		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+		var rect = canvas.getBoundingClientRect();
+		return {
+			x: event.clientX - rect.left,
+			y: event.clientY - rect.top,
+		};
+	}
 
-    public static renderMap() {
-        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-        const ctx = canvas?.getContext("2d");
-        if (!ctx) return;
+	public static renderMap() {
+		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+		const ctx = canvas?.getContext("2d");
+		if (!ctx) return;
 
-        const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
+		const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
 
-        let rect = {
-            x: 0,
-            y: 0,
-            width: GlobalStaticConstants.innerHeight / 0.815,
-            height: GlobalStaticConstants.innerHeight
-        };
+		let rect = {
+			x: 0,
+			y: 0,
+			width: GlobalStaticConstants.innerHeight / 0.815,
+			height: GlobalStaticConstants.innerHeight,
+		};
 
-        if (scaleToWidth) {
-            rect = {
-                x: 0,
-                y: 0,
-                width: GlobalStaticConstants.innerWidth,
-                height: 0.815 * GlobalStaticConstants.innerWidth
-            };
-        }
+		if (scaleToWidth) {
+			rect = {
+				x: 0,
+				y: 0,
+				width: GlobalStaticConstants.innerWidth,
+				height: 0.815 * GlobalStaticConstants.innerWidth,
+			};
+		}
 
-        const img = new Image();
-        img.src = './graphics/camelmap-nobreed-v3.svg';
-        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
+		const img = new Image();
+		img.src = "./graphics/camelmap-nobreed-v3.svg";
+		ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
 
         if (GlobalStaticConstants.debugMode) {
             ctx.save()
