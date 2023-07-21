@@ -48,6 +48,9 @@ class NavigatorService {
                 case Page.calendarDetails:
                     this.navigateToCalendarDetails();
                     break;
+                case Page.debug:
+                    isometricEditorComponent.load();
+                    break;
             }
 
             this._postNavigationFunc();

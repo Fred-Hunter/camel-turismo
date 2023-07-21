@@ -37,13 +37,14 @@ class RaceDrawing {
 
                     if (shouldIncludeObject) {
                         // Randomize object
-
                         const random = Math.floor(Math.random() * 10);
-                        if (random < 5) {
+                        if (random < 1) {
                             this.drawPalmTree(i, j, height);
                         }
-                        else if (random < 9) {
+                        else if (random < 4) {
                             this.drawRocks(i, j, height);
+                        } else if (random < 9) {
+                            this.drawCactus(i, j, height);
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -59,13 +60,15 @@ class RaceDrawing {
             .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, GlobalStaticConstants.baseCubeSize / 5, '#d8843b', height);
     }
 
-    public drawRocks(i: number, j: number, height: number) {
+    public drawRocks(x: number, y: number, height: number) {
         var xOffset = (Math.random() - 0.5) * 0.5;
         var yOffset = (Math.random() - 0.5) * 0.5;
 
-        const size = GlobalStaticConstants.baseCubeSize / 6;
+        const rockToDraw = Math.random() < 0.5 ? RookCoords.smallRock1 : RookCoords.smallRock2;
 
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#555555', height);
+        rockToDraw.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
     }
 
     public drawPalmTree(i: number, j: number, height: number) {
@@ -74,17 +77,17 @@ class RaceDrawing {
 
         const size = GlobalStaticConstants.baseCubeSize / 10;
 
-        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i - 0.5 + xOffset, j + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i - 0.4 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.3 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.2 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i - 0.1 + xOffset, j + yOffset, size, Colours.green, height + 5);
 
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.5 + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.4 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.3 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.2 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j - 0.1 + yOffset, size, Colours.green, height + 5);
 
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 1);
@@ -94,17 +97,17 @@ class RaceDrawing {
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 5);
         this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#b18579', height + 6);
 
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.1 + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.2 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.3 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.4 + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + xOffset, j + 0.5 + yOffset, size, Colours.green, height + 5);
 
-        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, size, '#3e6549', height + 5);
-        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, size, '#3e6549', height + 6);
-        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, size, '#3e6549', height + 5);
+        this.backgroundCubeService.drawCube(i + 0.1 + xOffset, j + yOffset, size, Colours.green, height + 5);
+        this.backgroundCubeService.drawCube(i + 0.2 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.3 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.4 + xOffset, j + yOffset, size, Colours.green, height + 6);
+        this.backgroundCubeService.drawCube(i + 0.5 + xOffset, j + yOffset, size, Colours.green, height + 5);
     }
 
     public drawCamels(race: Race) {
@@ -203,5 +206,14 @@ class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 2, -1.5);
+    }
+
+    private drawCactus(x: number, y: number, height: number): void {
+        var xOffset = (Math.random() - 0.5) * 0.25;
+        var yOffset = (Math.random() - 0.5) * 0.25;
+
+        CactusCoords.default.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
     }
 }

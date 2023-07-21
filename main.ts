@@ -20,13 +20,21 @@ let raceCamelSelectComponent: CamelSelectComponent;
 // Loading
 let loadingScreen: LoadingScreen;
 
+// Debug
+let isometricEditorComponent: IsometricEditorComponent;
+let debugMode = false;
+
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
-    
+
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
+
+    if (debugMode) {
+        globalServices.navigatorService.requestPageNavigation(Page.debug);
+    }
 
     globalServices.navigatorService.doNavigation();
 

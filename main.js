@@ -15,12 +15,18 @@ let raceComponent;
 let raceCamelSelectComponent;
 // Loading
 let loadingScreen;
+// Debug
+let isometricEditorComponent;
+let debugMode = false;
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
+    if (debugMode) {
+        globalServices.navigatorService.requestPageNavigation(Page.debug);
+    }
     globalServices.navigatorService.doNavigation();
     window.requestAnimationFrame(gameLoop);
 }
@@ -39,6 +45,143 @@ function gameLoop(timeStamp) {
     }
 }
 window.onload = () => { init(); };
+class Colours {
+    static get green() { return '#3e6549'; }
+    ;
+    static get grey() { return '#555555'; }
+    ;
+}
+class CactusCoords {
+    static get default() {
+        return [
+            {
+                "x": 6,
+                "y": 6,
+                "colour": Colours.green
+            },
+            {
+                "x": 5,
+                "y": 5,
+                "colour": Colours.green
+            },
+            {
+                "x": 4,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": Colours.green
+            },
+            {
+                "x": 2,
+                "y": 2,
+                "colour": Colours.green
+            },
+            {
+                "x": 5,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 6,
+                "y": 4,
+                "colour": Colours.green
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": Colours.green
+            },
+            {
+                "x": 4,
+                "y": 2,
+                "colour": Colours.green
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "colour": Colours.green
+            }
+        ];
+    }
+}
+class RookCoords {
+    static get smallRock1() {
+        return [
+            {
+                "x": 1,
+                "y": 3,
+                "colour": Colours.grey
+            },
+            {
+                "x": 1,
+                "y": 4,
+                "colour": Colours.grey
+            },
+            {
+                "x": 2,
+                "y": 3,
+                "colour": Colours.grey
+            },
+            {
+                "x": 2,
+                "y": 4,
+                "colour": Colours.grey
+            },
+            {
+                "x": 2,
+                "y": 5,
+                "colour": Colours.grey
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": Colours.grey
+            }
+        ];
+    }
+    static get smallRock2() {
+        return [
+            {
+                "x": 3,
+                "y": 1,
+                "colour": Colours.grey
+            },
+            {
+                "x": 4,
+                "y": 0,
+                "colour": Colours.grey
+            },
+            {
+                "x": 4,
+                "y": 1,
+                "colour": Colours.grey
+            },
+            {
+                "x": 4,
+                "y": 2,
+                "colour": Colours.grey
+            },
+            {
+                "x": 5,
+                "y": 2,
+                "colour": Colours.grey
+            },
+            {
+                "x": 4,
+                "y": 3,
+                "colour": Colours.grey
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": Colours.grey
+            }
+        ];
+    }
+}
 class MusicService {
     HomeScreenAudio;
     RaceAudio;
@@ -93,6 +236,7 @@ class CalendarDetailsDrawing {
         ctx.fillText(CalendarService.getSeasonAsString(calendar.Season), GlobalStaticConstants.innerWidth / 2, calendarYStart / 2, GlobalStaticConstants.innerWidth);
         ctx.font = '12pt Garamond';
         const currentDay = calendar.Day;
+        const currentDayTileColour = this.getCurrentDayTileColour(calendar.Season);
         for (let column = 0; column < numberOfColumns; column++) {
             for (let row = 0; row < numberOfRows; row++) {
                 const x = calendarXStart + (column * calendarWidth / (numberOfColumns)) + 2;
@@ -101,7 +245,7 @@ class CalendarDetailsDrawing {
                 const height = (calendarHeight / numberOfRows) - 4;
                 const day = column + 1 + row * numberOfColumns;
                 if (day === currentDay) {
-                    ctx.fillStyle = this.getCurrentDayTileColour(calendar.Season);
+                    ctx.fillStyle = currentDayTileColour;
                 }
                 ctx.fillRect(x, y, width, height);
                 ctx.fillStyle = '#fff';
@@ -110,7 +254,7 @@ class CalendarDetailsDrawing {
             }
         }
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
-        btnService.drawBackButton(Page.mapOverview);
+        btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }
     static getStandardTileColour(season) {
         return CalendarService.getSeasonDarkerColour(season);
@@ -196,6 +340,72 @@ var Season;
     Season[Season["Autumn"] = 2] = "Autumn";
     Season[Season["Winter"] = 3] = "Winter";
 })(Season || (Season = {}));
+class IsometricEditorComponent {
+    _cubeService;
+    constructor(_cubeService) {
+        this._cubeService = _cubeService;
+    }
+    _cubeCoords = [];
+    _colour = Colours.grey;
+    load() {
+        CanvasService.showCanvas(CanvasNames.Debug);
+        const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
+        this.drawGround();
+        this.drawButtons(canvas);
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
+            if (coords.y2 > 10) {
+                return;
+            }
+            canvas.getContext('2d').clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+            this.addCube({ x: Math.floor(coords.x2) - 1, y: Math.floor(coords.y2) - 1, colour: this._colour });
+            this.redraw();
+            console.log(this._cubeCoords);
+        });
+    }
+    addCube(newCube) {
+        const existingCube = this._cubeCoords
+            .filter(o => o.x === newCube.x && o.y === newCube.y);
+        if (existingCube.length > 0) {
+            this._cubeCoords.splice(this._cubeCoords.indexOf(existingCube[0]), 1);
+        }
+        this._cubeCoords.push(newCube);
+    }
+    redraw() {
+        this.drawGround();
+        this.drawCubes();
+    }
+    drawCubes() {
+        this._cubeCoords.forEach((cube) => {
+            this._cubeService.drawCube(cube.x, cube.y, GlobalStaticConstants.baseCubeSize, cube.colour, 0);
+        });
+    }
+    drawGround() {
+        const canvasColour = '#C2B280';
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                this._cubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, canvasColour, 0);
+            }
+        }
+    }
+    drawPaletteButton(btnService, maxX, maxY, position, colour) {
+        btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, '#fff', () => { this._colour = colour; console.log(this._colour, colour); }, ['']);
+    }
+    drawButtons(canvas) {
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const maxX = canvas.width / GlobalStaticConstants.devicePixelRatio;
+        const maxY = canvas.height / GlobalStaticConstants.devicePixelRatio;
+        btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
+            this._cubeCoords.pop();
+            this.redraw();
+        }, ['<-']);
+        this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
+        this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
+    }
+}
 class CanvasBtnService {
     canvas;
     _navigator;
@@ -215,10 +425,10 @@ class CanvasBtnService {
     isInside(pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     }
-    drawBackButton(targetPage) {
+    drawBackButton(targetPage, backgroundColour = '#cc807a', borderColour = '#f2ada7') {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, backgroundColour, borderColour, '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
     }
     drawBtn = (context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text) => {
         context.save();
@@ -323,6 +533,7 @@ class CanvasNames {
     static CamelManagement = 'camel-management';
     static LoadingScreen = 'loading-screen';
     static CalendarDetails = 'calendar-details';
+    static Debug = 'debug';
 }
 class CanvasService {
     static createCanvas(zIndex, name = "default") {
@@ -698,6 +909,7 @@ class Startup {
         managementStartup.registerComponents();
         recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
         loadingScreen = new LoadingScreen(globalServices.navigatorService);
+        this.registerDebugComponents();
     }
     registerAudio() {
         window.addEventListener('keydown', () => {
@@ -717,6 +929,7 @@ class Startup {
         CanvasService.createCanvas('7', CanvasNames.CamelManagement);
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
         CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
+        CanvasService.createCanvas('9', CanvasNames.Debug);
     }
     createGlobalServices() {
         const navigatorService = new NavigatorService();
@@ -730,6 +943,10 @@ class Startup {
             navigatorService,
             camelCreator
         };
+    }
+    registerDebugComponents() {
+        const cubeService = new CubeService(CanvasService.getCanvasByName(CanvasNames.Debug).getContext("2d"));
+        isometricEditorComponent = new IsometricEditorComponent(cubeService);
     }
 }
 class GymDrawing {
@@ -1650,6 +1867,9 @@ class NavigatorService {
                 case Page.calendarDetails:
                     this.navigateToCalendarDetails();
                     break;
+                case Page.debug:
+                    isometricEditorComponent.load();
+                    break;
             }
             this._postNavigationFunc();
             this._pageLoaded = true;
@@ -1685,6 +1905,7 @@ var Page;
     Page[Page["raceCamelSelect"] = 5] = "raceCamelSelect";
     Page[Page["raceSelection"] = 6] = "raceSelection";
     Page[Page["calendarDetails"] = 7] = "calendarDetails";
+    Page[Page["debug"] = 8] = "debug";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
@@ -1846,11 +2067,14 @@ class RaceDrawing {
                     if (shouldIncludeObject) {
                         // Randomize object
                         const random = Math.floor(Math.random() * 10);
-                        if (random < 5) {
+                        if (random < 1) {
                             this.drawPalmTree(i, j, height);
                         }
-                        else if (random < 9) {
+                        else if (random < 4) {
                             this.drawRocks(i, j, height);
+                        }
+                        else if (random < 9) {
+                            this.drawCactus(i, j, height);
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -1864,11 +2088,13 @@ class RaceDrawing {
         new CanvasCamelService(this._backgroundCanvas.getContext("2d"))
             .drawCamelIsoCoords(newXCoord, newYCoord + 0.5, GlobalStaticConstants.baseCubeSize / 5, '#d8843b', height);
     }
-    drawRocks(i, j, height) {
+    drawRocks(x, y, height) {
         var xOffset = (Math.random() - 0.5) * 0.5;
         var yOffset = (Math.random() - 0.5) * 0.5;
-        const size = GlobalStaticConstants.baseCubeSize / 6;
-        this.backgroundCubeService.drawCube(i + xOffset, j + yOffset, size, '#555555', height);
+        const rockToDraw = Math.random() < 0.5 ? RookCoords.smallRock1 : RookCoords.smallRock2;
+        rockToDraw.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + +xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
     }
     drawPalmTree(i, j, height) {
         var xOffset = (Math.random() - 0.5) * 0.5;
@@ -1983,6 +2209,13 @@ class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 2, -1.5);
     }
+    drawCactus(x, y, height) {
+        var xOffset = (Math.random() - 0.5) * 0.25;
+        var yOffset = (Math.random() - 0.5) * 0.25;
+        CactusCoords.default.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
+    }
 }
 class RaceManagement {
     _musicService;
@@ -2015,7 +2248,7 @@ class RaceManagement {
             competitorQuality = InitCamelQuality.Cpu5;
         }
         const trackCreator = new RaceTrackCreator();
-        const track = trackCreator.CreateTrack(raceLength);
+        const track = trackCreator.createTrack(raceLength);
         const race = new Race(raceLength, track, prizeCashMoney);
         this.addCpuCamelsToRace(raceSize, competitorQuality, race);
         return race;
@@ -2210,7 +2443,7 @@ class RaceSimulation {
     }
 }
 class RaceTrackCreator {
-    CreateTrack(length) {
+    createTrack(length) {
         if (length <= 0) {
             throw new Error('Tried to create a track with invalid length');
         }

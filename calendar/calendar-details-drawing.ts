@@ -36,6 +36,8 @@ class CalendarDetailsDrawing {
 
         const currentDay = calendar.Day;
 
+        const currentDayTileColour = this.getCurrentDayTileColour(calendar.Season);
+
         for (let column = 0; column < numberOfColumns; column++) {
             for (let row = 0; row < numberOfRows; row++) {
                 const x = calendarXStart + (column * calendarWidth / (numberOfColumns)) + 2;
@@ -46,7 +48,7 @@ class CalendarDetailsDrawing {
                 const day = column + 1 + row * numberOfColumns;
 
                 if (day === currentDay) {
-                    ctx.fillStyle = this.getCurrentDayTileColour(calendar.Season);
+                    ctx.fillStyle = currentDayTileColour;
                 }
 
                 ctx.fillRect(
@@ -64,7 +66,7 @@ class CalendarDetailsDrawing {
 
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
 
-        btnService.drawBackButton(Page.mapOverview);
+        btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }
 
     private static getStandardTileColour(season: Season) {
