@@ -351,7 +351,7 @@ class IsometricEditorComponent {
         CanvasService.showCanvas(CanvasNames.Debug);
         const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
         this.drawGround();
-        this.drawUndo(canvas);
+        this.drawButtons(canvas);
         canvas.addEventListener('click', (event) => {
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
@@ -379,8 +379,8 @@ class IsometricEditorComponent {
         this.drawCubes();
     }
     drawCubes() {
-        this._cubeCoords.forEach((coords) => {
-            this._cubeService.drawCube(coords.x, coords.y, GlobalStaticConstants.baseCubeSize, Colours.grey, 0);
+        this._cubeCoords.forEach((cube) => {
+            this._cubeService.drawCube(cube.x, cube.y, GlobalStaticConstants.baseCubeSize, cube.colour, 0);
         });
     }
     drawGround() {
@@ -391,14 +391,19 @@ class IsometricEditorComponent {
             }
         }
     }
-    drawUndo(canvas) {
+    drawPaletteButton(btnService, maxX, maxY, position, colour) {
+        btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, '#fff', () => { this._colour = colour; console.log(this._colour, colour); }, ['']);
+    }
+    drawButtons(canvas) {
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
         const maxX = canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = canvas.height / GlobalStaticConstants.devicePixelRatio;
-        btnService.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
+        btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
             this._cubeCoords.pop();
             this.redraw();
-        }, ['Undo']);
+        }, ['<-']);
+        this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
+        this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
     }
 }
 class CanvasBtnService {

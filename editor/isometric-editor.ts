@@ -11,7 +11,7 @@ class IsometricEditorComponent {
         const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
 
         this.drawGround();
-        this.drawUndo(canvas);
+        this.drawButtons(canvas);
 
         canvas.addEventListener('click', (event) => {
             const rect = canvas.getBoundingClientRect();
@@ -51,8 +51,8 @@ class IsometricEditorComponent {
     }
 
     private drawCubes() {
-        this._cubeCoords.forEach((coords) => {
-            this._cubeService.drawCube(coords.x, coords.y, GlobalStaticConstants.baseCubeSize, Colours.grey, 0);
+        this._cubeCoords.forEach((cube) => {
+            this._cubeService.drawCube(cube.x, cube.y, GlobalStaticConstants.baseCubeSize, cube.colour, 0);
         })
     }
 
@@ -66,7 +66,28 @@ class IsometricEditorComponent {
         }
     }
 
-    private drawUndo(canvas: HTMLCanvasElement) {
+    private drawPaletteButton(
+        btnService: CanvasBtnService,
+        maxX: number,
+        maxY: number,
+        position: number,
+        colour: string
+    ) {
+        btnService.createBtn(
+            (position + 2) * maxX / 40 + (position + 1) * 20,
+            maxY - 100,
+            maxX / 40,
+            50,
+            0,
+            5,
+            colour,
+            colour,
+            '#fff',
+            () => { this._colour = colour; console.log(this._colour, colour) },
+            ['']);
+    }
+
+    private drawButtons(canvas: HTMLCanvasElement) {
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
 
         const maxX = canvas.width / GlobalStaticConstants.devicePixelRatio;
@@ -75,7 +96,7 @@ class IsometricEditorComponent {
         btnService.createBtn(
             maxX / 40,
             maxY - 100,
-            100,
+            maxX / 40,
             50,
             0,
             5,
@@ -86,6 +107,9 @@ class IsometricEditorComponent {
                 this._cubeCoords.pop();
                 this.redraw()
             },
-            ['Undo']);
+            ['<-']);
+
+        this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
+        this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
     }
 }
