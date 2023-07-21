@@ -17,7 +17,7 @@ let raceCamelSelectComponent;
 let loadingScreen;
 // Debug
 let isometricEditorComponent;
-let debugMode = false;
+let debugMode = true;
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
@@ -45,58 +45,64 @@ function gameLoop(timeStamp) {
     }
 }
 window.onload = () => { init(); };
+class Colours {
+    static get green() { return '#3e6549'; }
+    ;
+    static get grey() { return '#555555'; }
+    ;
+}
 class CactusCoords {
     static get default() {
         return [
             {
                 "x": 6,
                 "y": 6,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 5,
                 "y": 5,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 4,
                 "y": 4,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 3,
                 "y": 3,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 2,
                 "y": 2,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 5,
                 "y": 4,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 6,
                 "y": 4,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 5,
                 "y": 3,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 4,
                 "y": 2,
-                "colour": '#3e6549'
+                "colour": Colours.green
             },
             {
                 "x": 1,
                 "y": 1,
-                "colour": '#3e6549'
+                "colour": Colours.green
             }
         ];
     }
@@ -107,32 +113,32 @@ class RookCoords {
             {
                 "x": 1,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 1,
                 "y": 4,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 4,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 5,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 3,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             }
         ];
     }
@@ -141,37 +147,37 @@ class RookCoords {
             {
                 "x": 3,
                 "y": 1,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 0,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 1,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 2,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 5,
                 "y": 2,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 5,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             }
         ];
     }
@@ -339,26 +345,41 @@ class IsometricEditorComponent {
         this._cubeService = _cubeService;
     }
     _cubeCoords = [];
-    _colour = '#555555';
+    _colour = Colours.grey;
     load() {
         CanvasService.showCanvas(CanvasNames.Debug);
-        this.drawGround();
         const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
+        this.drawGround();
+        this.drawUndo(canvas);
         canvas.addEventListener('click', (event) => {
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
             const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
+            if (coords.x2 < 0 || coords.x2 > 10 || coords.y2 < 0 || coords.y2 > 10) {
+                return;
+            }
             canvas.getContext('2d').clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-            this._cubeCoords.push({ x: Math.floor(coords.x2) - 1, y: Math.floor(coords.y2) - 1, colour: this._colour });
-            this.drawGround();
-            this.drawCubes();
+            this.addCube({ x: Math.floor(coords.x2) - 1, y: Math.floor(coords.y2) - 1, colour: this._colour });
+            this.redraw();
             console.log(this._cubeCoords);
         });
     }
+    addCube(newCube) {
+        const existingCube = this._cubeCoords
+            .filter(o => o.x === newCube.x && o.y === newCube.y);
+        if (existingCube.length > 0) {
+            this._cubeCoords.splice(this._cubeCoords.indexOf(existingCube[0]), 1);
+        }
+        this._cubeCoords.push(newCube);
+    }
+    redraw() {
+        this.drawGround();
+        this.drawCubes();
+    }
     drawCubes() {
         this._cubeCoords.forEach((coords) => {
-            this._cubeService.drawCube(coords.x, coords.y, GlobalStaticConstants.baseCubeSize, '#555555', 0);
+            this._cubeService.drawCube(coords.x, coords.y, GlobalStaticConstants.baseCubeSize, Colours.grey, 0);
         });
     }
     drawGround() {
@@ -368,6 +389,15 @@ class IsometricEditorComponent {
                 this._cubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, canvasColour, 0);
             }
         }
+    }
+    drawUndo(canvas) {
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const maxX = canvas.width / GlobalStaticConstants.devicePixelRatio;
+        const maxY = canvas.height / GlobalStaticConstants.devicePixelRatio;
+        btnService.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
+            this._cubeCoords.pop();
+            this.redraw();
+        }, ['Undo']);
     }
 }
 class CanvasBtnService {

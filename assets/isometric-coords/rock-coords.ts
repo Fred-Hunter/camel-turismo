@@ -4,32 +4,32 @@ class RookCoords {
             {
                 "x": 1,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 1,
                 "y": 4,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 4,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 2,
                 "y": 5,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 3,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             }
         ];
     }
@@ -39,37 +39,37 @@ class RookCoords {
             {
                 "x": 3,
                 "y": 1,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 0,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 1,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 2,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 5,
                 "y": 2,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 4,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             },
             {
                 "x": 5,
                 "y": 3,
-                "colour": "#555555"
+                "colour": Colours.grey
             }
         ];
     }
