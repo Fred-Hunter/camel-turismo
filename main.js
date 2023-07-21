@@ -236,6 +236,7 @@ class CalendarDetailsDrawing {
         ctx.fillText(CalendarService.getSeasonAsString(calendar.Season), GlobalStaticConstants.innerWidth / 2, calendarYStart / 2, GlobalStaticConstants.innerWidth);
         ctx.font = '12pt Garamond';
         const currentDay = calendar.Day;
+        const currentDayTileColour = this.getCurrentDayTileColour(calendar.Season);
         for (let column = 0; column < numberOfColumns; column++) {
             for (let row = 0; row < numberOfRows; row++) {
                 const x = calendarXStart + (column * calendarWidth / (numberOfColumns)) + 2;
@@ -244,7 +245,7 @@ class CalendarDetailsDrawing {
                 const height = (calendarHeight / numberOfRows) - 4;
                 const day = column + 1 + row * numberOfColumns;
                 if (day === currentDay) {
-                    ctx.fillStyle = this.getCurrentDayTileColour(calendar.Season);
+                    ctx.fillStyle = currentDayTileColour;
                 }
                 ctx.fillRect(x, y, width, height);
                 ctx.fillStyle = '#fff';
@@ -253,7 +254,7 @@ class CalendarDetailsDrawing {
             }
         }
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
-        btnService.drawBackButton(Page.mapOverview);
+        btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }
     static getStandardTileColour(season) {
         return CalendarService.getSeasonDarkerColour(season);
@@ -419,10 +420,10 @@ class CanvasBtnService {
     isInside(pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     }
-    drawBackButton(targetPage) {
+    drawBackButton(targetPage, backgroundColour = '#cc807a', borderColour = '#f2ada7') {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, backgroundColour, borderColour, '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
     }
     drawBtn = (context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text) => {
         context.save();

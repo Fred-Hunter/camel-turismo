@@ -18,7 +18,7 @@ class CanvasBtnService {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
     }
 
-    drawBackButton(targetPage: Page) {
+    drawBackButton(targetPage: Page, backgroundColour: string = '#cc807a', borderColour: string = '#f2ada7') {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
@@ -29,8 +29,8 @@ class CanvasBtnService {
             50,
             0,
             5,
-            '#cc807a',
-            '#f2ada7',
+            backgroundColour,
+            borderColour,
             '#fff',
             () => this._navigator.requestPageNavigation(targetPage),
             ['Back']);
