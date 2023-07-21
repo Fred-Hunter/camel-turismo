@@ -22,7 +22,7 @@ let loadingScreen: LoadingScreen;
 
 // Debug
 let isometricEditorComponent: IsometricEditorComponent;
-let debugMode = true;
+let debugMode = false;
 
 function init() {
     const startup = new Startup();

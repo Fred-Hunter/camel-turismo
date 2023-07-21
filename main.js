@@ -17,7 +17,7 @@ let raceCamelSelectComponent;
 let loadingScreen;
 // Debug
 let isometricEditorComponent;
-let debugMode = true;
+let debugMode = false;
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
