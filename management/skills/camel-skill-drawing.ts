@@ -48,7 +48,9 @@ class CamelSkillDrawing {
         this.drawSkill(camel.agility, xPadding, yPadding + height, levelUpSkillFunc);
         this.drawSkill(camel.sprintSpeed, xPadding, yPadding + 2 * height, levelUpSkillFunc);
         this.drawSkill(camel.stamina, xPadding, yPadding + 3 * height, levelUpSkillFunc);
-        this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);
+        
+        this.drawAwards(camel, xPadding, yPadding + 4 * height);
+        this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);  
     }
 
     private drawSkill(skill: CamelSkill, x: number, y: number, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {
@@ -101,7 +103,6 @@ class CamelSkillDrawing {
         this._ctx.stroke();
         this._ctx.fillStyle = "black";
         this._ctx.fill();
-
     }
 
     private drawSkillsOnStar(skills: CamelSkill[], maxRadius: number, x: number, y: number) {
@@ -177,5 +178,32 @@ class CamelSkillDrawing {
 
         this._ctx.fill();
         this._ctx.restore();
+    }
+
+    private drawAwards(camel: Camel, x: number, y: number) {
+        const achievementLevel = camel.achievementsUnlocked;
+        if (achievementLevel < 1) return;
+
+        const maxAchievementLevel = 8;
+        const scaling = 1/8;
+
+        const context = this._ctx;
+
+        const img = new Image();
+        const spriteWidth = img.naturalWidth / maxAchievementLevel;
+        
+		img.src = "./graphics/medals.svg";
+        img.onload = () => {
+            context.drawImage(
+                img, // img
+                (achievementLevel - 1) * spriteWidth, // sx
+                0, // sy
+                spriteWidth, // sw
+                img.naturalHeight, // sh
+                x, // dx
+                y, // dy
+                spriteWidth * scaling, // dw
+                img.naturalHeight * scaling); // dh
+        };
     }
 }

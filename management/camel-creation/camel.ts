@@ -27,6 +27,9 @@ class Camel {
     public colour: string;
     public name: string;
     public temperament: CamelTemperament;
+
+    public achievementsUnlocked: number = 0;
+
     public unspentXp: number;
 
     public agility: CamelSkill;
