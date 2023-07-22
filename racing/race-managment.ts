@@ -96,8 +96,10 @@ class RaceManagement {
 
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
-
-        GameState.camel.achievementsUnlocked = race.difficulty + 1;
+        
+        if (position === 1 && GameState.camel.achievementsUnlocked < race.difficulty + 1) {
+            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.difficulty + 1);
+        }
 
         race.raceState = RaceState.none;
 

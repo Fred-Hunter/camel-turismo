@@ -37,7 +37,7 @@ class PopupService {
         ctx.stroke();
 
         // Draw the popup content
-        const textLines = this.getLines(ctx, text, width / 2 - 30);
+        const textLines = this.getLines(ctx, text, width / 2 - 20);
         let textOffset = 0;
         ctx.fillStyle = textColour;
         ctx.font = 'bold 20px Arial';

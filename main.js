@@ -1527,7 +1527,7 @@ class PopupService {
         ctx.fill();
         ctx.stroke();
         // Draw the popup content
-        const textLines = this.getLines(ctx, text, width / 2 - 30);
+        const textLines = this.getLines(ctx, text, width / 2 - 20);
         let textOffset = 0;
         ctx.fillStyle = textColour;
         ctx.font = 'bold 20px Arial';
@@ -3078,7 +3078,9 @@ class RaceManagement {
         GameState.cashMoney += prizeCashMoney;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
-        GameState.camel.achievementsUnlocked = race.difficulty + 1;
+        if (position === 1 && GameState.camel.achievementsUnlocked < race.difficulty + 1) {
+            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.difficulty + 1);
+        }
         race.raceState = RaceState.none;
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
