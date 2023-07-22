@@ -22,6 +22,7 @@ class Camel {
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
         this.stamina = camelInitProperties.skills.stamina;
+        this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
     }
 
     public colour: string;

@@ -4,4 +4,5 @@ interface CamelInitProperties {
     skills: CamelInitSkills
     temperament: CamelTemperament
     unspentXp: number,
+    achievementsUnlocked: number,
 }

@@ -2013,6 +2013,7 @@ class CamelCreator {
             },
             temperament: this._camelPropertyGenerator.generateTemperament(),
             unspentXp: 0,
+            achievementsUnlocked: 0,
         };
         const camel = new Camel(++GameState.lastUsedId, camelInitProperties);
         return camel;
@@ -2028,6 +2029,7 @@ class CamelCreator {
             },
             temperament: this._camelPropertyGenerator.generateTemperament(),
             unspentXp: serialisedCamel.unspentXp,
+            achievementsUnlocked: serialisedCamel.achievementsUnlocked,
         };
         return new Camel(serialisedCamel.id, camelInitProperties);
     }
@@ -2117,6 +2119,7 @@ class Camel {
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
         this.stamina = camelInitProperties.skills.stamina;
+        this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
     }
     colour;
     name;

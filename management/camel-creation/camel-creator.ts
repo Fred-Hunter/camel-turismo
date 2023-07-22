@@ -21,6 +21,7 @@ class CamelCreator {
             },
             temperament: this._camelPropertyGenerator.generateTemperament(),
             unspentXp: 0,
+            achievementsUnlocked: 0,
         }
 
         const camel = new Camel(++GameState.lastUsedId, camelInitProperties);
@@ -39,6 +40,7 @@ class CamelCreator {
             },
             temperament: this._camelPropertyGenerator.generateTemperament(),
             unspentXp: serialisedCamel.unspentXp,
+            achievementsUnlocked: serialisedCamel.achievementsUnlocked,
         }
 
         return new Camel(serialisedCamel.id, camelInitProperties);
