@@ -20,9 +20,9 @@ let raceCamelSelectComponent: CamelSelectComponent;
 // Loading
 let loadingScreen: LoadingScreen;
 
-// Debug
+// Drawing
 let isometricEditorComponent: IsometricEditorComponent;
-let debugMode = false;
+let drawingMode = false;
 
 function init() {
     const startup = new Startup();
@@ -32,7 +32,7 @@ function init() {
     startup.registerComponents();
     startup.registerAudio();
 
-    if (debugMode) {
+    if (drawingMode) {
         globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
 

@@ -53,7 +53,10 @@ class Startup {
     }
 
     public registerDebugComponents() {
-        const cubeService = new CubeService(CanvasService.getCanvasByName(CanvasNames.Debug).getContext("2d")!);
-        isometricEditorComponent = new IsometricEditorComponent(cubeService);
+        const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
+        const cubeService = new CubeService(canvas.getContext("2d")!);
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        
+        isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
     }
 }

@@ -41,8 +41,10 @@ class RaceDrawing {
                         if (random < 1) {
                             this.drawPalmTree(i, j, height);
                         }
-                        else if (random < 4) {
+                        else if (random < 2) {
                             this.drawRocks(i, j, height);
+                        } else if (random < 2.5) {
+                            this.drawOasis(i, j, height);
                         } else if (random < 6) {
                             this.drawCactus(i, j, height);
                         } else if (random < 8) {
@@ -233,6 +235,12 @@ class RaceDrawing {
 
     private drawPyramid(x: number, y: number, height: number): void {
         PyramidCoords.dilapidated.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
+    }
+
+    private drawOasis(x: number, y: number, height: number): void {
+        OasisCoords.oasis.forEach(coord => {
             this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
         });
     }
