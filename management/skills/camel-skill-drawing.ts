@@ -26,15 +26,23 @@ class CamelSkillDrawing {
     }
 
     private drawOverview(camel: Camel, x: number, y: number) {
-        const nameText = `${camel.name}`;
-        const nameTextLength = this._ctx.measureText(nameText).width;
+        let xTextOffset = 0;
+        const xPaddingOffset = 20;
 
+        const nameText = `${camel.name}`;
         const xpText = `XP: ${camel.unspentXp}`;
-        const xpTextLength = this._ctx.measureText(xpText).width;
 
         this._ctx.fillText(nameText, x, y);
-        this._ctx.fillText(xpText, x + nameTextLength + 20, y);
-        this._ctx.fillText(camel.potentialDescription, x + nameTextLength + xpTextLength + 40, y);
+        xTextOffset += this._ctx.measureText(nameText).width;
+
+        this._ctx.fillText(xpText, x + xTextOffset + xPaddingOffset, y);
+        xTextOffset += this._ctx.measureText(xpText).width;
+
+        this._ctx.fillText(camel.potentialDescription, x + xTextOffset + 2 * xPaddingOffset, y);
+        xTextOffset += this._ctx.measureText(camel.potentialDescription).width;
+
+        // Why y - 20?
+        this.drawAwards(camel, x + xTextOffset + 3 * xPaddingOffset, y - 20);
     }
 
     private drawSkills(camel: Camel, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {
@@ -49,7 +57,6 @@ class CamelSkillDrawing {
         this.drawSkill(camel.sprintSpeed, xPadding, yPadding + 2 * height, levelUpSkillFunc);
         this.drawSkill(camel.stamina, xPadding, yPadding + 3 * height, levelUpSkillFunc);
         
-        this.drawAwards(camel, xPadding, yPadding + 4 * height);
         this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);  
     }
 
@@ -190,10 +197,9 @@ class CamelSkillDrawing {
         const context = this._ctx;
 
         const img = new Image();
-        const spriteWidth = img.naturalWidth / maxAchievementLevel;
-        
 		img.src = "./graphics/medals.svg";
-        img.onload = () => {
+        img.onload = function() {
+            const spriteWidth = img.naturalWidth / maxAchievementLevel;
             context.drawImage(
                 img, // img
                 (achievementLevel - 1) * spriteWidth, // sx

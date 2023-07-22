@@ -2263,13 +2263,18 @@ class CamelSkillDrawing {
         this._ctx.restore();
     }
     drawOverview(camel, x, y) {
+        let xTextOffset = 0;
+        const xPaddingOffset = 20;
         const nameText = `${camel.name}`;
-        const nameTextLength = this._ctx.measureText(nameText).width;
         const xpText = `XP: ${camel.unspentXp}`;
-        const xpTextLength = this._ctx.measureText(xpText).width;
         this._ctx.fillText(nameText, x, y);
-        this._ctx.fillText(xpText, x + nameTextLength + 20, y);
-        this._ctx.fillText(camel.potentialDescription, x + nameTextLength + xpTextLength + 40, y);
+        xTextOffset += this._ctx.measureText(nameText).width;
+        this._ctx.fillText(xpText, x + xTextOffset + xPaddingOffset, y);
+        xTextOffset += this._ctx.measureText(xpText).width;
+        this._ctx.fillText(camel.potentialDescription, x + xTextOffset + 2 * xPaddingOffset, y);
+        xTextOffset += this._ctx.measureText(camel.potentialDescription).width;
+        // Why y - 20?
+        this.drawAwards(camel, x + xTextOffset + 3 * xPaddingOffset, y - 20);
     }
     drawSkills(camel, levelUpSkillFunc) {
         const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
@@ -2279,7 +2284,6 @@ class CamelSkillDrawing {
         this.drawSkill(camel.agility, xPadding, yPadding + height, levelUpSkillFunc);
         this.drawSkill(camel.sprintSpeed, xPadding, yPadding + 2 * height, levelUpSkillFunc);
         this.drawSkill(camel.stamina, xPadding, yPadding + 3 * height, levelUpSkillFunc);
-        this.drawAwards(camel, xPadding, yPadding + 4 * height);
         this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);
     }
     drawSkill(skill, x, y, levelUpSkillFunc) {
@@ -2381,9 +2385,9 @@ class CamelSkillDrawing {
         const scaling = 1 / 8;
         const context = this._ctx;
         const img = new Image();
-        const spriteWidth = img.naturalWidth / maxAchievementLevel;
         img.src = "./graphics/medals.svg";
-        img.onload = () => {
+        img.onload = function () {
+            const spriteWidth = img.naturalWidth / maxAchievementLevel;
             context.drawImage(img, // img
             (achievementLevel - 1) * spriteWidth, // sx
             0, // sy
@@ -3028,7 +3032,7 @@ class RaceManagement {
         }
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);
-        const race = new Race(raceLength, track, prizeCashMoney);
+        const race = new Race(raceLength, track, prizeCashMoney, difficulty);
         this.addCpuCamelsToRace(raceSize, competitorQuality, race);
         return race;
     }
@@ -3061,6 +3065,8 @@ class RaceManagement {
         GameState.calendar.moveToNextDay();
     }
     handleFinishedRace(race) {
+        if (!GameState.camel)
+            return;
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
         position = position ??
             1 +
@@ -3069,6 +3075,7 @@ class RaceManagement {
         GameState.cashMoney += prizeCashMoney;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
+        GameState.camel.achievementsUnlocked = race.difficulty + 1;
         race.raceState = RaceState.none;
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
@@ -3319,10 +3326,12 @@ class Race {
     length;
     track;
     prizeCashMoney;
-    constructor(length, track, prizeCashMoney) {
+    difficulty;
+    constructor(length, track, prizeCashMoney, difficulty) {
         this.length = length;
         this.track = track;
         this.prizeCashMoney = prizeCashMoney;
+        this.difficulty = difficulty;
     }
     racingCamels = [];
     raceState = RaceState.none;

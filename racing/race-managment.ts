@@ -39,7 +39,7 @@ class RaceManagement {
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);
 
-        const race = new Race(raceLength, track, prizeCashMoney);
+        const race = new Race(raceLength, track, prizeCashMoney, difficulty);
 
         this.addCpuCamelsToRace(raceSize, competitorQuality, race);
 
@@ -82,18 +82,22 @@ class RaceManagement {
     }
 
     handleFinishedRace(race: Race) {
+        if (!GameState.camel) return;
+
         let position = race.racingCamels.filter(o => o.camel == GameState.camel)[0].finalPosition;
 
         position = position ??
             1 +
-            race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel!);
+            race.racingCamels.sort((a, b) => b.completionPercentage - a.completionPercentage).map(o => o.camel).indexOf(GameState.camel);
 
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
         GameState.cashMoney += prizeCashMoney;
 
         const xpGained = (race.racingCamels.length - position + 1) * 100;
-        GameState.camel!.unspentXp += xpGained;
+        GameState.camel.unspentXp += xpGained;
+
+        GameState.camel.achievementsUnlocked = race.difficulty + 1;
 
         race.raceState = RaceState.none;
 
@@ -106,7 +110,7 @@ class RaceManagement {
         MapOverview.showMap();
         MapOverview.renderMap();
 
-        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel!.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
+        PopupService.drawAlertPopup(`Congratulations, ${GameState.camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
     }
 
     getPrizeMoney(race: Race, position: number) {
