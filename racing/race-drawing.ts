@@ -41,14 +41,19 @@ class RaceDrawing {
                         if (random < 1) {
                             this.drawPalmTree(i, j, height);
                         }
-                        else if (random < 4) {
+                        else if (random < 2) {
                             this.drawRocks(i, j, height);
+                        } else if (random < 2.5) {
+                            this.drawOasis(i, j, height);
                         } else if (random < 6) {
                             this.drawCactus(i, j, height);
-                        } else if (random < 9) {
+                        } else if (random < 8) {
                             this.drawCactus2(i, j, height);
-                        }
-                        else {
+                        } else if (random < 9) {
+                            if (height > 0.1) {
+                                this.drawPyramid(i, j, height);
+                            }
+                        } else {
                             this.drawStaticCamel(i, j, height);
                         }
                     }
@@ -225,6 +230,18 @@ class RaceDrawing {
 
         CactusCoords.cactus2.forEach(coord => {
             this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
+    }
+
+    private drawPyramid(x: number, y: number, height: number): void {
+        PyramidCoords.dilapidated.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
+        });
+    }
+
+    private drawOasis(x: number, y: number, height: number): void {
+        OasisCoords.oasis.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10)
         });
     }
 }

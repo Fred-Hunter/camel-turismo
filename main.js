@@ -15,16 +15,16 @@ let raceComponent;
 let raceCamelSelectComponent;
 // Loading
 let loadingScreen;
-// Debug
+// Drawing
 let isometricEditorComponent;
-let debugMode = false;
+let drawingMode = false;
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
-    if (debugMode) {
+    if (drawingMode) {
         globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
     globalServices.navigatorService.doNavigation();
@@ -49,6 +49,12 @@ class Colours {
     static get green() { return '#3e6549'; }
     ;
     static get grey() { return '#555555'; }
+    ;
+    static get sand() { return '#C2B280'; }
+    ;
+    static get blue() { return '#2ebce4'; }
+    ;
+    static get brown() { return '#b18579'; }
     ;
 }
 class CactusCoords {
@@ -192,6 +198,623 @@ class CactusCoords {
                 "x": 4,
                 "y": 2,
                 "colour": Colours.green
+            }
+        ];
+    }
+}
+class OasisCoords {
+    static get oasis() {
+        return [
+            {
+                "x": 0,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 5,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": 6,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 0,
+                "y": 5,
+                "colour": "#b18579"
+            },
+            {
+                "x": -1,
+                "y": 4,
+                "colour": "#b18579"
+            },
+            {
+                "x": -2,
+                "y": 3,
+                "colour": "#b18579"
+            },
+            {
+                "x": -3,
+                "y": 2,
+                "colour": "#b18579"
+            },
+            {
+                "x": -4,
+                "y": 1,
+                "colour": "#b18579"
+            },
+            {
+                "x": -4,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": -3,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": -3,
+                "y": 4,
+                "colour": "#3e6549"
+            },
+            {
+                "x": -1,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": -5,
+                "y": 0,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 2,
+                "y": 0,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 2,
+                "y": 1,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 2,
+                "y": 2,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 2,
+                "y": 4,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 2,
+                "y": 5,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 2,
+                "y": 6,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 3,
+                "y": 1,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 3,
+                "y": 2,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 3,
+                "y": 6,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 3,
+                "y": 0,
+                "colour": "#b18579"
+            },
+            {
+                "x": 2,
+                "y": -1,
+                "colour": "#b18579"
+            },
+            {
+                "x": 1,
+                "y": -2,
+                "colour": "#b18579"
+            },
+            {
+                "x": 0,
+                "y": -3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": -1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 2,
+                "y": -2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 2,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 4,
+                "y": 3,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 4,
+                "y": 6,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 1,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 5,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 5,
+                "y": 2,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 5,
+                "y": 4,
+                "colour": "#2ebce4"
+            },
+            {
+                "x": 5,
+                "y": 5,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 6,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 6,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 6,
+                "y": 4,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 8,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 6,
+                "y": 7,
+                "colour": "#b18579"
+            },
+            {
+                "x": 5,
+                "y": 6,
+                "colour": "#b18579"
+            },
+            {
+                "x": 4,
+                "y": 5,
+                "colour": "#b18579"
+            },
+            {
+                "x": 3,
+                "y": 4,
+                "colour": "#b18579"
+            },
+            {
+                "x": 2,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 4,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 3,
+                "y": 5,
+                "colour": "#3e6549"
+            }
+        ];
+    }
+}
+class PyramidCoords {
+    static get dilapidated() {
+        return [
+            {
+                "x": 6,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 1,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 4,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 5,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 4,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 5,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 6,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 4,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 2,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 4,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 1,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 2,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 0,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 1,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 5,
+                "y": 7,
+                "colour": "#555555"
+            },
+            {
+                "x": 6,
+                "y": 7,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 2,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 3,
+                "y": 0,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 2,
+                "colour": "#555555"
+            },
+            {
+                "x": 3,
+                "y": 3,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 0,
+                "y": 5,
+                "colour": "#555555"
+            },
+            {
+                "x": 1,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 2,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 3,
+                "y": 5,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 4,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 0,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 1,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 1,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 2,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 3,
+                "colour": "#3e6549"
+            },
+            {
+                "x": 7,
+                "y": 4,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 5,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 6,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 7,
+                "y": 7,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 2,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 3,
+                "colour": "#C2B280"
+            },
+            {
+                "x": 5,
+                "y": 4,
+                "colour": "#555555"
+            },
+            {
+                "x": 5,
+                "y": 5,
+                "colour": "#C2B280"
             }
         ];
     }
@@ -430,26 +1053,29 @@ var Season;
     Season[Season["Winter"] = 3] = "Winter";
 })(Season || (Season = {}));
 class IsometricEditorComponent {
+    _canvas;
     _cubeService;
-    constructor(_cubeService) {
+    _btnService;
+    constructor(_canvas, _cubeService, _btnService) {
+        this._canvas = _canvas;
         this._cubeService = _cubeService;
+        this._btnService = _btnService;
     }
     _cubeCoords = [];
+    _cubeCoordHistory = [[]];
     _colour = Colours.grey;
     load() {
         CanvasService.showCanvas(CanvasNames.Debug);
-        const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
         this.drawGround();
-        this.drawButtons(canvas);
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
+        this.drawButtons();
+        this._canvas.addEventListener('click', (event) => {
+            const rect = this._canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
             const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
             if (coords.y2 > 10) {
                 return;
             }
-            canvas.getContext('2d').clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
             this.addCube({ x: Math.floor(coords.x2) - 1, y: Math.floor(coords.y2) - 1, colour: this._colour });
             this.redraw();
             console.log(this._cubeCoords);
@@ -462,10 +1088,14 @@ class IsometricEditorComponent {
             this._cubeCoords.splice(this._cubeCoords.indexOf(existingCube[0]), 1);
         }
         this._cubeCoords.push(newCube);
+        this._cubeCoordHistory.push([...this._cubeCoords]);
     }
     redraw() {
+        this._canvas.getContext('2d').clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        this._btnService.removeEventListeners();
         this.drawGround();
         this.drawCubes();
+        this.drawButtons();
     }
     drawCubes() {
         this._cubeCoords.forEach((cube) => {
@@ -480,19 +1110,25 @@ class IsometricEditorComponent {
             }
         }
     }
-    drawPaletteButton(btnService, maxX, maxY, position, colour) {
-        btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, '#fff', () => { this._colour = colour; console.log(this._colour, colour); }, ['']);
+    drawPaletteButton(maxX, maxY, position, colour) {
+        this._btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, '#fff', () => this._colour = colour, ['']);
     }
-    drawButtons(canvas) {
-        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
-        const maxX = canvas.width / GlobalStaticConstants.devicePixelRatio;
-        const maxY = canvas.height / GlobalStaticConstants.devicePixelRatio;
-        btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
-            this._cubeCoords.pop();
+    drawButtons() {
+        const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
+        const maxY = this._canvas.height / GlobalStaticConstants.devicePixelRatio;
+        this._btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
+            if (this._cubeCoordHistory.length === 1) {
+                return;
+            }
+            this._cubeCoordHistory.pop();
+            this._cubeCoords = [...this._cubeCoordHistory.at(-1)];
             this.redraw();
         }, ['<-']);
-        this.drawPaletteButton(btnService, maxX, maxY, 0, Colours.green);
-        this.drawPaletteButton(btnService, maxX, maxY, 1, Colours.grey);
+        this.drawPaletteButton(maxX, maxY, 0, Colours.green);
+        this.drawPaletteButton(maxX, maxY, 1, Colours.grey);
+        this.drawPaletteButton(maxX, maxY, 2, Colours.sand);
+        this.drawPaletteButton(maxX, maxY, 3, Colours.blue);
+        this.drawPaletteButton(maxX, maxY, 4, Colours.brown);
     }
 }
 class CanvasBtnService {
@@ -1034,8 +1670,10 @@ class Startup {
         };
     }
     registerDebugComponents() {
-        const cubeService = new CubeService(CanvasService.getCanvasByName(CanvasNames.Debug).getContext("2d"));
-        isometricEditorComponent = new IsometricEditorComponent(cubeService);
+        const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
+        const cubeService = new CubeService(canvas.getContext("2d"));
+        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
     }
 }
 class GymDrawing {
@@ -2159,14 +2797,22 @@ class RaceDrawing {
                         if (random < 1) {
                             this.drawPalmTree(i, j, height);
                         }
-                        else if (random < 4) {
+                        else if (random < 2) {
                             this.drawRocks(i, j, height);
+                        }
+                        else if (random < 2.5) {
+                            this.drawOasis(i, j, height);
                         }
                         else if (random < 6) {
                             this.drawCactus(i, j, height);
                         }
-                        else if (random < 9) {
+                        else if (random < 8) {
                             this.drawCactus2(i, j, height);
+                        }
+                        else if (random < 9) {
+                            if (height > 0.1) {
+                                this.drawPyramid(i, j, height);
+                            }
                         }
                         else {
                             this.drawStaticCamel(i, j, height);
@@ -2313,6 +2959,16 @@ class RaceDrawing {
         var yOffset = (Math.random() - 0.5) * 0.25;
         CactusCoords.cactus2.forEach(coord => {
             this.backgroundCubeService.drawCube(x + xOffset + coord.x / 10, y + yOffset + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
+    }
+    drawPyramid(x, y, height) {
+        PyramidCoords.dilapidated.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
+        });
+    }
+    drawOasis(x, y, height) {
+        OasisCoords.oasis.forEach(coord => {
+            this.backgroundCubeService.drawCube(x + coord.x / 10, y + coord.y / 10, GlobalStaticConstants.baseCubeSize / 10, coord.colour, height * 10);
         });
     }
 }
