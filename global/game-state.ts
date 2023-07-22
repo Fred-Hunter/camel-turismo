@@ -5,7 +5,7 @@ interface GameStateObject {
     oldTimeStamp: number,
     lastUsedId: number,
     cashMoney: number,
-    calendar: Calendar
+    calendar: Calendar,
 }
 
 class GameState {
