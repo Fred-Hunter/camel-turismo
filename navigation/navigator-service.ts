@@ -28,7 +28,7 @@ class NavigatorService {
                     this.navigateToLoading();
                     break;
                 case Page.mapOverview:
-                    this.navigateToOverview();
+                    MapOverview.load();
                     break;
                 case Page.management:
                     camelSkillComponent.load();
@@ -75,10 +75,5 @@ class NavigatorService {
     private navigateToCalendarDetails() {
         CanvasService.showCanvas(CanvasNames.CalendarDetails);
         CalendarDetailsDrawing.drawCalendarDetails();
-    }
-
-    private navigateToOverview() {
-        MapOverview.showMap();
-        MapOverview.renderMap();
     }
 }

@@ -36,8 +36,6 @@ function init() {
         globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
 
-    globalServices.navigatorService.doNavigation();
-
     window.requestAnimationFrame(gameLoop);
 }
 

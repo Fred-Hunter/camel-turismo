@@ -58,8 +58,7 @@ class GymDrawing {
             trainSession.endSession();
         }
         CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap()
+        MapOverview.load();
     }
 
     public drawFloor() {

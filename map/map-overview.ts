@@ -1,15 +1,6 @@
 class MapOverview {
     private static _eventListenersAdded = false;
 
-	public static showMap() {
-		CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
-		CanvasService.showCanvas(CanvasNames.MapOverview);
-		GameState.Save();
-	}
-	public static hideMap() {
-		CanvasService.hideCanvas(CanvasNames.MapOverview);
-	}
-
 	private static getMousePosition(event: any) {
 		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
 		var rect = canvas.getBoundingClientRect();
@@ -19,10 +10,16 @@ class MapOverview {
 		};
 	}
 
-	public static renderMap() {
+	public static load() {
+		CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
+		CanvasService.showCanvas(CanvasNames.MapOverview);
+		GameState.Save();
+        
 		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
 		const ctx = canvas?.getContext("2d");
 		if (!ctx) return;
+
+        ctx.clearRect(0,0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight)
 
 		const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
 
@@ -46,21 +43,6 @@ class MapOverview {
 		img.src = "./graphics/camelmap-nobreed-v3.svg";
 		ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
 
-        if (GlobalStaticConstants.debugMode) {
-            ctx.save()
-            const gridSize = 32;
-
-            ctx.strokeStyle = "red";
-            ctx.font = "8px Arial";
-            for (let x = 0; x < GlobalStaticConstants.innerWidth; x += rect.width / gridSize) {
-                for (let y = 0; y < GlobalStaticConstants.innerHeight; y += rect.height / gridSize) {
-                    ctx.strokeRect(x, y, rect.width, rect.height);
-                    ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
-                }
-            }
-            ctx.restore();
-        }
-
         if (!this._eventListenersAdded) {
             canvas.addEventListener(
                 "click",
@@ -70,7 +52,6 @@ class MapOverview {
                     // Hire
                     if (mousePosition.x < rect.width / 3 && mousePosition.y < (7 * rect.height) / 16) {
                         CanvasService.showAllCanvas();
-                        this.hideMap();
                         CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d")!);
                         CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
                     }
@@ -81,7 +62,6 @@ class MapOverview {
                             return;
                         }
                         CanvasService.showAllCanvas();
-                        this.hideMap();
                         CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                         CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
                         new GymDrawing(globalServices.navigatorService).drawGym();
@@ -126,8 +106,25 @@ class MapOverview {
             );
             this._eventListenersAdded = true;
         }
+
 		CalendarOverviewDrawing.drawCalendarOverview(canvas);
 
 		CashMoneyService.drawCashMoney(ctx);
+
+        // Draw debug grid
+        if (GlobalStaticConstants.debugMode) {
+            ctx.save()
+            const gridSize = 32;
+
+            ctx.strokeStyle = "red";
+            ctx.font = "8px Arial";
+            for (let x = 0; x < GlobalStaticConstants.innerWidth; x += rect.width / gridSize) {
+                for (let y = 0; y < GlobalStaticConstants.innerHeight; y += rect.height / gridSize) {
+                    ctx.strokeRect(x, y, rect.width, rect.height);
+                    ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
+                }
+            }
+            ctx.restore();
+        }
 	}
 }

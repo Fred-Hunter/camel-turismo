@@ -109,8 +109,7 @@ class RaceManagement {
         this.updateCalendar();
 
         CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
+        MapOverview.load();
 
         PopupService.drawAlertPopup(`Congratulations, ${GameState.camel.name} finished ${this.getPositionDisplay(position)}! You won $${prizeCashMoney}, and gained ${xpGained}xp!`);
     }

@@ -19,8 +19,7 @@ class RecruitmentService {
 
     handleEvent = () => {
         CanvasService.hideAllCanvas();
-        MapOverview.showMap();
-        MapOverview.renderMap();
+        MapOverview.load();
         document.removeEventListener("redirectToMap", this.handleEvent);
     }
 
