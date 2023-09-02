@@ -3,12 +3,14 @@ class CalendarOverviewDrawing {
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
 
         const calendar = CalendarService.getCalendar();
+        const widthUnit = GlobalStaticConstants.innerWidth / 20;
+        const heightUnit = GlobalStaticConstants.innerHeight / 20;
 
         btnService.createBtn(
-            7 * GlobalStaticConstants.innerWidth / 10,
-            GlobalStaticConstants.innerHeight / 10,
-            5 * GlobalStaticConstants.innerWidth / 20,
-            2 * GlobalStaticConstants.innerHeight / 10,
+            15 * widthUnit, // x
+            0.5 * heightUnit, // y
+            4 * widthUnit, // width
+            2 * heightUnit, // height
             10,
             10,
             CalendarService.getSeasonDarkerColour(calendar.Season),
