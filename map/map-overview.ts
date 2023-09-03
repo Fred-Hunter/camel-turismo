@@ -94,7 +94,6 @@ class MapOverview {
                         PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                         return;
                     }
-
                     globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
             }
@@ -170,27 +169,27 @@ class MapOverview {
         this._clickZones.push(
             {
                 location: MapLocations.Hire,
-                clickZone: this.createRect(0, 0, 11 * wUnit, 14 * hUnit)
+                clickZone: this.createRect(0 + this._canvasXOffset, 0, 11 * wUnit + this._canvasXOffset, 14 * hUnit)
             },
             
             {
                 location: MapLocations.Gym,
-                clickZone: this.createRect(11 * wUnit, 0, 19 * wUnit, 12 * hUnit)
+                clickZone: this.createRect(11 * wUnit + this._canvasXOffset, 0, 19 * wUnit + this._canvasXOffset, 12 * hUnit)
             },
             
             {
                 location: MapLocations.Mystery,
-                clickZone: this.createRect(12 * wUnit, 14 * hUnit, 19 * wUnit, 32 * hUnit)
+                clickZone: this.createRect(12 * wUnit + this._canvasXOffset, 14 * hUnit, 19 * wUnit + this._canvasXOffset, 32 * hUnit)
             },
             
             {
                 location: MapLocations.Race,
-                clickZone: this.createRect(0, 16 * hUnit, 11 * wUnit, 32 * hUnit)
+                clickZone: this.createRect(0 + this._canvasXOffset, 16 * hUnit, 11 * wUnit + this._canvasXOffset, 32 * hUnit)
             },
             
             {
                 location: MapLocations.Management,
-                clickZone: this.createRect(19 * wUnit, 6 * hUnit, 32 * wUnit, 18 * hUnit)
+                clickZone: this.createRect(19 * wUnit + this._canvasXOffset, 6 * hUnit, 32 * wUnit + this._canvasXOffset, 18 * hUnit)
             }
         )
     }
