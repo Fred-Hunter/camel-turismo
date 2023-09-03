@@ -120,10 +120,20 @@ class MapOverview {
             ctx.font = "8px Arial";
             for (let x = 0; x < GlobalStaticConstants.innerWidth; x += this._boundingRect.width / gridSize) {
                 for (let y = 0; y < GlobalStaticConstants.innerHeight; y += this._boundingRect.height / gridSize) {
-                    ctx.strokeRect(x, y, this._boundingRect.width, this._boundingRect.height);
+                    ctx.strokeRect(x, y, this._boundingRect.width / gridSize, this._boundingRect.height / gridSize);
                     ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
                 }
             }
+
+            
+            ctx.strokeStyle = "blue";
+            ctx.font = "16px Arial";
+            ctx.lineWidth = 4;
+            this._clickZones.forEach(z => {
+                ctx.strokeRect(z.clickZone.x, z.clickZone.y, z.clickZone.width, z.clickZone.height);
+                ctx.fillText(`${z.location}`, z.clickZone.x, z.clickZone.y + 16);
+            })
+
             ctx.restore();
         }
 	}
