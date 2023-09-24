@@ -38,6 +38,8 @@ class MapOverview {
     }
 
 	public static load() {
+        console.log(`Height: ${GlobalStaticConstants.innerHeight}`);
+        console.log(`Width: ${GlobalStaticConstants.innerWidth}`);
 
         // Set up canvas
 		CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
@@ -214,7 +216,6 @@ class MapOverview {
 
         const wUnit = this._boundingRect.width / 32;
         const hUnit = this._boundingRect.height / 32;
-        const tilesPerRow = this._verticalScreen ? 2 : 3;
 
         let tilesPlacedCount = 0;
 
@@ -226,6 +227,14 @@ class MapOverview {
             MapLocations.Race,
             MapLocations.Mystery,
         ];
+
+        // Calculate grid
+        let getTilesPerRow = () => Math.min(4, Math.max(1,  Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
+        let tilesPerRow = getTilesPerRow();
+        if (locationsToAdd.length / tilesPerRow > 3) {
+            this._tileSize = 4;
+            tilesPerRow = getTilesPerRow();
+        }
 
         locationsToAdd.forEach( (tile) => 
             {
@@ -267,6 +276,9 @@ class MapOverview {
     }
 
     private static paintTile(ctx: CanvasRenderingContext2D, mapTile: MapTile, borderColour: string = GlobalStaticConstants.mediumColour) {
+        // Don't draw tiles off-screen
+        if (mapTile.position.y + mapTile.position.height > this._boundingRect.y + this._boundingRect.height) return;
+
         ctx.save();
         
         ctx.strokeStyle = borderColour;

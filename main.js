@@ -2507,6 +2507,8 @@ class MapOverview {
         };
     }
     static load() {
+        console.log(`Height: ${GlobalStaticConstants.innerHeight}`);
+        console.log(`Width: ${GlobalStaticConstants.innerWidth}`);
         // Set up canvas
         CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
         CanvasService.showCanvas(CanvasNames.MapOverview);
@@ -2642,7 +2644,6 @@ class MapOverview {
         this._locationTiles = [];
         const wUnit = this._boundingRect.width / 32;
         const hUnit = this._boundingRect.height / 32;
-        const tilesPerRow = this._verticalScreen ? 2 : 3;
         let tilesPlacedCount = 0;
         // Add tiles
         const locationsToAdd = [
@@ -2652,6 +2653,13 @@ class MapOverview {
             MapLocations.Race,
             MapLocations.Mystery,
         ];
+        // Calculate grid
+        let getTilesPerRow = () => Math.min(4, Math.max(1, Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
+        let tilesPerRow = getTilesPerRow();
+        if (locationsToAdd.length / tilesPerRow > 3) {
+            this._tileSize = 4;
+            tilesPerRow = getTilesPerRow();
+        }
         locationsToAdd.forEach((tile) => {
             this._locationTiles.push(new MapTile(tile, new Rect(((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit, Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit, this._tileSize * wUnit, this._tileSize * hUnit), `./map/tile-${tile}.svg`));
             tilesPlacedCount++;
@@ -2671,6 +2679,9 @@ class MapOverview {
         });
     }
     static paintTile(ctx, mapTile, borderColour = GlobalStaticConstants.mediumColour) {
+        // Don't draw tiles off-screen
+        if (mapTile.position.y + mapTile.position.height > this._boundingRect.y + this._boundingRect.height)
+            return;
         ctx.save();
         ctx.strokeStyle = borderColour;
         ctx.lineWidth = 4;
