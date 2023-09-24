@@ -1,8 +1,18 @@
 class MapOverview {
     private static _canvasXOffset = 0;
+    private static _canvasYOffset = 0;
     private static _mapEventListeners: any[] = [];
     private static _clickZones: any[] = [];
     private static _boundingRect = this.getBoundingRect();
+
+    // V2
+    private static _tileSize = 8;
+    private static _outerPadding = 2;
+    private static _tileGap = 0.5;
+    private static _locationTiles: MapTile[] = [];
+    private static _uiTiles: MapTile[] = [];
+    private static _verticalScreen = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
+    private static _previousHoverZone = '';
 
 	private static getMousePosition(event: any) {
 		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
@@ -14,9 +24,7 @@ class MapOverview {
 	}
 
     private static getBoundingRect() {
-		const scaleToWidth = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
-
-		return scaleToWidth ?   {
+		return this._verticalScreen ?   {
             x: 0,
             y: 0,
             width: GlobalStaticConstants.innerWidth,
@@ -30,6 +38,8 @@ class MapOverview {
     }
 
 	public static load() {
+
+        // Set up canvas
 		CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
 		CanvasService.showCanvas(CanvasNames.MapOverview);
 		GameState.Save();
@@ -38,15 +48,54 @@ class MapOverview {
 		const ctx = canvas?.getContext("2d");
 		if (!ctx) return;
 
-        ctx.clearRect(0,0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight)
-
-		const img = new Image();
-		img.src = "./graphics/camelmap-nobreed-v3.svg";
-		ctx.drawImage(img, this._boundingRect.x + this._canvasXOffset, this._boundingRect.y, this._boundingRect.width, this._boundingRect.height);
-        
+        ctx.clearRect(0,0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.removeEventListeners(canvas);
-        this.recreateClickZones();
 
+        // V2 Load tiles
+        this._clickZones = [];
+        this.loadLocationTiles();
+        this.paintLocationTiles(ctx);
+        this.loadUiTiles();
+
+        // V1
+        this.removeEventListeners(canvas);
+        this.addEventListeners(canvas, ctx);
+
+		CalendarOverviewDrawing.drawCalendarOverview(canvas);
+
+		CashMoneyService.drawCashMoney(ctx);
+
+        if (GlobalStaticConstants.debugMode) {
+            this.drawDebugGrid(ctx)
+        }
+	}
+
+    private static drawDebugGrid(ctx: CanvasRenderingContext2D) {
+        ctx.save()
+        const gridSize = 32;
+
+        ctx.strokeStyle = "red";
+        ctx.font = "8px Arial";
+        for (let x = 0; x < GlobalStaticConstants.innerWidth; x += this._boundingRect.width / gridSize) {
+            for (let y = 0; y < GlobalStaticConstants.innerHeight; y += this._boundingRect.height / gridSize) {
+                ctx.strokeRect(x, y, this._boundingRect.width / gridSize, this._boundingRect.height / gridSize);
+                ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
+            }
+        }
+
+        
+        ctx.strokeStyle = "blue";
+        ctx.font = "16px Arial";
+        ctx.lineWidth = 4;
+        this._clickZones.forEach(z => {
+            ctx.strokeRect(z.clickZone.x, z.clickZone.y, z.clickZone.width, z.clickZone.height);
+            ctx.fillText(`${z.location}`, z.clickZone.x, z.clickZone.y + 16);
+        })
+
+        ctx.restore();
+    }
+
+    private static addEventListeners(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         const clickHandler = (event: MouseEvent) => {
             const mousePosition = this.getMousePosition(event);
 
@@ -98,6 +147,27 @@ class MapOverview {
                     break;
             }
         };
+        
+        const hoverHandler = (event: MouseEvent) => {
+            const mousePosition = this.getMousePosition(event);
+
+            const zone: string = this.getClickZone(mousePosition);
+
+            if (zone === this._previousHoverZone) return;
+
+            canvas.style.cursor = "default";
+            this.paintLocationTiles(ctx);
+
+            if (zone !== MapLocations.None) {
+                const tile = this.getLocationTileByName(zone);
+                if (tile !== null) this.paintTile(ctx, tile, GlobalStaticConstants.highlightColour);
+                canvas.style.cursor = "pointer";
+            }
+
+            this._previousHoverZone = zone;
+
+            return;
+        };
 
         canvas.addEventListener(
             "click",
@@ -105,42 +175,19 @@ class MapOverview {
             false
         );
 
-        this._mapEventListeners.push(clickHandler);
+        canvas.addEventListener(
+            "mousemove",
+            hoverHandler,
+            false
+        );
 
-		CalendarOverviewDrawing.drawCalendarOverview(canvas);
-
-		CashMoneyService.drawCashMoney(ctx);
-
-        // Draw debug grid
-        if (GlobalStaticConstants.debugMode) {
-            ctx.save()
-            const gridSize = 32;
-
-            ctx.strokeStyle = "red";
-            ctx.font = "8px Arial";
-            for (let x = 0; x < GlobalStaticConstants.innerWidth; x += this._boundingRect.width / gridSize) {
-                for (let y = 0; y < GlobalStaticConstants.innerHeight; y += this._boundingRect.height / gridSize) {
-                    ctx.strokeRect(x, y, this._boundingRect.width / gridSize, this._boundingRect.height / gridSize);
-                    ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
-                }
-            }
-
-            
-            ctx.strokeStyle = "blue";
-            ctx.font = "16px Arial";
-            ctx.lineWidth = 4;
-            this._clickZones.forEach(z => {
-                ctx.strokeRect(z.clickZone.x, z.clickZone.y, z.clickZone.width, z.clickZone.height);
-                ctx.fillText(`${z.location}`, z.clickZone.x, z.clickZone.y + 16);
-            })
-
-            ctx.restore();
-        }
-	}
+        this._mapEventListeners.push(clickHandler, hoverHandler);
+    }
 
     private static removeEventListeners(canvas: HTMLCanvasElement) {
         this._mapEventListeners.forEach(o => {
             canvas.removeEventListener('click', o, false)
+            canvas.removeEventListener('mousemove', o, false)
         });
 
         this._mapEventListeners = [];
@@ -162,46 +209,85 @@ class MapOverview {
         return location;
     }
 
-    private static createRect(x: number, y: number, xEnd: number, yEnd: number) {
-        return {
-            x: x,
-            y: y,
-            width: xEnd - x,
-            height: yEnd - y
-        };
-    }
+    private static loadLocationTiles() {
+        this._locationTiles = [];
 
-    private static recreateClickZones() {
-        this._clickZones = [];
         const wUnit = this._boundingRect.width / 32;
         const hUnit = this._boundingRect.height / 32;
+        const tilesPerRow = this._verticalScreen ? 2 : 3;
 
-        this._clickZones.push(
+        let tilesPlacedCount = 0;
+
+        // Add tiles
+        const locationsToAdd = [
+            MapLocations.Hire,
+            MapLocations.Gym,
+            MapLocations.Management,
+            MapLocations.Race,
+            MapLocations.Mystery,
+        ];
+
+        locationsToAdd.forEach( (tile) => 
             {
-                location: MapLocations.Hire,
-                clickZone: this.createRect(0 + this._canvasXOffset, 0, 11 * wUnit + this._canvasXOffset, 14 * hUnit)
-            },
-            
-            {
-                location: MapLocations.Gym,
-                clickZone: this.createRect(11 * wUnit + this._canvasXOffset, 0, 19 * wUnit + this._canvasXOffset, 12 * hUnit)
-            },
-            
-            {
-                location: MapLocations.Mystery,
-                clickZone: this.createRect(12 * wUnit + this._canvasXOffset, 14 * hUnit, 19 * wUnit + this._canvasXOffset, 32 * hUnit)
-            },
-            
-            {
-                location: MapLocations.Race,
-                clickZone: this.createRect(0 + this._canvasXOffset, 16 * hUnit, 11 * wUnit + this._canvasXOffset, 32 * hUnit)
-            },
-            
-            {
-                location: MapLocations.Management,
-                clickZone: this.createRect(19 * wUnit + this._canvasXOffset, 6 * hUnit, 32 * wUnit + this._canvasXOffset, 18 * hUnit)
+                this._locationTiles.push( new MapTile(
+                    tile,
+                    new Rect(
+                        ((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit,
+                        Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit,
+                        this._tileSize * wUnit,
+                        this._tileSize * hUnit
+                    ),
+                    `./map/tile-${tile}.svg`
+                ));
+
+                tilesPlacedCount++;
             }
         )
+
+        // Add click zones
+        this._locationTiles.forEach( (tile) => 
+            {
+                this._clickZones.push({
+                    location: tile.name,
+                    clickZone: tile.position
+                });
+
+                tilesPlacedCount++;
+            }
+        )
+    }
+
+    private static paintLocationTiles(ctx: CanvasRenderingContext2D) {
+        this._locationTiles.forEach( (tile) => 
+            {
+                this.paintTile(ctx, tile);
+            }
+        )
+        
+    }
+
+    private static paintTile(ctx: CanvasRenderingContext2D, mapTile: MapTile, borderColour: string = GlobalStaticConstants.mediumColour) {
+        ctx.save();
+        
+        ctx.strokeStyle = borderColour;
+        ctx.lineWidth = 4;
+
+        const img = new Image();
+        img.src = mapTile.backgroundImagePath;
+        ctx.drawImage(img, mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
+        ctx.strokeRect(mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
+
+        ctx.restore();
+    }
+
+    private static getLocationTileByName(name: string) {
+        const matches = this._locationTiles.filter((tile) => {
+            return tile.name === name;
+        });
+        return matches.length >= 0 ? matches[0] : null;
+    }
+
+    private static loadUiTiles() {
     }
 }
 
@@ -212,4 +298,22 @@ class MapLocations {
     public static Mystery: string = "Mystery";
     public static Race: string = "Race";
     public static Management: string = "Management";
+}
+
+class UiElements {
+    public static Money: string = "UiMoney";
+    public static Calendar: string = "UiCalendar";
+}
+
+class MapTile {
+    constructor(public name: string, public position: Rect, public backgroundImagePath: string) {}
+}
+
+class Rect {
+    constructor (
+        public x: number,
+        public y: number,
+        public width: number,
+        public height: number,
+    ) {}
 }
