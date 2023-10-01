@@ -18,6 +18,8 @@ let loadingScreen;
 // Drawing
 let isometricEditorComponent;
 let drawingMode = false;
+// Scrolls
+let scrollsComponent;
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
@@ -1410,7 +1412,7 @@ class CubeService {
 }
 class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 2;
+    static _version = 3;
     // Camel
     static camel;
     static camels = [];
@@ -1421,6 +1423,9 @@ class GameState {
     // Recruitment
     static lastUsedId = 0; // done
     static cashMoney = 100; // done
+    // Scrolls
+    static scrolls = [];
+    static get unreadScrollCount() { return GameState.scrolls.filter(o => !o.read).length; }
     static Save() {
         const gameStateObject = {
             camel: GameState.camel,
@@ -1429,7 +1434,8 @@ class GameState {
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
             cashMoney: GameState.cashMoney,
-            calendar: GameState.calendar
+            calendar: GameState.calendar,
+            scrolls: GameState.scrolls
         };
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -1442,15 +1448,13 @@ class GameState {
         if (!gameStateString || gameStateString === undefined)
             return;
         const gameState = JSON.parse(gameStateString);
-        return !!gameState.camel;
+        return true;
     }
     static LoadIfExists() {
         const gameStateString = localStorage.getItem(this.getItemKey());
         if (!gameStateString || gameStateString === undefined)
             return;
         const gameState = JSON.parse(gameStateString);
-        if (gameState.camel === undefined)
-            return;
         // Load camel
         gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
         if (gameState.camels.length > 0) {
@@ -1462,6 +1466,8 @@ class GameState {
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
+        debugger;
+        GameState.scrolls = gameState.scrolls;
     }
     static loadCamel(camelCreator, serialisedCamel) {
         const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);
@@ -1639,6 +1645,8 @@ class Startup {
         racingStartup.registerComponents();
         const managementStartup = new ManagementStartup(globalServices);
         managementStartup.registerComponents();
+        const scrollsStartup = new ScrollsStartup(globalServices);
+        scrollsStartup.registerComponents();
         recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
         loadingScreen = new LoadingScreen(globalServices.navigatorService);
         this.registerDebugComponents();
@@ -1957,6 +1965,7 @@ class LoadingScreen {
     _btnService;
     startFreshGame = () => {
         GameState.Reset();
+        GameState.scrolls.push(EmmaDaleScrolls.welcome);
         this._navigator.requestPageNavigation(Page.mapOverview, () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
     };
     loadSavedGame = () => {
@@ -2597,6 +2606,9 @@ class MapOverview {
                     }
                     globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
+                case MapLocations.Scrolls:
+                    globalServices.navigatorService.requestPageNavigation(Page.scrolls);
+                    break;
             }
         };
         const hoverHandler = (event) => {
@@ -2661,9 +2673,12 @@ class MapOverview {
             tilesPerRow = getTilesPerRow();
         }
         locationsToAdd.forEach((tile) => {
-            this._locationTiles.push(new MapTile(tile, new Rect(((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit, Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit, this._tileSize * wUnit, this._tileSize * hUnit), `./map/tile-${tile}.svg`));
+            this.addLocationTile(tile, wUnit, hUnit, tilesPlacedCount, tilesPerRow);
             tilesPlacedCount++;
         });
+        const scrollAlertMessage = GameState.unreadScrollCount > 0 ? GameState.unreadScrollCount.toString() : undefined;
+        this.addLocationTile(MapLocations.Scrolls, wUnit, hUnit, tilesPlacedCount, tilesPerRow, scrollAlertMessage);
+        tilesPlacedCount++;
         // Add click zones
         this._locationTiles.forEach((tile) => {
             this._clickZones.push({
@@ -2672,6 +2687,9 @@ class MapOverview {
             });
             tilesPlacedCount++;
         });
+    }
+    static addLocationTile(tile, wUnit, hUnit, tilesPlacedCount, tilesPerRow, alertText = undefined) {
+        this._locationTiles.push(new MapTile(tile, new Rect(((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit, Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit, this._tileSize * wUnit, this._tileSize * hUnit), `./map/tile-${tile}.svg`, alertText));
     }
     static paintLocationTiles(ctx) {
         this._locationTiles.forEach((tile) => {
@@ -2689,6 +2707,20 @@ class MapOverview {
         img.src = mapTile.backgroundImagePath;
         ctx.drawImage(img, mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
         ctx.strokeRect(mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
+        if (!!mapTile.alertText) {
+            const alertRadius = 20; // Adjust the radius as needed
+            const alertX = mapTile.position.x + mapTile.position.width - alertRadius - 10; // Adjust position as needed
+            const alertY = mapTile.position.y + alertRadius + 10; // Adjust position as needed
+            ctx.fillStyle = '#D0312D';
+            ctx.beginPath();
+            ctx.arc(alertX, alertY, alertRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16pt Garamond';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(mapTile.alertText, alertX, alertY + 2);
+        }
         ctx.restore();
     }
     static getLocationTileByName(name) {
@@ -2707,6 +2739,7 @@ class MapLocations {
     static Mystery = "Mystery";
     static Race = "Race";
     static Management = "Management";
+    static Scrolls = "Scrolls";
 }
 class UiElements {
     static Money = "UiMoney";
@@ -2716,10 +2749,12 @@ class MapTile {
     name;
     position;
     backgroundImagePath;
-    constructor(name, position, backgroundImagePath) {
+    alertText;
+    constructor(name, position, backgroundImagePath, alertText = undefined) {
         this.name = name;
         this.position = position;
         this.backgroundImagePath = backgroundImagePath;
+        this.alertText = alertText;
     }
 }
 class Rect {
@@ -2754,6 +2789,11 @@ class NavigatorService {
                 camelSelectSection.innerHTML = '';
                 camelSelectSection.style.display = 'none';
             }
+            const scrollsSection = document.getElementById('scrolls');
+            if (!!scrollsSection) {
+                scrollsSection.innerHTML = '';
+                scrollsSection.style.display = 'none';
+            }
             switch (this._currentPage) {
                 case Page.loading:
                     this.navigateToLoading();
@@ -2781,6 +2821,9 @@ class NavigatorService {
                     break;
                 case Page.debug:
                     isometricEditorComponent.load();
+                    break;
+                case Page.scrolls:
+                    scrollsComponent.load();
                     break;
             }
             this._postNavigationFunc();
@@ -2814,6 +2857,7 @@ var Page;
     Page[Page["raceSelection"] = 6] = "raceSelection";
     Page[Page["calendarDetails"] = 7] = "calendarDetails";
     Page[Page["debug"] = 8] = "debug";
+    Page[Page["scrolls"] = 9] = "scrolls";
 })(Page || (Page = {}));
 var Difficulty;
 (function (Difficulty) {
@@ -3583,6 +3627,9 @@ class RecruitmentService {
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
+        if (GameState.camels.length === 1) {
+            GameState.scrolls.push(GeneralWasteScrolls.welcome);
+        }
     }
     spendHighCashMoney = () => {
         this.tryBuyCamel(300);
@@ -3620,5 +3667,107 @@ class RecruitmentService {
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, ['Recruit high camel - $300']);
         camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
         CashMoneyService.drawCashMoney(this._ctx);
+    }
+}
+class ScrollsComponent {
+    _navigator;
+    constructor(_navigator) {
+        this._navigator = _navigator;
+    }
+    load() {
+        const scrollsSection = document.getElementById('scrolls');
+        if (!scrollsSection) {
+            throw new Error('No scrolls element');
+        }
+        scrollsSection.style.display = 'flex';
+        this.createScrollsList(scrollsSection);
+        this.createBackButton(scrollsSection);
+    }
+    createBackButton(scrollsSection) {
+        const button = document.createElement('button');
+        button.classList.add('scrolls__back');
+        button.innerText = 'Back';
+        button.onclick = () => this._navigator.requestPageNavigation(Page.mapOverview);
+        scrollsSection.appendChild(button);
+    }
+    createScrollsList(scrollsSection) {
+        const heading = document.createElement('h1');
+        heading.appendChild(document.createTextNode('Scrolls'));
+        scrollsSection.appendChild(heading);
+        const list = document.createElement('ul');
+        scrollsSection.appendChild(list);
+        const sortedScrolls = GameState.scrolls.sort((a, b) => Number(a.read) - Number(b.read));
+        sortedScrolls.forEach(scroll => this.addScrollToList(list, scroll));
+    }
+    addScrollToList(list, scroll) {
+        const listItem = document.createElement('li');
+        listItem.classList.add('scroll');
+        if (scroll.read) {
+            listItem.classList.add('scroll--read');
+        }
+        const scrollOverview = document.createElement('div');
+        scrollOverview.classList.add('scroll__overview');
+        const scrollPictureContainer = document.createElement('div');
+        scrollPictureContainer.classList.add('scroll__picture-container');
+        const scrollPicture = document.createElement('div');
+        scrollPicture.classList.add('scroll__picture');
+        scrollPictureContainer.appendChild(scrollPicture);
+        const scrollSubject = document.createElement('div');
+        scrollSubject.classList.add('scroll__subject');
+        scrollSubject.appendChild(document.createTextNode(scroll.subject));
+        const scrollSender = document.createElement('div');
+        scrollSender.classList.add('scroll__sender');
+        scrollSender.appendChild(document.createTextNode(scroll.sender));
+        const scrollBody = document.createElement('div');
+        scrollBody.classList.add('scroll__body');
+        scrollBody.appendChild(document.createTextNode(scroll.body));
+        scrollOverview.onclick = () => {
+            listItem.classList.toggle('scroll__expanded');
+            if (!scroll.read) {
+                scroll.read = true;
+                listItem.classList.add('scroll--read');
+            }
+        };
+        listItem.appendChild(scrollOverview);
+        scrollOverview.appendChild(scrollPictureContainer);
+        scrollOverview.appendChild(scrollSubject);
+        scrollOverview.appendChild(scrollSender);
+        listItem.appendChild(scrollBody);
+        list.appendChild(listItem);
+    }
+}
+class ScrollsStartup {
+    _globalServices;
+    constructor(_globalServices) {
+        this._globalServices = _globalServices;
+    }
+    registerComponents() {
+        scrollsComponent = new ScrollsComponent(globalServices.navigatorService);
+    }
+}
+class EmmaDaleScrolls {
+    static get welcome() {
+        return {
+            sender: 'Emma Dale',
+            subject: 'Welcome to Camel Racing Adventures!',
+            body: `Welcome, Manager! 🐪 Ready to conquer the desert tracks? 
+            As your racing guide, I'm here to help. 
+            Train hard, master the sands, and aim for victory. 
+            Remember, teamwork counts. Good luck in the races! 🏁 - Emma Dale`,
+            read: false
+        };
+    }
+}
+class GeneralWasteScrolls {
+    static get welcome() {
+        return {
+            sender: 'General Waste',
+            subject: 'Advice for the Enthusiastic Newcomer 🐫',
+            body: `I hope you're enjoying your little camel racing escapade. While it's cute that you're trying, you might find this endeavor slightly more challenging than anticipated. Don't hesitate to reach out to us seasoned racers; we'll try not to laugh too hard at your struggles.
+            
+            Sincerely,
+            General Waste`,
+            read: false
+        };
     }
 }

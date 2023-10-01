@@ -1,14 +1,14 @@
 class NavigatorService {
     private _pageLoaded = false;
     private _currentPage = Page.loading;
-    private _postNavigationFunc: () => void = () => {};
+    private _postNavigationFunc: () => void = () => { };
 
     public requestPageNavigation(page: Page, postNavigationFunc?: () => void): void {
         if (!this.canNavigate(page)) {
             return;
         }
 
-        this._postNavigationFunc = postNavigationFunc ?? (() => {});
+        this._postNavigationFunc = postNavigationFunc ?? (() => { });
         this._pageLoaded = false
         this._currentPage = page;
     }
@@ -21,6 +21,13 @@ class NavigatorService {
             if (!!camelSelectSection) {
                 camelSelectSection.innerHTML = ''
                 camelSelectSection.style.display = 'none';
+            }
+
+            const scrollsSection = document.getElementById('scrolls');
+
+            if (!!scrollsSection) {
+                scrollsSection.innerHTML = ''
+                scrollsSection.style.display = 'none';
             }
 
             switch (this._currentPage) {
@@ -50,6 +57,9 @@ class NavigatorService {
                     break;
                 case Page.debug:
                     isometricEditorComponent.load();
+                    break;
+                case Page.scrolls:
+                    scrollsComponent.load();
                     break;
             }
 

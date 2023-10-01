@@ -6,11 +6,12 @@ interface GameStateObject {
     lastUsedId: number,
     cashMoney: number,
     calendar: Calendar,
+    scrolls: Scroll[]
 }
 
 class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 2;
+    private static _version: number = 3;
 
     // Camel
     public static camel: Camel | undefined;
@@ -25,6 +26,10 @@ class GameState {
     public static lastUsedId: number = 0; // done
     public static cashMoney: number = 100; // done
 
+    // Scrolls
+    public static scrolls: Scroll[] = [];
+    public static get unreadScrollCount() { return GameState.scrolls.filter(o => !o.read).length }
+
     public static Save() {
         const gameStateObject: GameStateObject = {
             camel: GameState.camel,
@@ -33,7 +38,8 @@ class GameState {
             oldTimeStamp: GameState.oldTimeStamp,
             lastUsedId: GameState.lastUsedId,
             cashMoney: GameState.cashMoney,
-            calendar: GameState.calendar
+            calendar: GameState.calendar,
+            scrolls: GameState.scrolls
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -49,7 +55,7 @@ class GameState {
 
         const gameState = JSON.parse(gameStateString);
 
-        return !!gameState.camel;
+        return true;
     }
 
     public static LoadIfExists() {
@@ -57,8 +63,6 @@ class GameState {
         if (!gameStateString || gameStateString === undefined) return;
 
         const gameState: GameStateObject = JSON.parse(gameStateString);
-
-        if (gameState.camel === undefined) return;
 
         // Load camel
         gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
@@ -74,6 +78,8 @@ class GameState {
         GameState.cashMoney = gameState.cashMoney;
 
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
+        debugger;
+        GameState.scrolls = gameState.scrolls;
     }
 
     private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {

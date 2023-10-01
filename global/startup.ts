@@ -8,6 +8,9 @@ class Startup {
         const managementStartup = new ManagementStartup(globalServices);
         managementStartup.registerComponents();
 
+        const scrollsStartup = new ScrollsStartup(globalServices);
+        scrollsStartup.registerComponents();
+
         recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
         loadingScreen = new LoadingScreen(globalServices.navigatorService);
 

@@ -1,7 +1,18 @@
+:root {
+    --scroll-icon-outer: #c9c5bd;
+    --scroll-icon-inner: #ded8ce;
+    --scroll-unread: #cc7c26;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Garamond;
 }
 
+/* Camel select */
 #camel-select {
     margin-top: 2rem;
     align-items: center;
@@ -90,4 +101,123 @@ body {
     transform: rotate(-45deg);
     position: relative;
     left: 2rem;
+}
+
+/* Scrolls */
+#scrolls {
+    margin-top: 2rem;
+    align-items: center;
+    flex-direction: column;
+    font-family: fantasy;
+}
+
+#scrolls ul {
+    padding: 0;
+    margin: 0;
+    width: 25rem;
+}
+
+.scrolls__back {
+    margin-top: 1rem;
+}
+
+.scroll {
+    list-style: none;
+    height: 4rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: grid;
+    grid-template: repeat(1, 4rem) / repeat(1, 1fr);
+    transition: height 0.25s ease;
+}
+
+.scroll__overview {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color: #F8F0E3;
+    grid-area: 1 / 1 / 1 / 1;
+    display: grid;
+    grid-template: repeat(2, 2fr) / repeat(6, 1fr);
+    height: 4rem;
+    transition: padding 0.25s ease;
+    border-right: 1rem solid var(--scroll-unread);
+}
+
+.scroll--read .scroll__overview{
+    border-right: none;
+}
+
+.scroll__overview:hover {
+    cursor: pointer;
+    padding-left: 1.5rem;
+    filter: brightness(95%);
+}
+
+.scroll__expanded {
+    height: 14rem;
+    display: grid;
+    grid-template: repeat(1, 4rem) 6rem / repeat(1, 1fr);
+}
+
+.scroll__subject {
+    font-weight: 600;
+    font-size: 10pt;
+    grid-area: 1 / 2 / 1 / 7;
+    align-self: end;
+}
+
+.scroll__picture-container {
+    height: 2.5rem;
+    width: 2.5rem;
+    background-color: white;
+    border-radius: 50%;
+    grid-area: 1 / 1 / 3 / 1;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll__picture {
+    box-shadow:
+        0px 0px var(--scroll-icon-outer), 0px 6px var(--scroll-icon-outer), 0px 12px var(--scroll-icon-outer),
+        6px 0px var(--scroll-icon-outer), 6px 6px var(--scroll-icon-outer), 6px 12px var(--scroll-icon-outer);
+    height: 6px;
+    width: 6px;
+    background-color: var(--scroll-icon-outer);
+    margin-left: -6px;
+    margin-bottom: 12px;
+}
+
+.scroll--read .scroll__picture {
+    box-shadow:
+        0px 0px var(--scroll-icon-outer), 0px 6px var(--scroll-icon-outer), 0px 12px var(--scroll-icon-outer),
+        6px 0px var(--scroll-icon-inner), 6px 6px var(--scroll-icon-inner), 6px 12px var(--scroll-icon-inner),
+        12px 0px var(--scroll-icon-inner), 12px 6px var(--scroll-icon-inner), 12px 12px var(--scroll-icon-inner),
+        18px 0px var(--scroll-icon-outer), 18px 6px var(--scroll-icon-outer), 18px 12px var(--scroll-icon-outer);
+    background-color: var(--scroll-icon-outer);
+    margin-left: -18px;
+}
+
+.scroll__sender {
+    font-weight: 100;
+    grid-area: 2 / 2 / 2 / 6;
+    font-size: 10pt;
+    margin-top: 0.25rem;
+    color: green;
+}
+
+.scroll__body {
+    height: 0;
+    overflow: hidden;
+    padding: 0rem 1rem;
+    transition: height 0.25s ease, padding 0.25s ease;
+    grid-area: 2 / 1 / 2 / 1;
+    background-color: #fffaf1;
+}
+
+.scroll__expanded>.scroll__body {
+    height: 10rem;
+    padding: 1rem 1rem;
 }

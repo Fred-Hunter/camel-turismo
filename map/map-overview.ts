@@ -14,43 +14,43 @@ class MapOverview {
     private static _verticalScreen = GlobalStaticConstants.innerHeight > 0.815 * GlobalStaticConstants.innerWidth;
     private static _previousHoverZone = '';
 
-	private static getMousePosition(event: any) {
-		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-		var rect = canvas.getBoundingClientRect();
-		return {
-			x: event.clientX - rect.left,
-			y: event.clientY - rect.top,
-		};
-	}
+    private static getMousePosition(event: any) {
+        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    }
 
     private static getBoundingRect() {
-		return this._verticalScreen ?   {
+        return this._verticalScreen ? {
             x: 0,
             y: 0,
             width: GlobalStaticConstants.innerWidth,
             height: 0.815 * GlobalStaticConstants.innerWidth,
         } : {
-			x: 0,
-			y: 0,
-			width: GlobalStaticConstants.innerHeight / 0.815,
-			height: GlobalStaticConstants.innerHeight,
-		};
+            x: 0,
+            y: 0,
+            width: GlobalStaticConstants.innerHeight / 0.815,
+            height: GlobalStaticConstants.innerHeight,
+        };
     }
 
-	public static load() {
+    public static load() {
         console.log(`Height: ${GlobalStaticConstants.innerHeight}`);
         console.log(`Width: ${GlobalStaticConstants.innerWidth}`);
 
         // Set up canvas
-		CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
-		CanvasService.showCanvas(CanvasNames.MapOverview);
-		GameState.Save();
-        
-		const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
-		const ctx = canvas?.getContext("2d");
-		if (!ctx) return;
+        CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
+        CanvasService.showCanvas(CanvasNames.MapOverview);
+        GameState.Save();
 
-        ctx.clearRect(0,0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        const canvas = CanvasService.getCanvasByName(CanvasNames.MapOverview);
+        const ctx = canvas?.getContext("2d");
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.removeEventListeners(canvas);
 
         // V2 Load tiles
@@ -63,14 +63,14 @@ class MapOverview {
         this.removeEventListeners(canvas);
         this.addEventListeners(canvas, ctx);
 
-		CalendarOverviewDrawing.drawCalendarOverview(canvas);
+        CalendarOverviewDrawing.drawCalendarOverview(canvas);
 
-		CashMoneyService.drawCashMoney(ctx);
+        CashMoneyService.drawCashMoney(ctx);
 
         if (GlobalStaticConstants.debugMode) {
             this.drawDebugGrid(ctx)
         }
-	}
+    }
 
     private static drawDebugGrid(ctx: CanvasRenderingContext2D) {
         ctx.save()
@@ -81,11 +81,11 @@ class MapOverview {
         for (let x = 0; x < GlobalStaticConstants.innerWidth; x += this._boundingRect.width / gridSize) {
             for (let y = 0; y < GlobalStaticConstants.innerHeight; y += this._boundingRect.height / gridSize) {
                 ctx.strokeRect(x, y, this._boundingRect.width / gridSize, this._boundingRect.height / gridSize);
-                ctx.fillText(`${Math.trunc(x/gridSize)},${Math.trunc(y/gridSize)}`, x, y);
+                ctx.fillText(`${Math.trunc(x / gridSize)},${Math.trunc(y / gridSize)}`, x, y);
             }
         }
 
-        
+
         ctx.strokeStyle = "blue";
         ctx.font = "16px Arial";
         ctx.lineWidth = 4;
@@ -120,7 +120,7 @@ class MapOverview {
                     CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
                     new GymDrawing(globalServices.navigatorService).drawGym();
                     break;
-                    
+
                 case MapLocations.Mystery:
                     if (!!GameState.camel && GameState.camel.agility.level > 20) {
                         GameState.cashMoney += 1000;
@@ -131,7 +131,7 @@ class MapOverview {
                         PopupService.drawAlertPopup(`${GlobalStaticConstants.debugMode ? "Enabled" : "Disabled"} debug mode, you idiot!`);
                     }
                     break;
-                    
+
                 case MapLocations.Race:
                     if (!GameState.camel) {
                         PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
@@ -139,7 +139,7 @@ class MapOverview {
                     }
                     globalServices.navigatorService.requestPageNavigation(Page.raceSelection);
                     break;
-                
+
                 case MapLocations.Management:
                     if (!GameState.camel) {
                         PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
@@ -147,9 +147,13 @@ class MapOverview {
                     }
                     globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
+
+                case MapLocations.Scrolls:
+                    globalServices.navigatorService.requestPageNavigation(Page.scrolls);
+                    break;
             }
         };
-        
+
         const hoverHandler = (event: MouseEvent) => {
             const mousePosition = this.getMousePosition(event);
 
@@ -202,7 +206,7 @@ class MapOverview {
     private static getClickZone(pos: any): string {
         let location = MapLocations.None;
         this._clickZones.every(z => {
-            if (this.isInside(pos, z.clickZone)){
+            if (this.isInside(pos, z.clickZone)) {
                 location = z.location;
                 return false;
             }
@@ -229,50 +233,58 @@ class MapOverview {
         ];
 
         // Calculate grid
-        let getTilesPerRow = () => Math.min(4, Math.max(1,  Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
+        let getTilesPerRow = () => Math.min(4, Math.max(1, Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
         let tilesPerRow = getTilesPerRow();
         if (locationsToAdd.length / tilesPerRow > 3) {
             this._tileSize = 4;
             tilesPerRow = getTilesPerRow();
         }
 
-        locationsToAdd.forEach( (tile) => 
-            {
-                this._locationTiles.push( new MapTile(
-                    tile,
-                    new Rect(
-                        ((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit,
-                        Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit,
-                        this._tileSize * wUnit,
-                        this._tileSize * hUnit
-                    ),
-                    `./map/tile-${tile}.svg`
-                ));
+        locationsToAdd.forEach((tile) => {
+            this.addLocationTile(tile, wUnit, hUnit, tilesPlacedCount, tilesPerRow);
+            tilesPlacedCount++;
+        });
 
-                tilesPlacedCount++;
-            }
-        )
+        const scrollAlertMessage = GameState.unreadScrollCount > 0 ? GameState.unreadScrollCount.toString() : undefined;
+        this.addLocationTile(MapLocations.Scrolls, wUnit, hUnit, tilesPlacedCount, tilesPerRow, scrollAlertMessage);
+        tilesPlacedCount++;
 
         // Add click zones
-        this._locationTiles.forEach( (tile) => 
-            {
-                this._clickZones.push({
-                    location: tile.name,
-                    clickZone: tile.position
-                });
+        this._locationTiles.forEach((tile) => {
+            this._clickZones.push({
+                location: tile.name,
+                clickZone: tile.position
+            });
 
-                tilesPlacedCount++;
-            }
+            tilesPlacedCount++;
+        }
         )
     }
 
+    private static addLocationTile(
+        tile: string,
+        wUnit: number,
+        hUnit: number,
+        tilesPlacedCount: number,
+        tilesPerRow: number,
+        alertText: string | undefined = undefined): void {
+        this._locationTiles.push(new MapTile(
+            tile,
+            new Rect(
+                ((tilesPlacedCount % tilesPerRow) * (this._tileSize + this._tileGap) * wUnit) + this._canvasXOffset + this._outerPadding * wUnit,
+                Math.floor(tilesPlacedCount / tilesPerRow) * (this._tileSize + this._tileGap) * hUnit + this._canvasYOffset + this._outerPadding * hUnit,
+                this._tileSize * wUnit,
+                this._tileSize * hUnit
+            ),
+            `./map/tile-${tile}.svg`,
+            alertText
+        ));
+    }
+
     private static paintLocationTiles(ctx: CanvasRenderingContext2D) {
-        this._locationTiles.forEach( (tile) => 
-            {
-                this.paintTile(ctx, tile);
-            }
-        )
-        
+        this._locationTiles.forEach((tile) => {
+            this.paintTile(ctx, tile);
+        })
     }
 
     private static paintTile(ctx: CanvasRenderingContext2D, mapTile: MapTile, borderColour: string = GlobalStaticConstants.mediumColour) {
@@ -280,7 +292,7 @@ class MapOverview {
         if (mapTile.position.y + mapTile.position.height > this._boundingRect.y + this._boundingRect.height) return;
 
         ctx.save();
-        
+
         ctx.strokeStyle = borderColour;
         ctx.lineWidth = 4;
 
@@ -288,6 +300,23 @@ class MapOverview {
         img.src = mapTile.backgroundImagePath;
         ctx.drawImage(img, mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
         ctx.strokeRect(mapTile.position.x, mapTile.position.y, mapTile.position.width, mapTile.position.height);
+
+        if (!!mapTile.alertText) {
+            const alertRadius = 20; // Adjust the radius as needed
+            const alertX = mapTile.position.x + mapTile.position.width - alertRadius - 10; // Adjust position as needed
+            const alertY = mapTile.position.y + alertRadius + 10; // Adjust position as needed
+
+            ctx.fillStyle = '#D0312D';
+            ctx.beginPath();
+            ctx.arc(alertX, alertY, alertRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16pt Garamond';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(mapTile.alertText, alertX, alertY + 2);
+        }
 
         ctx.restore();
     }
@@ -310,6 +339,7 @@ class MapLocations {
     public static Mystery: string = "Mystery";
     public static Race: string = "Race";
     public static Management: string = "Management";
+    public static Scrolls: string = "Scrolls";
 }
 
 class UiElements {
@@ -318,14 +348,18 @@ class UiElements {
 }
 
 class MapTile {
-    constructor(public name: string, public position: Rect, public backgroundImagePath: string) {}
+    constructor(
+        public name: string,
+        public position: Rect,
+        public backgroundImagePath: string,
+        public alertText: string | undefined = undefined) { }
 }
 
 class Rect {
-    constructor (
+    constructor(
         public x: number,
         public y: number,
         public width: number,
         public height: number,
-    ) {}
+    ) { }
 }

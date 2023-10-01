@@ -7,5 +7,6 @@ enum Page {
     raceCamelSelect,
     raceSelection,
     calendarDetails,
-    debug
+    debug,
+    scrolls
 }

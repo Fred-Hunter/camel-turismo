@@ -54,6 +54,11 @@ class RecruitmentService {
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;
+
+        if (GameState.camels.length === 1) {
+            GameState.scrolls.push(GeneralWasteScrolls.welcome);
+        }
+
     }
 
     spendHighCashMoney = () => {

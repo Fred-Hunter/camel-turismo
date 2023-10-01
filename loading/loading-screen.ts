@@ -9,6 +9,9 @@ class LoadingScreen {
 
     private startFreshGame = () => {
         GameState.Reset();
+
+        GameState.scrolls.push(EmmaDaleScrolls.welcome);
+
         this._navigator.requestPageNavigation(
             Page.mapOverview, 
             () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));

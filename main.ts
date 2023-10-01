@@ -24,6 +24,9 @@ let loadingScreen: LoadingScreen;
 let isometricEditorComponent: IsometricEditorComponent;
 let drawingMode = false;
 
+// Scrolls
+let scrollsComponent: ScrollsComponent;
+
 function init() {
     const startup = new Startup();
     globalServices = startup.createGlobalServices();
