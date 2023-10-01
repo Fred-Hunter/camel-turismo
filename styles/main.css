@@ -215,6 +215,8 @@ body {
     transition: height 0.25s ease, padding 0.25s ease;
     grid-area: 2 / 1 / 2 / 1;
     background-color: #fffaf1;
+    white-space: pre-line;
+    overflow: scroll;
 }
 
 .scroll__expanded>.scroll__body {
