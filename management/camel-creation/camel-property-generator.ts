@@ -1,9 +1,17 @@
-class CamelPropertyGenerator{
+class CamelPropertyGenerator {
     public generateColour(): string {
-        return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 7);
+        return this.generateSeededColour(Math.random());
+    }
+
+    public generateSeededColour(seed: number): string {
+        return '#' + (0x1000000 + seed * 0xffffff).toString(16).substring(1, 7);
     }
 
     public generateName(): string {
+        return this.generateSeededName(Math.random(), Math.random());
+    }
+
+    public generateSeededName(adjectiveSeed: number, nounSeed: number): string {
         const adjectives = [
             "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
             "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
@@ -18,14 +26,18 @@ class CamelPropertyGenerator{
             "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
         ];
 
-        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        const randomAdjective = adjectives[Math.floor(adjectiveSeed * adjectives.length)];
+        const randomNoun = nouns[Math.floor(nounSeed * nouns.length)];
 
         return randomAdjective + " " + randomNoun;
     }
 
     public generateTemperament(): CamelTemperament {
-        if (Math.random() < 0.25) {
+        return this.generateSeededTemperament(Math.random());
+    }
+
+    public generateSeededTemperament(seed: number): CamelTemperament {
+        if (seed < 0.25) {
             return CamelTemperament.Aggressive;
         } else if (Math.random() < 0.5) {
             return CamelTemperament.Temperamental;

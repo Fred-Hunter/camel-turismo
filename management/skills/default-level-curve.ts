@@ -3,7 +3,7 @@ class DefaultLevelCurve implements LevelCurve {
 
     public get maxSkillLevel() { return 99; }
 
-    public getXpRequiredForLevel(level: number, potential: number) {
+    public getXpRequiredForLevel(level: number, potential: number = 0) {
         return (level - 1) * 100;
     }
 
