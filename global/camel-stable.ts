@@ -22,17 +22,18 @@ class CamelStable {
         let hardCamels: Camel[] = [];
 
         const populateCamelArray = (quality: InitCamelQuality, camelArray: Camel[]) => {
+            const radix = 36
             const seedPart = seed.slice(index * camelInformationLength, (1 + index) * camelInformationLength);
 
             camelArray.push(
                 this._camelCreator.createSeededCamel([
-                    ((quality + 1) / 10) * parseInt(seed.slice(0,2), 36) / (36 ** 2),
-                    parseInt(seedPart.slice(2,4), 36) / (36 ** 2),
-                    parseInt(seedPart.slice(4,6), 36) / (36 ** 2),
-                    parseInt(seedPart.slice(6,7), 36) / 36,
-                    parseInt(seedPart.slice(7,8), 36) / 36,
-                    parseInt(seedPart.slice(8,9), 36) / 36,
-                    parseInt(seedPart.slice(8,9), 36) / 36
+                    ((quality + 1) / 10) * parseInt(seedPart.slice(0,2), radix) / (radix ** 2),
+                    ((quality + 1) / 10) * parseInt(seedPart.slice(2,4), radix) / (radix ** 2),
+                    ((quality + 1) / 10) * parseInt(seedPart.slice(4,6), radix) / (radix ** 2),
+                    parseInt(seedPart.slice(6,7), radix) / radix,
+                    parseInt(seedPart.slice(7,8), radix) / radix,
+                    parseInt(seedPart.slice(8,9), radix) / radix,
+                    parseInt(seedPart.slice(8,9), radix) / radix,
                 ])
             );
 
