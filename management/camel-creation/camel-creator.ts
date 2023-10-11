@@ -94,4 +94,24 @@ class CamelCreator {
 
         return new Camel(++GameState.lastUsedId, camelInitProperties);
     }
+
+    
+
+    public createSeedFromCamel(camel: Camel): string {
+        const radix = 36;
+        let encodedString = "";
+
+        // skills
+        encodedString += camel.agility.level.toString(radix).padStart(2,"0");
+        encodedString += camel.sprintSpeed.level.toString(radix).padStart(2,"0");
+        encodedString += camel.stamina.level.toString(radix).padStart(2,"0");
+
+        // colour
+        encodedString += (parseInt(camel.colour.substring(1,7), 16) / 13000).toString(36);
+
+        // name
+        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
+        
+        return encodedString;
+    }
 }

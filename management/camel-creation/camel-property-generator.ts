@@ -1,10 +1,24 @@
 class CamelPropertyGenerator {
+    private nameAjectives =  [
+        "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
+        "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
+        "Amber", "Crimson", "Harmony", "Marble", "Opal",
+        "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
+    ];
+
+    private nameNouns =  [
+        "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
+        "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
+        "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
+        "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
+    ];
+
     public generateColour(): string {
         return this.generateSeededColour(Math.random());
     }
 
     public generateSeededColour(seed: number): string {
-        return '#' + (0x1000000 + seed * 0xffffff).toString(16).substring(1, 7);
+        return '#' + (0x000000 + seed * 0x32c8).toString(16);
     }
 
     public generateName(): string {
@@ -12,24 +26,18 @@ class CamelPropertyGenerator {
     }
 
     public generateSeededName(adjectiveSeed: number, nounSeed: number): string {
-        const adjectives = [
-            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
-            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
-            "Amber", "Crimson", "Harmony", "Marble", "Opal",
-            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
-        ];
-
-        const nouns = [
-            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
-            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
-            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
-            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
-        ];
-
-        const randomAdjective = adjectives[Math.floor(adjectiveSeed * adjectives.length)];
-        const randomNoun = nouns[Math.floor(nounSeed * nouns.length)];
+        const randomAdjective = this.nameAjectives[Math.floor(adjectiveSeed * this.nameAjectives.length)];
+        const randomNoun = this.nameNouns[Math.floor(nounSeed * this.nameNouns.length)];
 
         return randomAdjective + " " + randomNoun;
+    }
+
+    public generateSeedFromName(name: string): string {
+        let seed = "";
+        seed += this.nameAjectives.indexOf(name.split(" ")[0]);
+        seed += this.nameNouns.indexOf(name.split(" ")[1]);
+
+        return seed;
     }
 
     public generateTemperament(): CamelTemperament {
