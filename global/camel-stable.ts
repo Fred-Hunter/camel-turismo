@@ -8,6 +8,8 @@ class CamelStable {
     private _camelInformationLength = 10;
     private _numberOfCamels = 25;
 
+    public camels: Camel[] = [];
+
     public populateStable() {
         let firstTimeSetUp = false;
         if (!GameState.stableSeed) {
@@ -18,14 +20,13 @@ class CamelStable {
         const seed = GameState.stableSeed;
 
         let index = 0;
-        let camels: Camel[] = [];
 
         const variation = 30;
         const uniformCenters = Array.from(new Array(this._numberOfCamels), (e, i) => (100 / this._numberOfCamels) * (i + 1));
 
         if (firstTimeSetUp) {
             uniformCenters.forEach(center => {
-                camels.push(
+                this.camels.push(
                     this._camelCreator.createSeededCamel([
                         this.generateRandomNumber(center, variation),
                         this.generateRandomNumber(center, variation),
@@ -61,7 +62,7 @@ class CamelStable {
             index += this._camelInformationLength;
         };
 
-        new Array(this._numberOfCamels).forEach(quality => populateCamelArray(camels));
+        new Array(this._numberOfCamels).forEach(quality => populateCamelArray(this.camels));
 
         return;
     }
