@@ -13,11 +13,8 @@ class CamelStable {
     public populateStable() {
         let firstTimeSetUp = false;
         if (!GameState.stableSeed) {
-            GameState.stableSeed = this.generateSeed();
             firstTimeSetUp = true;
         }
-
-        const seed = GameState.stableSeed;
 
         let index = 0;
 
@@ -26,36 +23,46 @@ class CamelStable {
 
         if (firstTimeSetUp) {
             uniformCenters.forEach(center => {
-                this.camels.push(
-                    this._camelCreator.createSeededCamel([
-                        this.generateRandomNumber(center, variation),
-                        this.generateRandomNumber(center, variation),
-                        this.generateRandomNumber(center, variation),
-                        parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix,
-                        parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix,
-                        parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix,
-                        parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix,
-                    ])
-                );
+
+                const agility = this.generateRandomNumber(center, variation); 
+                const sprintSpeed = this.generateRandomNumber(center, variation); 
+                const stamina = this.generateRandomNumber(center, variation); 
+                const colour = this.generateSeed(1);
+                const name1 = this.generateSeed(1);
+                const name2 = this.generateSeed(1);
+                const temperament = this.generateSeed(1); // unused
+
+                const camel = this._camelCreator.createSeededCamel([
+                    agility,
+                    sprintSpeed,
+                    stamina,
+                    parseInt(colour, this._seedRadix) / this._seedRadix,
+                    parseInt(name1, this._seedRadix) / this._seedRadix,
+                    parseInt(name2, this._seedRadix) / this._seedRadix,
+                    parseInt(temperament, this._seedRadix) / this._seedRadix,
+                ]);
+
+                this.camels.push(camel);
+
+                GameState.stableSeed += this._camelCreator.createSeedFromCamel(camel);
             });
 
             return;
         }
 
         const populateCamelArray = (camelArray: Camel[]) => {
-            const radix = 36
-            const seedPart = seed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
+            const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
             const maxLevel = (new DefaultLevelCurve()).maxSkillLevel;
 
             camelArray.push(
                 this._camelCreator.createSeededCamel([
-                    maxLevel * parseInt(seedPart.slice(0, 2), radix) / (radix ** 2),
-                    maxLevel * parseInt(seedPart.slice(2, 4), radix) / (radix ** 2),
-                    maxLevel * parseInt(seedPart.slice(4, 6), radix) / (radix ** 2),
-                    parseInt(seedPart.slice(6, 7), radix) / radix,
-                    parseInt(seedPart.slice(7, 8), radix) / radix,
-                    parseInt(seedPart.slice(8, 9), radix) / radix,
-                    parseInt(seedPart.slice(9, 10), radix) / radix,
+                    maxLevel * parseInt(seedPart.slice(0, 2), this._seedRadix) / (this._seedRadix ** 2),
+                    maxLevel * parseInt(seedPart.slice(2, 4), this._seedRadix) / (this._seedRadix ** 2),
+                    maxLevel * parseInt(seedPart.slice(4, 6), this._seedRadix) / (this._seedRadix ** 2),
+                    parseInt(seedPart.slice(6, 7), this._seedRadix) / this._seedRadix,
+                    parseInt(seedPart.slice(7, 8), this._seedRadix) / this._seedRadix,
+                    parseInt(seedPart.slice(8, 9), this._seedRadix) / this._seedRadix,
+                    parseInt(seedPart.slice(9, 10), this._seedRadix) / this._seedRadix,
                 ])
             );
 
