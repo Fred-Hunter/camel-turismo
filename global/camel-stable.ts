@@ -24,22 +24,22 @@ class CamelStable {
         if (firstTimeSetUp) {
             uniformCenters.forEach(center => {
 
-                const agility = this.generateRandomNumber(center, variation); 
-                const sprintSpeed = this.generateRandomNumber(center, variation); 
-                const stamina = this.generateRandomNumber(center, variation); 
-                const colour = this.generateSeed(1);
-                const name1 = this.generateSeed(1);
-                const name2 = this.generateSeed(1);
-                const temperament = this.generateSeed(1); // unused
+                const agility = this.generateRandomNumber(center, variation);
+                const sprintSpeed = this.generateRandomNumber(center, variation);
+                const stamina = this.generateRandomNumber(center, variation);
+                const colour = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const name1 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const name2 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const temperament = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix; // unused
 
                 const camel = this._camelCreator.createSeededCamel([
                     agility,
                     sprintSpeed,
                     stamina,
-                    parseInt(colour, this._seedRadix) / this._seedRadix,
-                    parseInt(name1, this._seedRadix) / this._seedRadix,
-                    parseInt(name2, this._seedRadix) / this._seedRadix,
-                    parseInt(temperament, this._seedRadix) / this._seedRadix,
+                    colour,
+                    name1,
+                    name2,
+                    temperament
                 ]);
 
                 this.camels.push(camel);
