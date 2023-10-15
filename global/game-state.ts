@@ -6,18 +6,20 @@ interface GameStateObject {
     lastUsedId: number,
     cashMoney: number,
     calendar: Calendar,
-    scrolls: Scroll[]
+    scrolls: Scroll[],
+    stableSeed: string
 }
 
 class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 3;
+    private static _version: number = 4;
 
     // Camel
     public static camel: Camel | undefined;
     public static camels: Camel[] = [];
     public static secondsPassed: number = 0; // done
     public static oldTimeStamp: number = 0; // done
+    public static stableSeed: string = "";
 
     // Calendar
     public static calendar: Calendar;
@@ -39,7 +41,8 @@ class GameState {
             lastUsedId: GameState.lastUsedId,
             cashMoney: GameState.cashMoney,
             calendar: GameState.calendar,
-            scrolls: GameState.scrolls
+            scrolls: GameState.scrolls,
+            stableSeed: GameState.stableSeed
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -80,6 +83,7 @@ class GameState {
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
         debugger;
         GameState.scrolls = gameState.scrolls;
+        GameState.stableSeed = gameState.stableSeed;
     }
 
     private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {

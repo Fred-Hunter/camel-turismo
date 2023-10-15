@@ -21,4 +21,13 @@ class CamelSkillCreator {
         
         return new CamelSkill(serialisedSkill.skillType, levelCurve, serialisedSkill.potential, xp);
     }
+
+    public generateSkillWithLevel(
+        skillType: CamelSkillType, 
+        level: number): CamelSkill {
+            
+        const levelCurve = this._levelCurveFactory.getDefaultLevelCurve();
+        
+        return new CamelSkill(skillType, levelCurve, level, levelCurve.getXpRequiredForLevel(level, level));
+    }
 }

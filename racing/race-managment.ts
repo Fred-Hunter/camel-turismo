@@ -12,12 +12,16 @@ class RaceManagement {
 
     private addCpuCamelsToRace(
         raceSize: number,
-        competitorQuality: InitCamelQuality,
+        raceDifficulty: number,
         race: Race) {
-        for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
+            globalServices.camelStable.populateStable();
+            let sortedCamels = globalServices.camelStable.camels
+                .map(c => c) // copy array
+                .sort((c1, c2) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
 
-            this.addCamelToRace(competitorCamel, race);
+        for (let i = 0; i < raceSize; i++) {
+            if (sortedCamels.length === 0) break;
+            this.addCamelToRace(sortedCamels.shift() as Camel, race);
         }
     }
 
@@ -26,14 +30,14 @@ class RaceManagement {
         prizeCashMoney: number,
         raceSize: number,
         difficulty: Difficulty): Race {
-        let competitorQuality: InitCamelQuality;
+        let averageCompetitorLevel = 0;
 
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.High;
+            averageCompetitorLevel = 20;
         } else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Cpu1;
+            averageCompetitorLevel = 50;
         } else {
-            competitorQuality = InitCamelQuality.Cpu5;
+            averageCompetitorLevel = 80;
         }
 
         const trackCreator = new RaceTrackCreator();
@@ -41,7 +45,7 @@ class RaceManagement {
 
         const race = new Race(raceLength, track, prizeCashMoney, difficulty);
 
-        this.addCpuCamelsToRace(raceSize, competitorQuality, race);
+        this.addCpuCamelsToRace(raceSize, averageCompetitorLevel, race);
 
         return race;
     }

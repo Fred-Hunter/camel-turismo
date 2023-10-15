@@ -39,8 +39,8 @@ class Camel {
 
     public get level(): number {
         const skillLevels = [
-            this.agility.level, 
-            this.sprintSpeed.level, 
+            this.agility.level,
+            this.sprintSpeed.level,
             this.stamina.level];
 
         const skillLevelSum = skillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
@@ -50,8 +50,8 @@ class Camel {
 
     public get potentialLevel(): number {
         const potentialSkillLevels = [
-            this.agility.potential, 
-            this.sprintSpeed.potential, 
+            this.agility.potential,
+            this.sprintSpeed.potential,
             this.stamina.potential];
 
         const skillLevelSum = potentialSkillLevels.reduce((partialSum, newValue) => partialSum + newValue, 0);
@@ -62,15 +62,21 @@ class Camel {
     public get potentialDescription(): string {
         const potentialLevel = this.potentialLevel;
 
-        if(potentialLevel <= 10) return 'Dismal underachiever';
-        else if(potentialLevel <= 20) return 'Dismal underachiever';
-        else if(potentialLevel <= 30) return 'Struggling competitor';
-        else if(potentialLevel <= 40) return 'Modest hopeless case';
-        else if(potentialLevel <= 50) return 'Developing talent';
-        else if(potentialLevel <= 60) return 'Breakthrough prospect';
-        else if(potentialLevel <= 70) return 'Frontrunner in training';
-        else if(potentialLevel <= 80) return 'Elite championship aspirant';
-        else if(potentialLevel <= 90) return 'Future racing star';
+        if (potentialLevel <= 10) return 'Dismal underachiever';
+        else if (potentialLevel <= 20) return 'Dismal underachiever';
+        else if (potentialLevel <= 30) return 'Struggling competitor';
+        else if (potentialLevel <= 40) return 'Modest hopeless case';
+        else if (potentialLevel <= 50) return 'Developing talent';
+        else if (potentialLevel <= 60) return 'Breakthrough prospect';
+        else if (potentialLevel <= 70) return 'Frontrunner in training';
+        else if (potentialLevel <= 80) return 'Elite championship aspirant';
+        else if (potentialLevel <= 90) return 'Future racing star';
         else return 'Legendary camel in the making'
+    }
+
+    public get levelAverage(): number {
+        return (this.agility.level +
+            this.sprintSpeed.level +
+            this.stamina.level)/3;
     }
 }
