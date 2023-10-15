@@ -55,14 +55,17 @@ class LeaderboardService {
 
 		camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
 		this.ctx.fillStyle = "#96876e";
+		this.ctx.font = "10pt Garamond";
 
+		this.ctx.save();
 		if (this.isCamelUserOwned(camel.camel)) {
-			this.ctx.fillStyle = "#96876e";
-			this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
-		}
+			this.ctx.fillStyle = GlobalStaticConstants.highlightColour;
+			this.ctx.font = "bold 10pt Garamond";
+		} 
+		this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
+		this.ctx.restore();
 
 		this.ctx.fillStyle = "#000";
-		this.ctx.font = "10pt Garamond";
 		const completionPercentage = Math.min(1, Math.round(camel.completionPercentage * 100) / 100);
 		this.ctx.beginPath();
 		this.ctx.fillStyle = "#fff";
