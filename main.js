@@ -1143,36 +1143,57 @@ class CamelStable {
     constructor(_camelCreator) {
         this._camelCreator = _camelCreator;
     }
+    _seedRadix = 36;
+    _camelInformationLength = 10;
+    _numberOfCamels = 25;
+    camels = [];
     populateStable() {
+        let firstTimeSetUp = false;
         if (!GameState.stableSeed) {
-            GameState.stableSeed = this.generateSeed();
+            firstTimeSetUp = true;
         }
-        const seed = GameState.stableSeed;
-        const camelInformationLength = 10;
         let index = 0;
-        let easyCamelCount = 10;
-        let mediumCamelCount = 10;
-        let hardCamelCount = 10;
-        let easyCamels = [];
-        let mediumCamels = [];
-        let hardCamels = [];
-        const populateCamelArray = (quality, camelArray) => {
-            const radix = 36;
-            const seedPart = seed.slice(index * camelInformationLength, (1 + index) * camelInformationLength);
+        const variation = 30;
+        const uniformCenters = Array.from(new Array(this._numberOfCamels), (e, i) => (100 / this._numberOfCamels) * (i + 1));
+        if (firstTimeSetUp) {
+            uniformCenters.forEach(center => {
+                const agility = this.generateRandomNumber(center, variation);
+                const sprintSpeed = this.generateRandomNumber(center, variation);
+                const stamina = this.generateRandomNumber(center, variation);
+                const colour = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const name1 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const name2 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const temperament = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix; // unused
+                const camel = this._camelCreator.createSeededCamel([
+                    agility,
+                    sprintSpeed,
+                    stamina,
+                    colour,
+                    name1,
+                    name2,
+                    temperament
+                ]);
+                this.camels.push(camel);
+                GameState.stableSeed += this._camelCreator.createSeedFromCamel(camel);
+            });
+            return;
+        }
+        const populateCamelArray = (camelArray) => {
+            const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
+            const maxLevel = (new DefaultLevelCurve()).maxSkillLevel;
             camelArray.push(this._camelCreator.createSeededCamel([
-                ((quality + 1) / 10) * parseInt(seedPart.slice(0, 2), radix) / (radix ** 2),
-                ((quality + 1) / 10) * parseInt(seedPart.slice(2, 4), radix) / (radix ** 2),
-                ((quality + 1) / 10) * parseInt(seedPart.slice(4, 6), radix) / (radix ** 2),
-                parseInt(seedPart.slice(6, 7), radix) / radix,
-                parseInt(seedPart.slice(7, 8), radix) / radix,
-                parseInt(seedPart.slice(8, 9), radix) / radix,
-                parseInt(seedPart.slice(8, 9), radix) / radix,
+                maxLevel * parseInt(seedPart.slice(0, 2), this._seedRadix) / (this._seedRadix ** 2),
+                maxLevel * parseInt(seedPart.slice(2, 4), this._seedRadix) / (this._seedRadix ** 2),
+                maxLevel * parseInt(seedPart.slice(4, 6), this._seedRadix) / (this._seedRadix ** 2),
+                parseInt(seedPart.slice(6, 7), this._seedRadix) / this._seedRadix,
+                parseInt(seedPart.slice(7, 8), this._seedRadix) / this._seedRadix,
+                parseInt(seedPart.slice(8, 9), this._seedRadix) / this._seedRadix,
+                parseInt(seedPart.slice(9, 10), this._seedRadix) / this._seedRadix,
             ]));
-            index += camelInformationLength;
+            index += this._camelInformationLength;
         };
-        new Array(easyCamelCount).fill(InitCamelQuality.High).forEach(quality => populateCamelArray(quality, easyCamels));
-        new Array(mediumCamelCount).fill(InitCamelQuality.Cpu1).forEach(quality => populateCamelArray(quality, mediumCamels));
-        new Array(hardCamelCount).fill(InitCamelQuality.Cpu5).forEach(quality => populateCamelArray(quality, hardCamels));
+        new Array(this._numberOfCamels).forEach(e => populateCamelArray(this.camels));
+        return;
     }
     static GetGeneralWaste = () => {
         const levelCurve = new DefaultLevelCurve();
@@ -1191,6 +1212,10 @@ class CamelStable {
     };
     generateSeed(length = 700, radix = 36) {
         return "x".repeat(length).replace(/x/g, (char) => Math.floor(Math.random() * radix).toString(radix));
+    }
+    generateRandomNumber(center, plusMinusRange, max = 100, min = 0) {
+        const randValue = center + ((Math.random()) * 2 - 1) * plusMinusRange;
+        return Math.max(min, Math.min(max, randValue));
     }
 }
 class CanvasBtnService {
@@ -2144,33 +2169,52 @@ class CamelCreator {
         };
         return new Camel(++GameState.lastUsedId, camelInitProperties);
     }
+    createSeedFromCamel(camel) {
+        const radix = 36;
+        let encodedString = "";
+        // skills
+        encodedString += camel.agility.level.toString(radix).padStart(2, "0");
+        encodedString += camel.sprintSpeed.level.toString(radix).padStart(2, "0");
+        encodedString += camel.stamina.level.toString(radix).padStart(2, "0");
+        // colour
+        encodedString += (parseInt(camel.colour.substring(1, 7), 16) / 13000).toString(36);
+        // name
+        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
+        return encodedString;
+    }
 }
 class CamelPropertyGenerator {
+    nameAjectives = [
+        "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
+        "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
+        "Amber", "Crimson", "Harmony", "Marble", "Opal",
+        "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
+    ];
+    nameNouns = [
+        "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
+        "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
+        "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
+        "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
+    ];
     generateColour() {
         return this.generateSeededColour(Math.random());
     }
     generateSeededColour(seed) {
-        return '#' + (0x1000000 + seed * 0xffffff).toString(16).substring(1, 7);
+        return '#' + (0x000000 + seed * 0x32c8).toString(16);
     }
     generateName() {
         return this.generateSeededName(Math.random(), Math.random());
     }
     generateSeededName(adjectiveSeed, nounSeed) {
-        const adjectives = [
-            "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
-            "Whirling", "Blazing", "Silent", "Radiant", "Breezy",
-            "Amber", "Crimson", "Harmony", "Marble", "Opal",
-            "Princess", "Sahara", "Shadow", "Tawny", "Whisper"
-        ];
-        const nouns = [
-            "Desert", "Oasis", "Pyramid", "Mirage", "Nomad",
-            "Sunset", "Sahara", "Dune", "Caravan", "Cactus",
-            "Jewel", "Moon", "Oracle", "Sphinx", "Spirit",
-            "Sultan", "Talisman", "Treasure", "Zephyr", "Zodiac"
-        ];
-        const randomAdjective = adjectives[Math.floor(adjectiveSeed * adjectives.length)];
-        const randomNoun = nouns[Math.floor(nounSeed * nouns.length)];
+        const randomAdjective = this.nameAjectives[Math.floor(adjectiveSeed * this.nameAjectives.length)];
+        const randomNoun = this.nameNouns[Math.floor(nounSeed * this.nameNouns.length)];
         return randomAdjective + " " + randomNoun;
+    }
+    generateSeedFromName(name) {
+        let seed = "";
+        seed += this.nameAjectives.indexOf(name.split(" ")[0]);
+        seed += this.nameNouns.indexOf(name.split(" ")[1]);
+        return seed;
     }
     generateTemperament() {
         return this.generateSeededTemperament(Math.random());
@@ -2293,6 +2337,11 @@ class Camel {
             return 'Future racing star';
         else
             return 'Legendary camel in the making';
+    }
+    get levelAverage() {
+        return (this.agility.level +
+            this.sprintSpeed.level +
+            this.stamina.level) / 3;
     }
 }
 class CamelSelectComponent {
@@ -2625,8 +2674,6 @@ class MapOverview {
         };
     }
     static load() {
-        console.log(`Height: ${GlobalStaticConstants.innerHeight}`);
-        console.log(`Width: ${GlobalStaticConstants.innerWidth}`);
         // Set up canvas
         CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
         CanvasService.showCanvas(CanvasNames.MapOverview);
@@ -3319,22 +3366,36 @@ class RaceManagement {
         const racingCamel = new RacingCamel(camel);
         race.racingCamels.push(racingCamel);
     }
-    addCpuCamelsToRace(raceSize, competitorQuality, race) {
+    // private addCpuCamelsToRace(
+    //     raceSize: number,
+    //     competitorQuality: InitCamelQuality,
+    //     race: Race) {
+    //     for (let i = 0; i < raceSize; i++) {
+    //         const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
+    //         this.addCamelToRace(competitorCamel, race);
+    //     }
+    // }
+    addCpuCamelsToRace(raceSize, raceDifficulty, race) {
+        globalServices.camelStable.populateStable();
+        let sortedCamels = globalServices.camelStable.camels
+            .map(c => c) // copy array
+            .sort((c1, c2) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
         for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
-            this.addCamelToRace(competitorCamel, race);
+            if (sortedCamels.length === 0)
+                break;
+            this.addCamelToRace(sortedCamels.shift(), race);
         }
     }
     createRace(raceLength, prizeCashMoney, raceSize, difficulty) {
-        let competitorQuality;
+        let competitorQuality = 0; // Average level of competitors
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.High;
+            competitorQuality = 40;
         }
         else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Cpu1;
+            competitorQuality = 50;
         }
         else {
-            competitorQuality = InitCamelQuality.Cpu5;
+            competitorQuality = 90;
         }
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);

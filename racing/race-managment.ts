@@ -10,14 +10,29 @@ class RaceManagement {
         race.racingCamels.push(racingCamel);
     }
 
+    // private addCpuCamelsToRace(
+    //     raceSize: number,
+    //     competitorQuality: InitCamelQuality,
+    //     race: Race) {
+    //     for (let i = 0; i < raceSize; i++) {
+    //         const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
+
+    //         this.addCamelToRace(competitorCamel, race);
+    //     }
+    // }
+
     private addCpuCamelsToRace(
         raceSize: number,
-        competitorQuality: InitCamelQuality,
+        raceDifficulty: number,
         race: Race) {
-        for (let i = 0; i < raceSize; i++) {
-            const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
+            globalServices.camelStable.populateStable();
+            let sortedCamels = globalServices.camelStable.camels
+                .map(c => c) // copy array
+                .sort((c1, c2) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
 
-            this.addCamelToRace(competitorCamel, race);
+        for (let i = 0; i < raceSize; i++) {
+            if (sortedCamels.length === 0) break;
+            this.addCamelToRace(sortedCamels.shift() as Camel, race);
         }
     }
 
@@ -26,14 +41,14 @@ class RaceManagement {
         prizeCashMoney: number,
         raceSize: number,
         difficulty: Difficulty): Race {
-        let competitorQuality: InitCamelQuality;
+        let competitorQuality = 0; // Average level of competitors
 
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = InitCamelQuality.High;
+            competitorQuality = 40;
         } else if (difficulty === Difficulty.Normal) {
-            competitorQuality = InitCamelQuality.Cpu1;
+            competitorQuality = 50;
         } else {
-            competitorQuality = InitCamelQuality.Cpu5;
+            competitorQuality = 90;
         }
 
         const trackCreator = new RaceTrackCreator();

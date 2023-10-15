@@ -74,9 +74,9 @@ class Camel {
         else return 'Legendary camel in the making'
     }
 
-    public get levelTotal(): number {
-        return this.agility.level +
+    public get levelAverage(): number {
+        return (this.agility.level +
             this.sprintSpeed.level +
-            this.stamina.level;
+            this.stamina.level)/3;
     }
 }
