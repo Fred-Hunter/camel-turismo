@@ -2177,7 +2177,7 @@ class CamelCreator {
         encodedString += camel.sprintSpeed.level.toString(radix).padStart(2, "0");
         encodedString += camel.stamina.level.toString(radix).padStart(2, "0");
         // colour
-        encodedString += (parseInt(camel.colour.substring(1, 7), 16) / 13000).toString(36);
+        encodedString += Math.round(parseInt(camel.colour.substring(1, 7), 16) / (16 ** 6 / 36)).toString(36);
         // name
         encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
         return encodedString;
@@ -2200,7 +2200,7 @@ class CamelPropertyGenerator {
         return this.generateSeededColour(Math.random());
     }
     generateSeededColour(seed) {
-        return '#' + (0x000000 + seed * 0x32c8).toString(16);
+        return '#' + (0x000000 + Math.floor(seed * 36) * 0x71c71).toString(16);
     }
     generateName() {
         return this.generateSeededName(Math.random(), Math.random());
@@ -3366,15 +3366,6 @@ class RaceManagement {
         const racingCamel = new RacingCamel(camel);
         race.racingCamels.push(racingCamel);
     }
-    // private addCpuCamelsToRace(
-    //     raceSize: number,
-    //     competitorQuality: InitCamelQuality,
-    //     race: Race) {
-    //     for (let i = 0; i < raceSize; i++) {
-    //         const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
-    //         this.addCamelToRace(competitorCamel, race);
-    //     }
-    // }
     addCpuCamelsToRace(raceSize, raceDifficulty, race) {
         globalServices.camelStable.populateStable();
         let sortedCamels = globalServices.camelStable.camels

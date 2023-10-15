@@ -18,7 +18,7 @@ class CamelPropertyGenerator {
     }
 
     public generateSeededColour(seed: number): string {
-        return '#' + (0x000000 + seed * 0x32c8).toString(16);
+        return '#' + (0x000000 + Math.floor(seed * 36) * 0x71c71).toString(16);
     }
 
     public generateName(): string {

@@ -10,17 +10,6 @@ class RaceManagement {
         race.racingCamels.push(racingCamel);
     }
 
-    // private addCpuCamelsToRace(
-    //     raceSize: number,
-    //     competitorQuality: InitCamelQuality,
-    //     race: Race) {
-    //     for (let i = 0; i < raceSize; i++) {
-    //         const competitorCamel = this._camelCreator.createRandomCamelWithQuality(competitorQuality);
-
-    //         this.addCamelToRace(competitorCamel, race);
-    //     }
-    // }
-
     private addCpuCamelsToRace(
         raceSize: number,
         raceDifficulty: number,

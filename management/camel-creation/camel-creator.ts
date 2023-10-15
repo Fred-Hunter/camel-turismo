@@ -107,7 +107,7 @@ class CamelCreator {
         encodedString += camel.stamina.level.toString(radix).padStart(2,"0");
 
         // colour
-        encodedString += (parseInt(camel.colour.substring(1,7), 16) / 13000).toString(36);
+        encodedString += Math.round(parseInt(camel.colour.substring(1,7), 16) / (16**6 / 36)).toString(36);
 
         // name
         encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
