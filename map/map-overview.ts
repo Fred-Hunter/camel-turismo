@@ -38,9 +38,6 @@ class MapOverview {
     }
 
     public static load() {
-        console.log(`Height: ${GlobalStaticConstants.innerHeight}`);
-        console.log(`Width: ${GlobalStaticConstants.innerWidth}`);
-
         // Set up canvas
         CanvasService.bringCanvasToTop(CanvasNames.MapOverview);
         CanvasService.showCanvas(CanvasNames.MapOverview);
