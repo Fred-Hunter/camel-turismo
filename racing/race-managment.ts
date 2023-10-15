@@ -41,14 +41,14 @@ class RaceManagement {
         prizeCashMoney: number,
         raceSize: number,
         difficulty: Difficulty): Race {
-        let competitorQuality = 0; // Average level of competitors
+        let averageCompetitorLevel = 0;
 
         if (difficulty === Difficulty.Easy) {
-            competitorQuality = 40;
+            averageCompetitorLevel = 20;
         } else if (difficulty === Difficulty.Normal) {
-            competitorQuality = 50;
+            averageCompetitorLevel = 50;
         } else {
-            competitorQuality = 90;
+            averageCompetitorLevel = 80;
         }
 
         const trackCreator = new RaceTrackCreator();
@@ -56,7 +56,7 @@ class RaceManagement {
 
         const race = new Race(raceLength, track, prizeCashMoney, difficulty);
 
-        this.addCpuCamelsToRace(raceSize, competitorQuality, race);
+        this.addCpuCamelsToRace(raceSize, averageCompetitorLevel, race);
 
         return race;
     }
