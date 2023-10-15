@@ -95,7 +95,7 @@ class CamelStable {
             Math.floor(Math.random() * radix).toString(radix));
     }
 
-    private generateRandomNumber(center: number, plusMinusRange: number, max: number = 100, min: number = 0) {
+    private generateRandomNumber(center: number, plusMinusRange: number, min: number = 1, max: number = 100) {
         const randValue = center + ((Math.random()) * 2 - 1) * plusMinusRange;
         return Math.max(min, Math.min(max, randValue));
     }
