@@ -75,9 +75,9 @@ class CamelCreator {
     public createSeededCamel(
         seeds: [number, number, number, number, number, number, number]
     ): Camel {
-        const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, Math.ceil(seeds[0] * 100));
-        const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, Math.ceil(seeds[1] * 100));
-        const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, Math.ceil(seeds[2] * 100));
+        const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, Math.ceil(seeds[0]));
+        const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, Math.ceil(seeds[1]));
+        const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, Math.ceil(seeds[2]));
 
         const camelInitProperties: CamelInitProperties = {
             colour: this._camelPropertyGenerator.generateSeededColour(seeds[3]),

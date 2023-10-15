@@ -1213,7 +1213,7 @@ class CamelStable {
     generateSeed(length = 700, radix = 36) {
         return "x".repeat(length).replace(/x/g, (char) => Math.floor(Math.random() * radix).toString(radix));
     }
-    generateRandomNumber(center, plusMinusRange, max = 100, min = 0) {
+    generateRandomNumber(center, plusMinusRange, min = 1, max = 100) {
         const randValue = center + ((Math.random()) * 2 - 1) * plusMinusRange;
         return Math.max(min, Math.min(max, randValue));
     }
@@ -2152,9 +2152,9 @@ class CamelCreator {
         return new Camel(serialisedCamel.id, camelInitProperties);
     }
     createSeededCamel(seeds) {
-        const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, Math.ceil(seeds[0] * 100));
-        const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, Math.ceil(seeds[1] * 100));
-        const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, Math.ceil(seeds[2] * 100));
+        const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, Math.ceil(seeds[0]));
+        const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, Math.ceil(seeds[1]));
+        const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, Math.ceil(seeds[2]));
         const camelInitProperties = {
             colour: this._camelPropertyGenerator.generateSeededColour(seeds[3]),
             name: this._camelPropertyGenerator.generateSeededName(seeds[4], seeds[5]),
