@@ -69,7 +69,7 @@ class CamelStable {
             index += this._camelInformationLength;
         };
 
-        new Array(this._numberOfCamels).forEach(quality => populateCamelArray(this.camels));
+        new Array(this._numberOfCamels).forEach(e => populateCamelArray(this.camels));
 
         return;
     }
