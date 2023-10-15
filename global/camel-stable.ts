@@ -18,8 +18,10 @@ class CamelStable {
 
         let index = 0;
 
-        const variation = 30;
-        const uniformCenters = Array.from(new Array(this._numberOfCamels), (e, i) => (100 / this._numberOfCamels) * (i + 1));
+        const variation = 20;
+        const minimumLevel = 5;
+        const maximumLevel = 100;
+        const uniformCenters = Array.from(new Array(this._numberOfCamels), (e, i) => minimumLevel + ((maximumLevel - minimumLevel) / this._numberOfCamels) * (i));
 
         if (firstTimeSetUp) {
             uniformCenters.forEach(center => {
