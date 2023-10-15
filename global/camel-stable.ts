@@ -54,13 +54,12 @@ class CamelStable {
 
         const populateCamelArray = (camelArray: Camel[]) => {
             const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
-            const maxLevel = (new DefaultLevelCurve()).maxSkillLevel;
 
             camelArray.push(
                 this._camelCreator.createSeededCamel([
-                    maxLevel * parseInt(seedPart.slice(0, 2), this._seedRadix) / (this._seedRadix ** 2),
-                    maxLevel * parseInt(seedPart.slice(2, 4), this._seedRadix) / (this._seedRadix ** 2),
-                    maxLevel * parseInt(seedPart.slice(4, 6), this._seedRadix) / (this._seedRadix ** 2),
+                    parseInt(seedPart.slice(0, 2), this._seedRadix),
+                    parseInt(seedPart.slice(2, 4), this._seedRadix),
+                    parseInt(seedPart.slice(4, 6), this._seedRadix),
                     parseInt(seedPart.slice(6, 7), this._seedRadix) / this._seedRadix,
                     parseInt(seedPart.slice(7, 8), this._seedRadix) / this._seedRadix,
                     parseInt(seedPart.slice(8, 9), this._seedRadix) / this._seedRadix,
@@ -68,10 +67,10 @@ class CamelStable {
                 ])
             );
 
-            index += this._camelInformationLength;
+            index += 1;
         };
 
-        new Array(this._numberOfCamels).forEach(e => populateCamelArray(this.camels));
+        new Array(this._numberOfCamels).fill(1).forEach(e => populateCamelArray(this.camels));
 
         return;
     }
