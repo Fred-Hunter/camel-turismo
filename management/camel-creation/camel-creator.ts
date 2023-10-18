@@ -95,6 +95,21 @@ class CamelCreator {
         return new Camel(++GameState.lastUsedId, camelInitProperties);
     }
 
+    public createCamelFromSeed(
+        seedPart: string,
+        radix = 36
+    ): Camel {
+        return this.createSeededCamel([
+            parseInt(seedPart.slice(0, 2), radix),
+            parseInt(seedPart.slice(2, 4), radix),
+            parseInt(seedPart.slice(4, 6), radix),
+            parseInt(seedPart.slice(6, 7), radix) / radix,
+            parseInt(seedPart.slice(7, 8), radix) / radix,
+            parseInt(seedPart.slice(8, 9), radix) / radix,
+            parseInt(seedPart.slice(9, 10), radix) / radix,
+        ])
+    }
+
     
 
     public createSeedFromCamel(camel: Camel): string {
@@ -110,8 +125,11 @@ class CamelCreator {
         encodedString += Math.round(parseInt(camel.colour.substring(1,7), 16) / (16**6 / radix)).toString(radix);
 
         // name
-        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
-        
+        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name, radix);
+
+        // temperament
+        encodedString += "0"; // unused
+
         return encodedString;
     }
 }

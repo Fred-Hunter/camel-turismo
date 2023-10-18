@@ -56,15 +56,7 @@ class CamelStable {
             const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
 
             camelArray.push(
-                this._camelCreator.createSeededCamel([
-                    parseInt(seedPart.slice(0, 2), this._seedRadix),
-                    parseInt(seedPart.slice(2, 4), this._seedRadix),
-                    parseInt(seedPart.slice(4, 6), this._seedRadix),
-                    parseInt(seedPart.slice(6, 7), this._seedRadix) / this._seedRadix,
-                    parseInt(seedPart.slice(7, 8), this._seedRadix) / this._seedRadix,
-                    parseInt(seedPart.slice(8, 9), this._seedRadix) / this._seedRadix,
-                    parseInt(seedPart.slice(9, 10), this._seedRadix) / this._seedRadix,
-                ])
+                this._camelCreator.createCamelFromSeed(seedPart)
             );
 
             index += 1;

@@ -32,10 +32,10 @@ class CamelPropertyGenerator {
         return randomAdjective + " " + randomNoun;
     }
 
-    public generateSeedFromName(name: string): string {
+    public generateSeedFromName(name: string, radix = 36): string {
         let seed = "";
-        seed += this.nameAjectives.indexOf(name.split(" ")[0]);
-        seed += this.nameNouns.indexOf(name.split(" ")[1]);
+        seed += this.nameAjectives.indexOf(name.split(" ")[0]).toString(radix);
+        seed += this.nameNouns.indexOf(name.split(" ")[1]).toString(radix);
 
         return seed;
     }
