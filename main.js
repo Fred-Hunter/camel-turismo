@@ -1182,17 +1182,10 @@ class CamelStable {
         }
         const populateCamelArray = (camelArray) => {
             const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
-            camelArray.push(this._camelCreator.createSeededCamel([
-                parseInt(seedPart.slice(0, 2), this._seedRadix),
-                parseInt(seedPart.slice(2, 4), this._seedRadix),
-                parseInt(seedPart.slice(4, 6), this._seedRadix),
-                parseInt(seedPart.slice(6, 7), this._seedRadix) / this._seedRadix,
-                parseInt(seedPart.slice(7, 8), this._seedRadix) / this._seedRadix,
-                parseInt(seedPart.slice(8, 9), this._seedRadix) / this._seedRadix,
-                parseInt(seedPart.slice(9, 10), this._seedRadix) / this._seedRadix,
-            ]));
+            camelArray.push(this._camelCreator.createCamelFromSeed(seedPart));
             index += 1;
         };
+        this.camels = [];
         new Array(this._numberOfCamels).fill(1).forEach(e => populateCamelArray(this.camels));
         return;
     }
@@ -2170,6 +2163,17 @@ class CamelCreator {
         };
         return new Camel(++GameState.lastUsedId, camelInitProperties);
     }
+    createCamelFromSeed(seedPart, radix = 36) {
+        return this.createSeededCamel([
+            parseInt(seedPart.slice(0, 2), radix),
+            parseInt(seedPart.slice(2, 4), radix),
+            parseInt(seedPart.slice(4, 6), radix),
+            parseInt(seedPart.slice(6, 7), radix) / radix,
+            parseInt(seedPart.slice(7, 8), radix) / radix,
+            parseInt(seedPart.slice(8, 9), radix) / radix,
+            parseInt(seedPart.slice(9, 10), radix) / radix,
+        ]);
+    }
     createSeedFromCamel(camel) {
         const radix = 36;
         let encodedString = "";
@@ -2180,7 +2184,9 @@ class CamelCreator {
         // colour
         encodedString += Math.round(parseInt(camel.colour.substring(1, 7), 16) / (16 ** 6 / radix)).toString(radix);
         // name
-        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name);
+        encodedString += this._camelPropertyGenerator.generateSeedFromName(camel.name, radix);
+        // temperament
+        encodedString += "0"; // unused
         return encodedString;
     }
 }
@@ -2211,10 +2217,10 @@ class CamelPropertyGenerator {
         const randomNoun = this.nameNouns[Math.floor(nounSeed * this.nameNouns.length)];
         return randomAdjective + " " + randomNoun;
     }
-    generateSeedFromName(name) {
+    generateSeedFromName(name, radix = 36) {
         let seed = "";
-        seed += this.nameAjectives.indexOf(name.split(" ")[0]);
-        seed += this.nameNouns.indexOf(name.split(" ")[1]);
+        seed += this.nameAjectives.indexOf(name.split(" ")[0]).toString(radix);
+        seed += this.nameNouns.indexOf(name.split(" ")[1]).toString(radix);
         return seed;
     }
     generateTemperament() {

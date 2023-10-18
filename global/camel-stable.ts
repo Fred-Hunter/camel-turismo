@@ -61,7 +61,8 @@ class CamelStable {
 
             index += 1;
         };
-
+        
+        this.camels = [];
         new Array(this._numberOfCamels).fill(1).forEach(e => populateCamelArray(this.camels));
 
         return;
