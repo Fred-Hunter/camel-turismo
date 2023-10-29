@@ -2,7 +2,7 @@ import { CalendarDetailsDrawing } from "../calendar/calendar-details-drawing";
 import { CanvasNames } from "../global/canvas-names";
 import { CanvasService } from "../global/canvas-service";
 import { GameState } from "../global/game-state";
-import { camelSkillComponent, raceSelection, raceComponent, raceCamelSelectComponent, camelManagementSelectComponent, isometricEditorComponent, scrollsComponent, loadingScreen } from "../main";
+import { GlobalComponents } from "../global/global-components";
 import { MapOverview } from "../map/map-overview";
 import { Page } from "./page";
 
@@ -46,28 +46,28 @@ export class NavigatorService {
                     MapOverview.load();
                     break;
                 case Page.management:
-                    camelSkillComponent.load();
+                    GlobalComponents.camelSkillComponent.load();
                     break;
                 case Page.raceSelection:
-                    raceSelection.load();
+                    GlobalComponents.raceSelection.load();
                     break;
                 case Page.race:
-                    raceComponent.load();
+                    GlobalComponents.raceComponent.load();
                     break;
                 case Page.raceCamelSelect:
-                    raceCamelSelectComponent.load();
+                    GlobalComponents.raceCamelSelectComponent.load();
                     break;
                 case Page.managementSelect:
-                    camelManagementSelectComponent.load();
+                    GlobalComponents.camelManagementSelectComponent.load();
                     break;
                 case Page.calendarDetails:
                     this.navigateToCalendarDetails();
                     break;
                 case Page.debug:
-                    isometricEditorComponent.load();
+                    GlobalComponents.isometricEditorComponent.load();
                     break;
                 case Page.scrolls:
-                    scrollsComponent.load();
+                    GlobalComponents.scrollsComponent.load();
                     break;
             }
 
@@ -87,7 +87,7 @@ export class NavigatorService {
 
     private navigateToLoading() {
         CanvasService.showCanvas(CanvasNames.LoadingScreen);
-        loadingScreen.drawLoadingScreen();
+        GlobalComponents.loadingScreen.drawLoadingScreen();
     }
 
     private navigateToCalendarDetails() {

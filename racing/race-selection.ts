@@ -6,7 +6,6 @@ import { GameState } from "../global/game-state";
 import { GlobalComponents } from "../global/global-components";
 import { GlobalStaticConstants } from "../global/global-static-constants";
 import { PopupService } from "../global/popup-service";
-import { race } from "../main";
 import { NavigatorService } from "../navigation/navigator-service";
 import { Page } from "../navigation/page";
 import { Difficulty } from "./difficulty";

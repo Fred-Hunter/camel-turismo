@@ -2,7 +2,6 @@ import { CamelCreator } from "../management/camel-creation/camel-creator";
 import { CamelPropertyGenerator } from "../management/camel-creation/camel-property-generator";
 import { CamelStable } from "../global/camel-stable";
 import { GlobalServices } from "./global-services";
-import { globalServices, recruitmentService, loadingScreen, isometricEditorComponent } from "../main";
 import { RecruitmentService } from "../recruitment/recruitment-service";
 import { LoadingScreen } from "../loading/loading-screen";
 import { CamelSkillCreator } from "../management/camel-creation/camel-skill-creator";
@@ -16,29 +15,30 @@ import { CanvasNames } from "./canvas-names";
 import { CanvasService } from "./canvas-service";
 import { CubeService } from "./cube-service";
 import { GlobalComponents } from "./global-components";
+import { IsometricEditorComponent } from "../editor/isometric-editor";
 
 export class Startup {
     constructor() { }
 
     public registerComponents() {
-        const racingStartup = new RacingStartup(globalServices);
+        const racingStartup = new RacingStartup(GlobalComponents.globalServices);
         racingStartup.registerComponents();
 
-        const managementStartup = new ManagementStartup(globalServices);
+        const managementStartup = new ManagementStartup(GlobalComponents.globalServices);
         managementStartup.registerComponents();
 
-        const scrollsStartup = new ScrollsStartup(globalServices);
+        const scrollsStartup = new ScrollsStartup(GlobalComponents.globalServices);
         scrollsStartup.registerComponents();
 
-        GlobalComponents.recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
-        GlobalComponents.loadingScreen = new LoadingScreen(globalServices.navigatorService);
+        GlobalComponents.recruitmentService = new RecruitmentService(GlobalComponents.globalServices.navigatorService, GlobalComponents.globalServices.camelCreator);
+        GlobalComponents.loadingScreen = new LoadingScreen(GlobalComponents.globalServices.navigatorService);
 
         this.registerDebugComponents();
     }
 
     public registerAudio() {
         window.addEventListener('keydown', () => {
-            globalServices.musicService.startAudio();
+            GlobalComponents.globalServices.musicService.startAudio();
         })
     }
 
@@ -79,7 +79,7 @@ export class Startup {
     public registerDebugComponents() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
         const cubeService = new CubeService(canvas.getContext("2d")!);
-        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
         
         GlobalComponents.isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
     }

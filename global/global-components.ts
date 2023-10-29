@@ -1,3 +1,4 @@
+import { IsometricEditorComponent } from "../editor/isometric-editor";
 import { LoadingScreen } from "../loading/loading-screen";
 import { CamelSelectComponent } from "../management/camel-select/camel-select-component";
 import { CamelSkillComponent } from "../management/skills/camel-skill-component";

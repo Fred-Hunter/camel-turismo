@@ -1,7 +1,7 @@
 import { CanvasService } from "../global/canvas-service";
 import { GameState } from "../global/game-state";
+import { GlobalComponents } from "../global/global-components";
 import { PopupService } from "../global/popup-service";
-import { globalServices } from "../main";
 import { MapOverview } from "../map/map-overview";
 import { Difficulty } from "./difficulty";
 import { Race } from "./models/race";
@@ -22,9 +22,9 @@ export class RaceManagement {
         race.racingCamels.push(racingCamel);
     }
     addCpuCamelsToRace(raceSize, raceDifficulty, race) {
-        globalServices.camelStable.populateStable();
-        let sortedCamels = globalServices.camelStable.camels
-            .map(c => c) // copy array
+        GlobalComponents.globalServices.camelStable.populateStable();
+        let sortedCamels = GlobalComponents.globalServices.camelStable.camels
+            .map((c) => c) // copy array
             .sort((c1, c2) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
         for (let i = 0; i < raceSize; i++) {
             if (sortedCamels.length === 0)

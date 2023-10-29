@@ -1,4 +1,11 @@
-class IsometricEditorComponent {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CubeService } from "../global/cube-service";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { ImportantService } from "../global/important-service";
+
+export class IsometricEditorComponent {
     constructor(
         private readonly _canvas: HTMLCanvasElement,
         private readonly _cubeService: CubeService,

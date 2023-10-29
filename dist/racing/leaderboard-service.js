@@ -1,8 +1,8 @@
 import { CanvasCamelService } from "../global/canvas-camel-service";
 import { CubeService } from "../global/cube-service";
 import { GameState } from "../global/game-state";
+import { GlobalComponents } from "../global/global-components";
 import { GlobalStaticConstants } from "../global/global-static-constants";
-import { race } from "../main";
 export class LeaderboardService {
     ctx;
     constructor(ctx) {
@@ -23,11 +23,11 @@ export class LeaderboardService {
         return a.finalPosition - b.finalPosition;
     }
     drawLeaderboard() {
-        const cols = Math.ceil(race.racingCamels.length / 5);
+        const cols = Math.ceil(GlobalComponents.race.racingCamels.length / 5);
         let height = 0;
-        race.racingCamels
+        GlobalComponents.race.racingCamels
             .sort((a, b) => this.sortCamels(a, b))
-            .forEach(racingCamel => {
+            .forEach((racingCamel) => {
             this.drawCamel(racingCamel, height);
             height -= 5;
         });

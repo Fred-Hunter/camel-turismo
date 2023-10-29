@@ -1,3 +1,4 @@
+import { CamelTemperament } from "./camel-temperament";
 export class CamelPropertyGenerator {
     nameAjectives = [
         "Sandy", "Dusty", "Golden", "Majestic", "Spotted",

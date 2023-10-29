@@ -1,7 +1,7 @@
-import { globalServices } from "../main";
 import { Page } from "../navigation/page";
 import { CanvasNames } from "./canvas-names";
 import { CanvasService } from "./canvas-service";
+import { GlobalComponents } from "./global-components";
 import { GlobalStaticConstants } from "./global-static-constants";
 export class PopupService {
     constructor() {
@@ -61,7 +61,7 @@ export class PopupService {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 CanvasService.hideCanvas(CanvasNames.PopupCanvas);
                 if (navigateBackToMap) {
-                    globalServices.navigatorService.requestPageNavigation(Page.mapOverview);
+                    GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.mapOverview);
                 }
             }
         });

@@ -1,4 +1,4 @@
-import { globalServices } from "../main";
+import { GlobalComponents } from "./global-components";
 export class GameState {
     // Update this whenever a new gamestate version is created
     static _version = 4;
@@ -47,7 +47,7 @@ export class GameState {
             return;
         const gameState = JSON.parse(gameStateString);
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
+        gameState.camels.forEach(camel => this.loadCamel(GlobalComponents.globalServices.camelCreator, camel));
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];
         }

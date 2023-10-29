@@ -3,7 +3,6 @@ import { CanvasService } from "../global/canvas-service";
 import { GameState } from "../global/game-state";
 import { GlobalComponents } from "../global/global-components";
 import { GlobalServices } from "../global/global-services";
-import { race, raceCamelSelectComponent, raceSelection, raceComponent } from "../main";
 import { Camel } from "../management/camel-creation/camel";
 import { CamelSelectComponent } from "../management/camel-select/camel-select-component";
 import { Page } from "../navigation/page";
@@ -34,13 +33,13 @@ export class RacingStartup {
     private registerRaceCamelSelectComponent(raceManagement: RaceManagement) {
         const selectRaceCamelFunc = (camel: Camel) => {
             GameState.camel = camel;
-            raceManagement.addCamelToRace(camel, race);
+            raceManagement.addCamelToRace(camel, GlobalComponents.race);
 
             this._globalServices.navigatorService.requestPageNavigation(Page.race)
             this._globalServices.musicService.setAudio("RaceAudio");
             this._globalServices.musicService.startAudio()
 
-            race.raceState = RaceState.triggered;
+            GlobalComponents.race.raceState = RaceState.triggered;
         };
 
         GlobalComponents.raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);

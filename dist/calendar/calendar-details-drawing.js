@@ -1,8 +1,8 @@
 import { CanvasBtnService } from "../global/canvas-btn-service";
 import { CanvasNames } from "../global/canvas-names";
 import { CanvasService } from "../global/canvas-service";
+import { GlobalComponents } from "../global/global-components";
 import { GlobalStaticConstants } from "../global/global-static-constants";
-import { globalServices } from "../main";
 import { Page } from "../navigation/page";
 import { CalendarService } from "./calendar-service";
 export class CalendarDetailsDrawing {
@@ -44,7 +44,7 @@ export class CalendarDetailsDrawing {
                 ctx.fillStyle = standardTileFillColour;
             }
         }
-        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
         btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }
     static getStandardTileColour(season) {

@@ -1,7 +1,7 @@
-import { globalServices } from "../main";
 import { Camel } from "../management/camel-creation/camel";
 import { CamelCreator } from "../management/camel-creation/camel-creator";
 import { Scroll } from "../scrolls/scroll";
+import { GlobalComponents } from "./global-components";
 
 export interface GameStateObject {
     camel: Camel | undefined,
@@ -73,7 +73,7 @@ export class GameState {
         const gameState: GameStateObject = JSON.parse(gameStateString);
 
         // Load camel
-        gameState.camels.forEach(camel => this.loadCamel(globalServices.camelCreator, camel));
+        gameState.camels.forEach(camel => this.loadCamel(GlobalComponents.globalServices.camelCreator, camel));
 
         if (gameState.camels.length > 0) {
             GameState.camel = GameState.camels[0];

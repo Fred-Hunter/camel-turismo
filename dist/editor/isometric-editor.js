@@ -1,5 +1,8 @@
-"use strict";
-class IsometricEditorComponent {
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { ImportantService } from "../global/important-service";
+export class IsometricEditorComponent {
     _canvas;
     _cubeService;
     _btnService;

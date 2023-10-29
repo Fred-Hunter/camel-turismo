@@ -1,5 +1,4 @@
 import { GlobalComponents } from "../global/global-components";
-import { globalServices } from "../main";
 import { ScrollsComponent } from "./scrolls-component";
 export class ScrollsStartup {
     _globalServices;
@@ -7,6 +6,6 @@ export class ScrollsStartup {
         this._globalServices = _globalServices;
     }
     registerComponents() {
-        GlobalComponents.scrollsComponent = new ScrollsComponent(globalServices.navigatorService);
+        GlobalComponents.scrollsComponent = new ScrollsComponent(GlobalComponents.globalServices.navigatorService);
     }
 }
