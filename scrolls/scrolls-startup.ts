@@ -1,6 +1,6 @@
-import { GlobalComponents } from "../global/global-components";
-import { GlobalServices } from "../global/global-services";
-import { ScrollsComponent } from "./scrolls-component";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalServices } from "../global/global-services.js";
+import { ScrollsComponent } from "./scrolls-component.js";
 
 export class ScrollsStartup {
     constructor(

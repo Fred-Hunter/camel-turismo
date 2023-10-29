@@ -1,4 +1,4 @@
-import { DefaultLevelCurve } from "./default-level-curve";
+import { DefaultLevelCurve } from "./default-level-curve.js";
 export class LevelCurveFactory {
     getDefaultLevelCurve() {
         return new DefaultLevelCurve();

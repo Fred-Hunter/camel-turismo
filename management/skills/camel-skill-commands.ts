@@ -1,5 +1,5 @@
-import { Camel } from "../camel-creation/camel";
-import { CamelSkill } from "./camel-skill";
+import { Camel } from "../camel-creation/camel.js";
+import { CamelSkill } from "./camel-skill.js";
 
 export class CamelSkillCommands {
     public levelUpSkill(camel: Camel, skill: CamelSkill) {

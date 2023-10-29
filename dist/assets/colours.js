@@ -1,5 +1,4 @@
-"use strict";
-class Colours {
+export class Colours {
     static get green() { return '#3e6549'; }
     ;
     static get grey() { return '#555555'; }

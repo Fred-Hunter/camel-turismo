@@ -1,9 +1,9 @@
-import { Camel } from "../management/camel-creation/camel";
-import { CamelTemperament } from "../management/camel-creation/camel-temperament";
-import { CamelSkill } from "../management/skills/camel-skill";
-import { CamelSkillType } from "../management/skills/camel-skill-type";
-import { DefaultLevelCurve } from "../management/skills/default-level-curve";
-import { GameState } from "./game-state";
+import { Camel } from "../management/camel-creation/camel.js";
+import { CamelTemperament } from "../management/camel-creation/camel-temperament.js";
+import { CamelSkill } from "../management/skills/camel-skill.js";
+import { CamelSkillType } from "../management/skills/camel-skill-type.js";
+import { DefaultLevelCurve } from "../management/skills/default-level-curve.js";
+import { GameState } from "./game-state.js";
 export class CamelStable {
     _camelCreator;
     constructor(_camelCreator) {

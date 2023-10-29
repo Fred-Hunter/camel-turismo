@@ -1,12 +1,12 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GameState } from "../global/game-state";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { PopupService } from "../global/popup-service";
-import { NavigatorService } from "../navigation/navigator-service";
-import { Page } from "../navigation/page";
-import { EmmaDaleScrolls } from "../scrolls/library/emma-dale";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { PopupService } from "../global/popup-service.js";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { Page } from "../navigation/page.js";
+import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
 
 export class LoadingScreen {
     constructor(private readonly _navigator: NavigatorService) {

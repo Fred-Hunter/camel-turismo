@@ -1,4 +1,6 @@
-class CactusCoords {
+import { Colours } from "../colours.js";
+
+export class CactusCoords {
     public static get cactus(): Array<{x: number, y: number, colour: string}> {
         return [
             {

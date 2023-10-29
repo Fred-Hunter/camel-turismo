@@ -1,16 +1,17 @@
-import { CanvasService } from "../global/canvas-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { PopupService } from "../global/popup-service";
-import { Camel } from "../management/camel-creation/camel";
-import { CamelCreator } from "../management/camel-creation/camel-creator";
-import { MapOverview } from "../map/map-overview";
-import { Difficulty } from "./difficulty";
-import { Race } from "./models/race";
-import { RaceState } from "./models/race-state";
-import { RacingCamel } from "./models/racing-camel";
-import { RaceSimulation } from "./race-simulation";
-import { RaceTrackCreator } from "./race-track-creator";
+import { CanvasService } from "../global/canvas-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { PopupService } from "../global/popup-service.js";
+import { Camel } from "../management/camel-creation/camel.js";
+import { CamelCreator } from "../management/camel-creation/camel-creator.js";
+import { MapOverview } from "../map/map-overview.js";
+import { Difficulty } from "./difficulty.js";
+import { Race } from "./models/race.js";
+import { RaceState } from "./models/race-state.js";
+import { RacingCamel } from "./models/racing-camel.js";
+import { RaceSimulation } from "./race-simulation.js";
+import { RaceTrackCreator } from "./race-track-creator.js";
+import { MusicService } from "../audio/music-service.js";
 
 export class RaceManagement {
     constructor(

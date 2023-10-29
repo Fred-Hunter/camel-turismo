@@ -1,13 +1,13 @@
-import { CanvasService } from "../global/canvas-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { PopupService } from "../global/popup-service";
-import { MapOverview } from "../map/map-overview";
-import { Difficulty } from "./difficulty";
-import { Race } from "./models/race";
-import { RaceState } from "./models/race-state";
-import { RacingCamel } from "./models/racing-camel";
-import { RaceTrackCreator } from "./race-track-creator";
+import { CanvasService } from "../global/canvas-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { PopupService } from "../global/popup-service.js";
+import { MapOverview } from "../map/map-overview.js";
+import { Difficulty } from "./difficulty.js";
+import { Race } from "./models/race.js";
+import { RaceState } from "./models/race-state.js";
+import { RacingCamel } from "./models/racing-camel.js";
+import { RaceTrackCreator } from "./race-track-creator.js";
 export class RaceManagement {
     _musicService;
     _raceSimulation;

@@ -1,4 +1,4 @@
-class Calendar {
+export class Calendar {
     constructor(startDay: number = 1, season: Season = Season.Spring) {
         this.Day = startDay;
         this.Season = season;
@@ -20,7 +20,7 @@ class Calendar {
     }
 }
 
-enum Season {
+export enum Season {
     Spring,
     Summer,
     Autumn,

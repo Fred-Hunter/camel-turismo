@@ -1,13 +1,13 @@
-import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CashMoneyService } from "../global/cash-money-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { PopupService } from "../global/popup-service";
-import { GymDrawing } from "../gym/gym-drawing";
-import { Page } from "../navigation/page";
+import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CashMoneyService } from "../global/cash-money-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { PopupService } from "../global/popup-service.js";
+import { GymDrawing } from "../gym/gym-drawing.js";
+import { Page } from "../navigation/page.js";
 export class MapOverview {
     static _canvasXOffset = 0;
     static _canvasYOffset = 0;
@@ -270,7 +270,7 @@ export class MapOverview {
     static loadUiTiles() {
     }
 }
-class MapLocations {
+export class MapLocations {
     static None = "";
     static Hire = "Hire";
     static Gym = "Gym";
@@ -281,11 +281,11 @@ class MapLocations {
     static Deal = "Deal";
     static DealLocked = "DealLocked";
 }
-class UiElements {
+export class UiElements {
     static Money = "UiMoney";
     static Calendar = "UiCalendar";
 }
-class MapTile {
+export class MapTile {
     name;
     position;
     backgroundImagePath;
@@ -297,7 +297,7 @@ class MapTile {
         this.alertText = alertText;
     }
 }
-class Rect {
+export class Rect {
     x;
     y;
     width;

@@ -1,15 +1,15 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CashMoneyService } from "../global/cash-money-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { PopupService } from "../global/popup-service";
-import { NavigatorService } from "../navigation/navigator-service";
-import { Page } from "../navigation/page";
-import { Difficulty } from "./difficulty";
-import { RaceManagement } from "./race-managment";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CashMoneyService } from "../global/cash-money-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { PopupService } from "../global/popup-service.js";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { Page } from "../navigation/page.js";
+import { Difficulty } from "./difficulty.js";
+import { RaceManagement } from "./race-managment.js";
 
 export class RaceSelection {
     constructor(

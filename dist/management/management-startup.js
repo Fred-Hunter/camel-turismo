@@ -1,10 +1,10 @@
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { Page } from "../navigation/page";
-import { CamelSelectComponent } from "./camel-select/camel-select-component";
-import { CamelSkillCommands } from "./skills/camel-skill-commands";
-import { CamelSkillComponent } from "./skills/camel-skill-component";
-import { CamelSkillDrawing } from "./skills/camel-skill-drawing";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { Page } from "../navigation/page.js";
+import { CamelSelectComponent } from "./camel-select/camel-select-component.js";
+import { CamelSkillCommands } from "./skills/camel-skill-commands.js";
+import { CamelSkillComponent } from "./skills/camel-skill-component.js";
+import { CamelSkillDrawing } from "./skills/camel-skill-drawing.js";
 export class ManagementStartup {
     _globalServices;
     constructor(_globalServices) {

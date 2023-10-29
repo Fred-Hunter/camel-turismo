@@ -1,10 +1,10 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GlobalComponents } from "../global/global-components";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { Page } from "../navigation/page";
-import { CalendarService } from "./calendar-service";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { Page } from "../navigation/page.js";
+import { CalendarService } from "./calendar-service.js";
 export class CalendarDetailsDrawing {
     static drawCalendarDetails() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.CalendarDetails);

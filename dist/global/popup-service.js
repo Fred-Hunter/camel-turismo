@@ -1,8 +1,8 @@
-import { Page } from "../navigation/page";
-import { CanvasNames } from "./canvas-names";
-import { CanvasService } from "./canvas-service";
-import { GlobalComponents } from "./global-components";
-import { GlobalStaticConstants } from "./global-static-constants";
+import { Page } from "../navigation/page.js";
+import { CanvasNames } from "./canvas-names.js";
+import { CanvasService } from "./canvas-service.js";
+import { GlobalComponents } from "./global-components.js";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 export class PopupService {
     constructor() {
     }

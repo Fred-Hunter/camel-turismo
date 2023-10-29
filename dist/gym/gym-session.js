@@ -1,5 +1,5 @@
-import { GameState } from "../global/game-state";
-import { PopupService } from "../global/popup-service";
+import { GameState } from "../global/game-state.js";
+import { PopupService } from "../global/popup-service.js";
 export class GymSession {
     _sessionActive = false;
     startSession() {

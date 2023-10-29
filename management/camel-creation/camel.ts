@@ -1,6 +1,6 @@
-import { CamelSkill } from "../skills/camel-skill";
-import { CamelInitProperties } from "./camel-init-properties";
-import { CamelTemperament } from "./camel-temperament";
+import { CamelSkill } from "../skills/camel-skill.js";
+import { CamelInitProperties } from "./camel-init-properties.js";
+import { CamelTemperament } from "./camel-temperament.js";
 
 export enum InitCamelQuality {
     None = 0,

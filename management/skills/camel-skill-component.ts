@@ -1,10 +1,10 @@
-import { CanvasNames } from "../../global/canvas-names";
-import { CanvasService } from "../../global/canvas-service";
-import { GameState } from "../../global/game-state";
-import { Camel } from "../camel-creation/camel";
-import { CamelSkill } from "./camel-skill";
-import { CamelSkillCommands } from "./camel-skill-commands";
-import { CamelSkillDrawing } from "./camel-skill-drawing";
+import { CanvasNames } from "../../global/canvas-names.js";
+import { CanvasService } from "../../global/canvas-service.js";
+import { GameState } from "../../global/game-state.js";
+import { Camel } from "../camel-creation/camel.js";
+import { CamelSkill } from "./camel-skill.js";
+import { CamelSkillCommands } from "./camel-skill-commands.js";
+import { CamelSkillDrawing } from "./camel-skill-drawing.js";
 
 export class CamelSkillComponent {
     constructor(private readonly _camelSkillDrawing: CamelSkillDrawing,

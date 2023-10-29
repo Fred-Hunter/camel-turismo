@@ -1,4 +1,4 @@
-import { RaceState } from "./race-state";
+import { RaceState } from "./race-state.js";
 export class Race {
     length;
     track;

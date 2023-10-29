@@ -1,5 +1,5 @@
-import { GameState } from "../global/game-state";
-import { Page } from "../navigation/page";
+import { GameState } from "../global/game-state.js";
+import { Page } from "../navigation/page.js";
 export class ScrollsComponent {
     _navigator;
     constructor(_navigator) {

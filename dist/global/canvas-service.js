@@ -1,4 +1,4 @@
-import { GlobalStaticConstants } from "./global-static-constants";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 export class CanvasService {
     static createCanvas(zIndex, name = "default") {
         const canvas = document.createElement('canvas');

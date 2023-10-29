@@ -1,7 +1,8 @@
-import { Camel } from "../management/camel-creation/camel";
-import { CamelCreator } from "../management/camel-creation/camel-creator";
-import { Scroll } from "../scrolls/scroll";
-import { GlobalComponents } from "./global-components";
+import { Camel } from "../management/camel-creation/camel.js";
+import { CamelCreator } from "../management/camel-creation/camel-creator.js";
+import { Scroll } from "../scrolls/scroll.js";
+import { GlobalComponents } from "./global-components.js";
+import { Calendar } from "../calendar/calendar.js";
 
 export interface GameStateObject {
     camel: Camel | undefined,

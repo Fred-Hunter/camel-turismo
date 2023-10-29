@@ -1,4 +1,4 @@
-class MusicService {
+export class MusicService {
     private HomeScreenAudio: HTMLAudioElement;
     private RaceAudio: HTMLAudioElement;
     public currentAudio = "HomeScreenAudio";

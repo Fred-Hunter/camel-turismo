@@ -1,5 +1,4 @@
-"use strict";
-class OasisCoords {
+export class OasisCoords {
     static get oasis() {
         return [
             {

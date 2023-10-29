@@ -1,4 +1,4 @@
-import { GameState } from "../../global/game-state";
+import { GameState } from "../../global/game-state.js";
 export class CamelSelectComponent {
     _selectFunc;
     constructor(_selectFunc) {

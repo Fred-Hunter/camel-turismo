@@ -1,6 +1,6 @@
-import { GameState } from "../global/game-state";
-import { PopupService } from "../global/popup-service";
-import { CamelSkill } from "../management/skills/camel-skill";
+import { GameState } from "../global/game-state.js";
+import { PopupService } from "../global/popup-service.js";
+import { CamelSkill } from "../management/skills/camel-skill.js";
 
 export class GymSession {
     protected _sessionActive = false;

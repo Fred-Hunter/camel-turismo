@@ -1,6 +1,6 @@
-import { GameState } from "../global/game-state";
-import { Camel } from "../management/camel-creation/camel";
-import { TrainSession, SpaSession } from "./gym-session";
+import { GameState } from "../global/game-state.js";
+import { Camel } from "../management/camel-creation/camel.js";
+import { TrainSession, SpaSession } from "./gym-session.js";
 
 export class Gym {
     static getTreadmillSession(camel: Camel) {

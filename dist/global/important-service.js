@@ -1,4 +1,4 @@
-import { GlobalStaticConstants } from "./global-static-constants";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 export class ImportantService {
     static ConvertCoordToReal(coordX, coordY, sideLength, height = 0, xStart = 0, yStart = 0) {
         const xOffset = GlobalStaticConstants.innerWidth / 2;

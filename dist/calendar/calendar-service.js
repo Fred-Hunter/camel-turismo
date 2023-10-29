@@ -1,4 +1,5 @@
-import { GameState } from "../global/game-state";
+import { GameState } from "../global/game-state.js";
+import { Calendar, Season } from "./calendar.js";
 export class CalendarService {
     static getCalendar() {
         if (!GameState.calendar) {

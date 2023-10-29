@@ -1,6 +1,6 @@
-import { GameState } from "../../global/game-state";
-import { CamelSkillType } from "../skills/camel-skill-type";
-import { Camel } from "./camel";
+import { GameState } from "../../global/game-state.js";
+import { CamelSkillType } from "../skills/camel-skill-type.js";
+import { Camel } from "./camel.js";
 export class CamelCreator {
     _camelPropertyGenerator;
     _camelSkillCreator;

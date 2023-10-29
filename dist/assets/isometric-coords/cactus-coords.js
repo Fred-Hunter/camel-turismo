@@ -1,5 +1,5 @@
-"use strict";
-class CactusCoords {
+import { Colours } from "../colours.js";
+export class CactusCoords {
     static get cactus() {
         return [
             {

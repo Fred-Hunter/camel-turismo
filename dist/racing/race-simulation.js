@@ -1,6 +1,6 @@
-import { GameState } from "../global/game-state";
-import { CamelTemperament } from "../management/camel-creation/camel-temperament";
-import { RaceState } from "./models/race-state";
+import { GameState } from "../global/game-state.js";
+import { CamelTemperament } from "../management/camel-creation/camel-temperament.js";
+import { RaceState } from "./models/race-state.js";
 export class RaceSimulation {
     constructor() { }
     _nextPosition = 1;

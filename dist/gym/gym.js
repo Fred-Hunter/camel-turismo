@@ -1,5 +1,5 @@
-import { GameState } from "../global/game-state";
-import { TrainSession, SpaSession } from "./gym-session";
+import { GameState } from "../global/game-state.js";
+import { TrainSession, SpaSession } from "./gym-session.js";
 export class Gym {
     static getTreadmillSession(camel) {
         return new TrainSession(camel.sprintSpeed, camel.stamina.level);

@@ -1,4 +1,4 @@
-import { ImportantService } from "./important-service";
+import { ImportantService } from "./important-service.js";
 export class CubeService {
     ctx;
     constructor(ctx) {

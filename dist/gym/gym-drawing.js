@@ -1,11 +1,11 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CubeService } from "../global/cube-service";
-import { GameState } from "../global/game-state";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { MapOverview } from "../map/map-overview";
-import { Gym } from "./gym";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CubeService } from "../global/cube-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { MapOverview } from "../map/map-overview.js";
+import { Gym } from "./gym.js";
 export class GymDrawing {
     _navigatorService;
     constructor(_navigatorService) {
