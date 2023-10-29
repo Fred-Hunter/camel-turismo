@@ -1,5 +1,5 @@
-import { GameState } from "../../global/game-state";
-import { Camel } from "../camel-creation/camel";
+import { GameState } from "../../global/game-state.js";
+import { Camel } from "../camel-creation/camel.js";
 
 export class CamelSelectComponent {
     constructor(private readonly _selectFunc: (camel: Camel) => void) {

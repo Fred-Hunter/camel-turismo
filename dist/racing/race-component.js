@@ -1,7 +1,7 @@
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GlobalComponents } from "../global/global-components";
-import { RaceState } from "./models/race-state";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { RaceState } from "./models/race-state.js";
 export class RaceComponent {
     _raceDrawing;
     _raceManagement;

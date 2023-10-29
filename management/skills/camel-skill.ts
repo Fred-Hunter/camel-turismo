@@ -1,5 +1,5 @@
-import { CamelSkillType } from "./camel-skill-type";
-import { LevelCurve } from "./level-curve";
+import { CamelSkillType } from "./camel-skill-type.js";
+import { LevelCurve } from "./level-curve.js";
 
 export class CamelSkill {
     constructor(

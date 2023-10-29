@@ -1,4 +1,4 @@
-import { CamelSkill } from "../skills/camel-skill";
+import { CamelSkill } from "../skills/camel-skill.js";
 
 export interface CamelInitSkills {
     agility: CamelSkill;

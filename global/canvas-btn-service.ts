@@ -1,6 +1,6 @@
-import { NavigatorService } from "../navigation/navigator-service";
-import { Page } from "../navigation/page";
-import { GlobalStaticConstants } from "./global-static-constants";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { Page } from "../navigation/page.js";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 
 export class CanvasBtnService {
     constructor(

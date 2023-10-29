@@ -1,8 +1,8 @@
-import { CanvasCamelService } from "../global/canvas-camel-service";
-import { CubeService } from "../global/cube-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { GlobalStaticConstants } from "../global/global-static-constants";
+import { CanvasCamelService } from "../global/canvas-camel-service.js";
+import { CubeService } from "../global/cube-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
 export class LeaderboardService {
     ctx;
     constructor(ctx) {

@@ -1,4 +1,4 @@
-import { Camel } from "../../management/camel-creation/camel";
+import { Camel } from "../../management/camel-creation/camel.js";
 
 export class RacingCamel {
     constructor(

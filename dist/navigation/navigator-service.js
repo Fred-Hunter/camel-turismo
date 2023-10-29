@@ -1,10 +1,10 @@
-import { CalendarDetailsDrawing } from "../calendar/calendar-details-drawing";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { MapOverview } from "../map/map-overview";
-import { Page } from "./page";
+import { CalendarDetailsDrawing } from "../calendar/calendar-details-drawing.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { MapOverview } from "../map/map-overview.js";
+import { Page } from "./page.js";
 export class NavigatorService {
     _pageLoaded = false;
     _currentPage = Page.loading;

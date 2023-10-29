@@ -1,5 +1,4 @@
-"use strict";
-class MusicService {
+export class MusicService {
     HomeScreenAudio;
     RaceAudio;
     currentAudio = "HomeScreenAudio";

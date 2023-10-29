@@ -1,4 +1,4 @@
-import { CamelTemperament } from "./camel-temperament";
+import { CamelTemperament } from "./camel-temperament.js";
 
 export class CamelPropertyGenerator {
     private nameAjectives =  [

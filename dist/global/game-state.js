@@ -1,4 +1,5 @@
-import { GlobalComponents } from "./global-components";
+import { GlobalComponents } from "./global-components.js";
+import { Calendar } from "../calendar/calendar.js";
 export class GameState {
     // Update this whenever a new gamestate version is created
     static _version = 4;

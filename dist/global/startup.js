@@ -1,20 +1,21 @@
-import { CamelCreator } from "../management/camel-creation/camel-creator";
-import { CamelPropertyGenerator } from "../management/camel-creation/camel-property-generator";
-import { CamelStable } from "../global/camel-stable";
-import { RecruitmentService } from "../recruitment/recruitment-service";
-import { LoadingScreen } from "../loading/loading-screen";
-import { CamelSkillCreator } from "../management/camel-creation/camel-skill-creator";
-import { ManagementStartup } from "../management/management-startup";
-import { LevelCurveFactory } from "../management/skills/level-curve-factory";
-import { NavigatorService } from "../navigation/navigator-service";
-import { RacingStartup } from "../racing/racing-startup";
-import { ScrollsStartup } from "../scrolls/scrolls-startup";
-import { CanvasBtnService } from "./canvas-btn-service";
-import { CanvasNames } from "./canvas-names";
-import { CanvasService } from "./canvas-service";
-import { CubeService } from "./cube-service";
-import { GlobalComponents } from "./global-components";
-import { IsometricEditorComponent } from "../editor/isometric-editor";
+import { CamelCreator } from "../management/camel-creation/camel-creator.js";
+import { CamelPropertyGenerator } from "../management/camel-creation/camel-property-generator.js";
+import { CamelStable } from "../global/camel-stable.js";
+import { RecruitmentService } from "../recruitment/recruitment-service.js";
+import { LoadingScreen } from "../loading/loading-screen.js";
+import { CamelSkillCreator } from "../management/camel-creation/camel-skill-creator.js";
+import { ManagementStartup } from "../management/management-startup.js";
+import { LevelCurveFactory } from "../management/skills/level-curve-factory.js";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { RacingStartup } from "../racing/racing-startup.js";
+import { ScrollsStartup } from "../scrolls/scrolls-startup.js";
+import { CanvasBtnService } from "./canvas-btn-service.js";
+import { CanvasNames } from "./canvas-names.js";
+import { CanvasService } from "./canvas-service.js";
+import { CubeService } from "./cube-service.js";
+import { GlobalComponents } from "./global-components.js";
+import { IsometricEditorComponent } from "../editor/isometric-editor.js";
+import { MusicService } from "../audio/music-service.js";
 export class Startup {
     constructor() { }
     registerComponents() {

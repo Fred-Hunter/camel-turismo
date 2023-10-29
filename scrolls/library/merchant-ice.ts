@@ -1,5 +1,5 @@
-import { Camel } from "../../management/camel-creation/camel";
-import { Scroll } from "../scroll";
+import { Camel } from "../../management/camel-creation/camel.js";
+import { Scroll } from "../scroll.js";
 
 export class MerchantIceScrolls {
     static getCamelPurchase(camel: Camel): Scroll {

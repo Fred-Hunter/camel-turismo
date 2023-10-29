@@ -1,3 +1,4 @@
+import { MusicService } from "../audio/music-service"
 import { CamelCreator } from "../management/camel-creation/camel-creator"
 import { NavigatorService } from "../navigation/navigator-service"
 import { CamelStable } from "./camel-stable"

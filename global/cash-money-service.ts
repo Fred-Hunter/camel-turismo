@@ -1,5 +1,5 @@
-import { GameState } from "./game-state";
-import { GlobalStaticConstants } from "./global-static-constants";
+import { GameState } from "./game-state.js";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 
 export class CashMoneyService {
     public static drawCashMoney(ctx: CanvasRenderingContext2D): void {

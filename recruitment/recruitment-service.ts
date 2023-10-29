@@ -1,19 +1,19 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasCamelService } from "../global/canvas-camel-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CashMoneyService } from "../global/cash-money-service";
-import { CubeService } from "../global/cube-service";
-import { GameState } from "../global/game-state";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { PopupService } from "../global/popup-service";
-import { InitCamelQuality } from "../management/camel-creation/camel";
-import { CamelCreator } from "../management/camel-creation/camel-creator";
-import { MapOverview } from "../map/map-overview";
-import { NavigatorService } from "../navigation/navigator-service";
-import { Page } from "../navigation/page";
-import { GeneralWasteScrolls } from "../scrolls/library/general-waste";
-import { MerchantIceScrolls } from "../scrolls/library/merchant-ice";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasCamelService } from "../global/canvas-camel-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CashMoneyService } from "../global/cash-money-service.js";
+import { CubeService } from "../global/cube-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { PopupService } from "../global/popup-service.js";
+import { InitCamelQuality } from "../management/camel-creation/camel.js";
+import { CamelCreator } from "../management/camel-creation/camel-creator.js";
+import { MapOverview } from "../map/map-overview.js";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { Page } from "../navigation/page.js";
+import { GeneralWasteScrolls } from "../scrolls/library/general-waste.js";
+import { MerchantIceScrolls } from "../scrolls/library/merchant-ice.js";
 
 export class RecruitmentService {
     constructor(

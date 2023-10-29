@@ -1,5 +1,4 @@
-"use strict";
-class Calendar {
+export class Calendar {
     constructor(startDay = 1, season = Season.Spring) {
         this.Day = startDay;
         this.Season = season;
@@ -16,7 +15,7 @@ class Calendar {
         this.Day++;
     }
 }
-var Season;
+export var Season;
 (function (Season) {
     Season[Season["Spring"] = 0] = "Spring";
     Season[Season["Summer"] = 1] = "Summer";

@@ -1,7 +1,7 @@
-import { GameState } from "../global/game-state";
-import { NavigatorService } from "../navigation/navigator-service";
-import { Page } from "../navigation/page";
-import { Scroll } from "./scroll";
+import { GameState } from "../global/game-state.js";
+import { NavigatorService } from "../navigation/navigator-service.js";
+import { Page } from "../navigation/page.js";
+import { Scroll } from "./scroll.js";
 
 export class ScrollsComponent {
     constructor(private readonly _navigator: NavigatorService) { }

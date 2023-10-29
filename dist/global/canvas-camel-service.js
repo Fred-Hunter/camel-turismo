@@ -1,6 +1,6 @@
-import { CubeService } from "./cube-service";
-import { GlobalStaticConstants } from "./global-static-constants";
-import { ImportantService } from "./important-service";
+import { CubeService } from "./cube-service.js";
+import { GlobalStaticConstants } from "./global-static-constants.js";
+import { ImportantService } from "./important-service.js";
 export class CanvasCamelService {
     ctx;
     constructor(ctx) {

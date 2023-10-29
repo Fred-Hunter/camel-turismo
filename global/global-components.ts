@@ -1,13 +1,13 @@
-import { IsometricEditorComponent } from "../editor/isometric-editor";
-import { LoadingScreen } from "../loading/loading-screen";
-import { CamelSelectComponent } from "../management/camel-select/camel-select-component";
-import { CamelSkillComponent } from "../management/skills/camel-skill-component";
-import { Race } from "../racing/models/race";
-import { RaceComponent } from "../racing/race-component";
-import { RaceSelection } from "../racing/race-selection";
-import { RecruitmentService } from "../recruitment/recruitment-service";
-import { ScrollsComponent } from "../scrolls/scrolls-component";
-import { GlobalServices } from "./global-services";
+import { IsometricEditorComponent } from "../editor/isometric-editor.js";
+import { LoadingScreen } from "../loading/loading-screen.js";
+import { CamelSelectComponent } from "../management/camel-select/camel-select-component.js";
+import { CamelSkillComponent } from "../management/skills/camel-skill-component.js";
+import { Race } from "../racing/models/race.js";
+import { RaceComponent } from "../racing/race-component.js";
+import { RaceSelection } from "../racing/race-selection.js";
+import { RecruitmentService } from "../recruitment/recruitment-service.js";
+import { ScrollsComponent } from "../scrolls/scrolls-component.js";
+import { GlobalServices } from "./global-services.js";
 
 export class GlobalComponents {
     // Game state

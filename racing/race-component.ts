@@ -1,11 +1,11 @@
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GlobalComponents } from "../global/global-components";
-import { Countdown } from "./countdown/countdown";
-import { LeaderboardService } from "./leaderboard-service";
-import { RaceState } from "./models/race-state";
-import { RaceDrawing } from "./race-drawing";
-import { RaceManagement } from "./race-managment";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { Countdown } from "./countdown/countdown.js";
+import { LeaderboardService } from "./leaderboard-service.js";
+import { RaceState } from "./models/race-state.js";
+import { RaceDrawing } from "./race-drawing.js";
+import { RaceManagement } from "./race-managment.js";
 
 export class RaceComponent {
     constructor(

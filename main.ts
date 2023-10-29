@@ -1,7 +1,7 @@
-import { GameState } from "./global/game-state";
-import { GlobalComponents } from "./global/global-components";
-import { Startup } from "./global/startup";
-import { Page } from "./navigation/page";
+import { GameState } from "./global/game-state.js";
+import { GlobalComponents } from "./global/global-components.js";
+import { Startup } from "./global/startup.js";
+import { Page } from "./navigation/page.js";
 
 function init() {
     const startup = new Startup();

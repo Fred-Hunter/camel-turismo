@@ -1,5 +1,4 @@
-"use strict";
-class PyramidCoords {
+export class PyramidCoords {
     static get dilapidated() {
         return [
             {

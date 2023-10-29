@@ -1,4 +1,4 @@
-import { GlobalStaticConstants } from "./global-static-constants";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 
 export class ImportantService {
     static ConvertCoordToReal(

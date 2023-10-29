@@ -1,4 +1,4 @@
-class PyramidCoords {
+export class PyramidCoords {
     public static get dilapidated(): Array<{ x: number, y: number, colour: string }> {
         return [
             {

@@ -1,4 +1,4 @@
-import { LevelCurve } from "./level-curve";
+import { LevelCurve } from "./level-curve.js";
 
 export class DefaultLevelCurve implements LevelCurve {
     public get minSkillLevel() { return 1; }

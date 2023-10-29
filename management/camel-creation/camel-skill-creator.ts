@@ -1,7 +1,7 @@
-import { CamelSkill } from "../skills/camel-skill";
-import { CamelSkillType } from "../skills/camel-skill-type";
-import { LevelCurveFactory } from "../skills/level-curve-factory";
-import { InitCamelQuality } from "./camel";
+import { CamelSkill } from "../skills/camel-skill.js";
+import { CamelSkillType } from "../skills/camel-skill-type.js";
+import { LevelCurveFactory } from "../skills/level-curve-factory.js";
+import { InitCamelQuality } from "./camel.js";
 
 export class CamelSkillCreator {
     constructor(private readonly _levelCurveFactory: LevelCurveFactory) {}

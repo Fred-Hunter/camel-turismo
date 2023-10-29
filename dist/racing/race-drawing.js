@@ -1,8 +1,13 @@
-import { CanvasCamelService } from "../global/canvas-camel-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CubeService } from "../global/cube-service";
-import { GlobalStaticConstants } from "../global/global-static-constants";
+import { Colours } from "../assets/colours.js";
+import { CactusCoords } from "../assets/isometric-coords/cactus-coords.js";
+import { OasisCoords } from "../assets/isometric-coords/oasis-coords.js";
+import { PyramidCoords } from "../assets/isometric-coords/pyramids.js";
+import { RookCoords } from "../assets/isometric-coords/rock-coords.js";
+import { CanvasCamelService } from "../global/canvas-camel-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CubeService } from "../global/cube-service.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
 export class RaceDrawing {
     constructor() {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);

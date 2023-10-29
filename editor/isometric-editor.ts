@@ -1,9 +1,10 @@
-import { CanvasBtnService } from "../global/canvas-btn-service";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CubeService } from "../global/cube-service";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { ImportantService } from "../global/important-service";
+import { Colours } from "../assets/colours.js";
+import { CanvasBtnService } from "../global/canvas-btn-service.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CubeService } from "../global/cube-service.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { ImportantService } from "../global/important-service.js";
 
 export class IsometricEditorComponent {
     constructor(

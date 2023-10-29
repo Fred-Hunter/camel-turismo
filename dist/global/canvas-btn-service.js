@@ -1,4 +1,4 @@
-import { GlobalStaticConstants } from "./global-static-constants";
+import { GlobalStaticConstants } from "./global-static-constants.js";
 export class CanvasBtnService {
     canvas;
     _navigator;

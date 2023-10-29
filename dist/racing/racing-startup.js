@@ -1,17 +1,17 @@
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { CamelSelectComponent } from "../management/camel-select/camel-select-component";
-import { Page } from "../navigation/page";
-import { Countdown } from "./countdown/countdown";
-import { LeaderboardService } from "./leaderboard-service";
-import { RaceState } from "./models/race-state";
-import { RaceComponent } from "./race-component";
-import { RaceDrawing } from "./race-drawing";
-import { RaceManagement } from "./race-managment";
-import { RaceSelection } from "./race-selection";
-import { RaceSimulation } from "./race-simulation";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { CamelSelectComponent } from "../management/camel-select/camel-select-component.js";
+import { Page } from "../navigation/page.js";
+import { Countdown } from "./countdown/countdown.js";
+import { LeaderboardService } from "./leaderboard-service.js";
+import { RaceState } from "./models/race-state.js";
+import { RaceComponent } from "./race-component.js";
+import { RaceDrawing } from "./race-drawing.js";
+import { RaceManagement } from "./race-managment.js";
+import { RaceSelection } from "./race-selection.js";
+import { RaceSimulation } from "./race-simulation.js";
 export class RacingStartup {
     _globalServices;
     constructor(_globalServices) {

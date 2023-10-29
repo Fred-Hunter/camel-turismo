@@ -1,5 +1,5 @@
-"use strict";
-class RookCoords {
+import { Colours } from "../colours.js";
+export class RookCoords {
     static get smallRock1() {
         return [
             {

@@ -1,13 +1,13 @@
-import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing";
-import { CanvasNames } from "../global/canvas-names";
-import { CanvasService } from "../global/canvas-service";
-import { CashMoneyService } from "../global/cash-money-service";
-import { GameState } from "../global/game-state";
-import { GlobalComponents } from "../global/global-components";
-import { GlobalStaticConstants } from "../global/global-static-constants";
-import { PopupService } from "../global/popup-service";
-import { GymDrawing } from "../gym/gym-drawing";
-import { Page } from "../navigation/page";
+import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing.js";
+import { CanvasNames } from "../global/canvas-names.js";
+import { CanvasService } from "../global/canvas-service.js";
+import { CashMoneyService } from "../global/cash-money-service.js";
+import { GameState } from "../global/game-state.js";
+import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { PopupService } from "../global/popup-service.js";
+import { GymDrawing } from "../gym/gym-drawing.js";
+import { Page } from "../navigation/page.js";
 
 export class MapOverview {
     private static _canvasXOffset = 0;
@@ -355,7 +355,7 @@ export class MapOverview {
     }
 }
 
-class MapLocations {
+export class MapLocations {
     public static None: string = "";
     public static Hire: string = "Hire";
     public static Gym: string = "Gym";
@@ -367,12 +367,12 @@ class MapLocations {
     public static DealLocked: string = "DealLocked";
 }
 
-class UiElements {
+export class UiElements {
     public static Money: string = "UiMoney";
     public static Calendar: string = "UiCalendar";
 }
 
-class MapTile {
+export class MapTile {
     constructor(
         public name: string,
         public position: Rect,
@@ -380,7 +380,7 @@ class MapTile {
         public alertText: string | undefined = undefined) { }
 }
 
-class Rect {
+export class Rect {
     constructor(
         public x: number,
         public y: number,

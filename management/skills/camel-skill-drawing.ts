@@ -1,11 +1,11 @@
-import { CanvasBtnService } from "../../global/canvas-btn-service";
-import { CanvasNames } from "../../global/canvas-names";
-import { CanvasService } from "../../global/canvas-service";
-import { GlobalStaticConstants } from "../../global/global-static-constants";
-import { NavigatorService } from "../../navigation/navigator-service";
-import { Page } from "../../navigation/page";
-import { Camel } from "../camel-creation/camel";
-import { CamelSkill } from "./camel-skill";
+import { CanvasBtnService } from "../../global/canvas-btn-service.js";
+import { CanvasNames } from "../../global/canvas-names.js";
+import { CanvasService } from "../../global/canvas-service.js";
+import { GlobalStaticConstants } from "../../global/global-static-constants.js";
+import { NavigatorService } from "../../navigation/navigator-service.js";
+import { Page } from "../../navigation/page.js";
+import { Camel } from "../camel-creation/camel.js";
+import { CamelSkill } from "./camel-skill.js";
 
 export class CamelSkillDrawing {
     constructor(private readonly _navigator: NavigatorService) {

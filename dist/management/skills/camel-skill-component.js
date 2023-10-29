@@ -1,6 +1,6 @@
-import { CanvasNames } from "../../global/canvas-names";
-import { CanvasService } from "../../global/canvas-service";
-import { GameState } from "../../global/game-state";
+import { CanvasNames } from "../../global/canvas-names.js";
+import { CanvasService } from "../../global/canvas-service.js";
+import { GameState } from "../../global/game-state.js";
 export class CamelSkillComponent {
     _camelSkillDrawing;
     _camelSkillCommands;

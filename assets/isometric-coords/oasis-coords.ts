@@ -1,4 +1,4 @@
-class OasisCoords {
+export class OasisCoords {
     public static get oasis(): Array<{x: number, y: number, colour: string}> {
         return [
             {

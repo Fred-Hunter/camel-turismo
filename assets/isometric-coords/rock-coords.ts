@@ -1,4 +1,6 @@
-class RookCoords {
+import { Colours } from "../colours.js";
+
+export class RookCoords {
     public static get smallRock1(): Array<{ x: number, y: number, colour: string }> {
         return [
             {

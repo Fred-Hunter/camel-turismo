@@ -1,6 +1,6 @@
-import { Difficulty } from "../difficulty";
-import { RaceState } from "./race-state";
-import { RacingCamel } from "./racing-camel";
+import { Difficulty } from "../difficulty.js";
+import { RaceState } from "./race-state.js";
+import { RacingCamel } from "./racing-camel.js";
 
 export class Race {
     constructor(

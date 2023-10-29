@@ -1,4 +1,4 @@
-import { CamelSkillType } from "./camel-skill-type";
+import { CamelSkillType } from "./camel-skill-type.js";
 export class CamelSkill {
     skillType;
     levelCurve;
