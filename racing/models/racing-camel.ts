@@ -1,4 +1,6 @@
-class RacingCamel {
+import { Camel } from "../../management/camel-creation/camel";
+
+export class RacingCamel {
     constructor(
         public camel: Camel) { 
             this._initialVelocity = 5 + (this.camel.agility.level / 10);

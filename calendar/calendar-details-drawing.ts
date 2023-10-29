@@ -1,4 +1,12 @@
-class CalendarDetailsDrawing {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GlobalComponents } from "../global/global-components";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { Page } from "../navigation/page";
+import { CalendarService } from "./calendar-service";
+
+export class CalendarDetailsDrawing {
     static drawCalendarDetails() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.CalendarDetails);
         const ctx = canvas.getContext("2d")!;
@@ -64,7 +72,7 @@ class CalendarDetailsDrawing {
             }
         }
 
-        const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
 
         btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }

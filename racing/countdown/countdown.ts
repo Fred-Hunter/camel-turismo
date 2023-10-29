@@ -1,4 +1,8 @@
-class Countdown {
+import { CanvasNames } from "../../global/canvas-names";
+import { CanvasService } from "../../global/canvas-service";
+import { GlobalStaticConstants } from "../../global/global-static-constants";
+
+export class Countdown {
     constructor(
     ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.Countdown);

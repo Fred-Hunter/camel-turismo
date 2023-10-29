@@ -1,4 +1,6 @@
-class CubeService {
+import { ImportantService } from "./important-service";
+
+export class CubeService {
     constructor(public readonly ctx: CanvasRenderingContext2D) {
     }
 

@@ -1,4 +1,7 @@
-class CamelSkillCommands {
+import { Camel } from "../camel-creation/camel";
+import { CamelSkill } from "./camel-skill";
+
+export class CamelSkillCommands {
     public levelUpSkill(camel: Camel, skill: CamelSkill) {
         const toNextLevel = skill.getXpToNextLevel();
 

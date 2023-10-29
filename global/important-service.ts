@@ -1,4 +1,6 @@
-class ImportantService {
+import { GlobalStaticConstants } from "./global-static-constants";
+
+export class ImportantService {
     static ConvertCoordToReal(
         coordX: number,
         coordY: number,

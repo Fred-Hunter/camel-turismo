@@ -1,4 +1,15 @@
-class MapOverview {
+import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CashMoneyService } from "../global/cash-money-service";
+import { GameState } from "../global/game-state";
+import { GlobalComponents } from "../global/global-components";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { PopupService } from "../global/popup-service";
+import { GymDrawing } from "../gym/gym-drawing";
+import { Page } from "../navigation/page";
+
+export class MapOverview {
     private static _canvasXOffset = 0;
     private static _canvasYOffset = 0;
     private static _mapEventListeners: any[] = [];
@@ -115,7 +126,7 @@ class MapOverview {
                     CanvasService.showAllCanvas();
                     CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
                     CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                    new GymDrawing(globalServices.navigatorService).drawGym();
+                    new GymDrawing(GlobalComponents.globalServices.navigatorService).drawGym();
                     break;
 
                 case MapLocations.Mystery:
@@ -134,7 +145,7 @@ class MapOverview {
                         PopupService.drawAlertPopup("You cannot enter a race without a camel, you idiot!");
                         return;
                     }
-                    globalServices.navigatorService.requestPageNavigation(Page.raceSelection);
+                    GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.raceSelection);
                     break;
 
                 case MapLocations.Management:
@@ -142,7 +153,7 @@ class MapOverview {
                         PopupService.drawAlertPopup("You cannot manage camel skills without a camel, you idiot!");
                         return;
                     }
-                    globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
+                    GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
 
                 case MapLocations.DealLocked:
@@ -154,7 +165,7 @@ class MapOverview {
                     return;
 
                 case MapLocations.Scrolls:
-                    globalServices.navigatorService.requestPageNavigation(Page.scrolls);
+                    GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.scrolls);
                     break;
             }
         };

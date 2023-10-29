@@ -1,4 +1,6 @@
-class DefaultLevelCurve implements LevelCurve {
+import { LevelCurve } from "./level-curve";
+
+export class DefaultLevelCurve implements LevelCurve {
     public get minSkillLevel() { return 1; }
 
     public get maxSkillLevel() { return 99; }

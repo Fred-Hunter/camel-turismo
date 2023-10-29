@@ -1,4 +1,8 @@
-class CanvasCamelService {
+import { CubeService } from "./cube-service";
+import { GlobalStaticConstants } from "./global-static-constants";
+import { ImportantService } from "./important-service";
+
+export class CanvasCamelService {
     constructor(public readonly ctx: CanvasRenderingContext2D) {
         this._cubeService = new CubeService(ctx);
     }

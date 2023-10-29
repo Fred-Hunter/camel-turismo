@@ -1,42 +1,18 @@
-// Game state
-let race: Race;
-
-// Global service
-let globalServices: GlobalServices
-
-// Components
-// Recruitment
-let recruitmentService: RecruitmentService;
-
-// Camel management
-let camelSkillComponent: CamelSkillComponent;
-let camelManagementSelectComponent: CamelSelectComponent;
-
-// Race
-let raceSelection: RaceSelection;
-let raceComponent: RaceComponent;
-let raceCamelSelectComponent: CamelSelectComponent;
-
-// Loading
-let loadingScreen: LoadingScreen;
-
-// Drawing
-let isometricEditorComponent: IsometricEditorComponent;
-let drawingMode = false;
-
-// Scrolls
-let scrollsComponent: ScrollsComponent;
+import { GameState } from "./global/game-state";
+import { GlobalComponents } from "./global/global-components";
+import { Startup } from "./global/startup";
+import { Page } from "./navigation/page";
 
 function init() {
     const startup = new Startup();
-    globalServices = startup.createGlobalServices();
+    GlobalComponents.globalServices = startup.createGlobalServices();
 
     startup.createCanvases();
     startup.registerComponents();
     startup.registerAudio();
 
-    if (drawingMode) {
-        globalServices.navigatorService.requestPageNavigation(Page.debug);
+    if (GlobalComponents.drawingMode) {
+        GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
 
     window.requestAnimationFrame(gameLoop);
@@ -47,8 +23,8 @@ function gameLoop(timeStamp: number) {
         GameState.secondsPassed = Math.min((timeStamp - GameState.oldTimeStamp) / 1000, 0.1);
         GameState.oldTimeStamp = timeStamp;
 
-        globalServices.navigatorService.doNavigation();
-        raceComponent.handleRaceLoop(timeStamp);
+        GlobalComponents.globalServices.navigatorService.doNavigation();
+        GlobalComponents.raceComponent.handleRaceLoop(timeStamp);
 
     } catch (exception) {
         console.error(exception);

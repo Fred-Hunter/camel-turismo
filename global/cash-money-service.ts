@@ -1,4 +1,7 @@
-class CashMoneyService {
+import { GameState } from "./game-state";
+import { GlobalStaticConstants } from "./global-static-constants";
+
+export class CashMoneyService {
     public static drawCashMoney(ctx: CanvasRenderingContext2D): void {
         var img = new Image();
         img.src = './assets/egyptian-pound.jpg';

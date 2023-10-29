@@ -1,4 +1,13 @@
-class RaceComponent {
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GlobalComponents } from "../global/global-components";
+import { Countdown } from "./countdown/countdown";
+import { LeaderboardService } from "./leaderboard-service";
+import { RaceState } from "./models/race-state";
+import { RaceDrawing } from "./race-drawing";
+import { RaceManagement } from "./race-managment";
+
+export class RaceComponent {
     constructor(
         private readonly _raceDrawing: RaceDrawing,
         private readonly _raceManagement: RaceManagement,
@@ -17,34 +26,34 @@ class RaceComponent {
     }
 
     public handleRaceLoop(timeStamp: number): void {
-        if (!race || race.raceState === RaceState.none) {
+        if (!GlobalComponents.race || GlobalComponents.race.raceState === RaceState.none) {
             return;
         }
         
-        if (race.raceState === RaceState.inProgress) {
-            this._raceManagement.simulateRaceStep(race);
-            this._raceDrawing.drawCamels(race);
+        if (GlobalComponents.race.raceState === RaceState.inProgress) {
+            this._raceManagement.simulateRaceStep(GlobalComponents.race);
+            this._raceDrawing.drawCamels(GlobalComponents.race);
             this._leaderboardService.drawLeaderboard();
         }
 
-        if (race.raceState === RaceState.triggered) {
-            this._raceDrawing.drawRaceCourse(race);
-            race.triggeredTimestamp = timeStamp;
-            this._raceDrawing.drawCamels(race);
-            race.raceState = RaceState.initialised;
+        if (GlobalComponents.race.raceState === RaceState.triggered) {
+            this._raceDrawing.drawRaceCourse(GlobalComponents.race);
+            GlobalComponents.race.triggeredTimestamp = timeStamp;
+            this._raceDrawing.drawCamels(GlobalComponents.race);
+            GlobalComponents.race.raceState = RaceState.initialised;
         }
 
-        if (race.raceState === RaceState.initialised) {
-            this._countdown.displayCountdown(8000 - (timeStamp - race.triggeredTimestamp));
+        if (GlobalComponents.race.raceState === RaceState.initialised) {
+            this._countdown.displayCountdown(8000 - (timeStamp - GlobalComponents.race.triggeredTimestamp));
 
-            if (timeStamp - race.triggeredTimestamp >= 7500) {
+            if (timeStamp - GlobalComponents.race.triggeredTimestamp >= 7500) {
                 CanvasService.hideCanvas(CanvasNames.Countdown);
-                this._raceManagement.startRace(race);
+                this._raceManagement.startRace(GlobalComponents.race);
             }
         }
 
-        if (race.raceState === RaceState.finished) {
-            this._raceManagement.handleFinishedRace(race);
+        if (GlobalComponents.race.raceState === RaceState.finished) {
+            this._raceManagement.handleFinishedRace(GlobalComponents.race);
         }
     }
 }

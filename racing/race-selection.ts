@@ -1,4 +1,17 @@
-class RaceSelection {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CashMoneyService } from "../global/cash-money-service";
+import { GameState } from "../global/game-state";
+import { GlobalComponents } from "../global/global-components";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { PopupService } from "../global/popup-service";
+import { NavigatorService } from "../navigation/navigator-service";
+import { Page } from "../navigation/page";
+import { Difficulty } from "./difficulty";
+import { RaceManagement } from "./race-managment";
+
+export class RaceSelection {
     constructor(
         private readonly _navigator: NavigatorService,
         private readonly _raceManagement: RaceManagement
@@ -64,7 +77,7 @@ class RaceSelection {
 
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, difficulty);
+            GlobalComponents.race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
 

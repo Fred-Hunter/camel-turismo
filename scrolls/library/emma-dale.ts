@@ -1,4 +1,6 @@
-class EmmaDaleScrolls {
+import { Scroll } from "../scroll";
+
+export class EmmaDaleScrolls {
     static get welcome(): Scroll {
         return {
             sender: 'Emma Dale',

@@ -1,4 +1,6 @@
-class CanvasService {
+import { GlobalStaticConstants } from "./global-static-constants";
+
+export class CanvasService {
     public static createCanvas(zIndex: string, name: string = "default"): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
         canvas.setAttribute("id", `canvas-${name}`);
