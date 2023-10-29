@@ -2769,6 +2769,12 @@ class MapOverview {
                     }
                     globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
+                case MapLocations.DealLocked:
+                    PopupService.drawAlertPopup("You idiot!");
+                    return;
+                case MapLocations.Deal:
+                    PopupService.drawAlertPopup("You idiot!");
+                    return;
                 case MapLocations.Scrolls:
                     globalServices.navigatorService.requestPageNavigation(Page.scrolls);
                     break;
@@ -2828,6 +2834,12 @@ class MapOverview {
             MapLocations.Race,
             MapLocations.Mystery,
         ];
+        if (GameState.camels.length > 8) {
+            locationsToAdd.push(MapLocations.Deal);
+        }
+        else {
+            locationsToAdd.push(MapLocations.DealLocked);
+        }
         // Calculate grid
         let getTilesPerRow = () => Math.min(4, Math.max(1, Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
         let tilesPerRow = getTilesPerRow();
@@ -2903,6 +2915,8 @@ class MapLocations {
     static Race = "Race";
     static Management = "Management";
     static Scrolls = "Scrolls";
+    static Deal = "Deal";
+    static DealLocked = "DealLocked";
 }
 class UiElements {
     static Money = "UiMoney";
@@ -3396,7 +3410,7 @@ class RaceManagement {
             averageCompetitorLevel = 50;
         }
         else {
-            averageCompetitorLevel = 80;
+            averageCompetitorLevel = 60;
         }
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);

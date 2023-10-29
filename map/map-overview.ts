@@ -145,6 +145,14 @@ class MapOverview {
                     globalServices.navigatorService.requestPageNavigation(Page.managementSelect);
                     break;
 
+                case MapLocations.DealLocked:
+                    PopupService.drawAlertPopup("You idiot!");
+                    return;
+
+                case MapLocations.Deal:
+                    PopupService.drawAlertPopup("You idiot!");
+                    return;
+
                 case MapLocations.Scrolls:
                     globalServices.navigatorService.requestPageNavigation(Page.scrolls);
                     break;
@@ -228,6 +236,13 @@ class MapOverview {
             MapLocations.Race,
             MapLocations.Mystery,
         ];
+
+        if (GameState.camels.length > 8) {
+            locationsToAdd.push(MapLocations.Deal);
+        }
+        else {
+            locationsToAdd.push(MapLocations.DealLocked);
+        }
 
         // Calculate grid
         let getTilesPerRow = () => Math.min(4, Math.max(1, Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
@@ -337,6 +352,8 @@ class MapLocations {
     public static Race: string = "Race";
     public static Management: string = "Management";
     public static Scrolls: string = "Scrolls";
+    public static Deal: string = "Deal";
+    public static DealLocked: string = "DealLocked";
 }
 
 class UiElements {
