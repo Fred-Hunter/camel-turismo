@@ -37,7 +37,7 @@ class RaceManagement {
         } else if (difficulty === Difficulty.Normal) {
             averageCompetitorLevel = 50;
         } else {
-            averageCompetitorLevel = 80;
+            averageCompetitorLevel = 60;
         }
 
         const trackCreator = new RaceTrackCreator();
