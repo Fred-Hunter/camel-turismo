@@ -1,4 +1,13 @@
-class CamelSkillDrawing {
+import { CanvasBtnService } from "../../global/canvas-btn-service";
+import { CanvasNames } from "../../global/canvas-names";
+import { CanvasService } from "../../global/canvas-service";
+import { GlobalStaticConstants } from "../../global/global-static-constants";
+import { NavigatorService } from "../../navigation/navigator-service";
+import { Page } from "../../navigation/page";
+import { Camel } from "../camel-creation/camel";
+import { CamelSkill } from "./camel-skill";
+
+export class CamelSkillDrawing {
     constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.CamelManagement);
         this._ctx = this._canvas.getContext('2d')!;

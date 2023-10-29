@@ -1,31 +1,44 @@
+import { GameState } from "./global/game-state";
+import { GlobalServices } from "./global/global-services";
+import { Startup } from "./global/startup";
+import { LoadingScreen } from "./loading/loading-screen";
+import { CamelSelectComponent } from "./management/camel-select/camel-select-component";
+import { CamelSkillComponent } from "./management/skills/camel-skill-component";
+import { Page } from "./navigation/page";
+import { Race } from "./racing/models/race";
+import { RaceComponent } from "./racing/race-component";
+import { RaceSelection } from "./racing/race-selection";
+import { RecruitmentService } from "./recruitment/recruitment-service";
+import { ScrollsComponent } from "./scrolls/scrolls-component";
+
 // Game state
-let race: Race;
+export let race: Race;
 
 // Global service
-let globalServices: GlobalServices
+export let globalServices: GlobalServices
 
 // Components
 // Recruitment
-let recruitmentService: RecruitmentService;
+export let recruitmentService: RecruitmentService;
 
 // Camel management
-let camelSkillComponent: CamelSkillComponent;
-let camelManagementSelectComponent: CamelSelectComponent;
+export let camelSkillComponent: CamelSkillComponent;
+export let camelManagementSelectComponent: CamelSelectComponent;
 
 // Race
-let raceSelection: RaceSelection;
-let raceComponent: RaceComponent;
-let raceCamelSelectComponent: CamelSelectComponent;
+export let raceSelection: RaceSelection;
+export let raceComponent: RaceComponent;
+export let raceCamelSelectComponent: CamelSelectComponent;
 
 // Loading
-let loadingScreen: LoadingScreen;
+export let loadingScreen: LoadingScreen;
 
 // Drawing
-let isometricEditorComponent: IsometricEditorComponent;
-let drawingMode = false;
+export let isometricEditorComponent: IsometricEditorComponent;
+export let drawingMode = false;
 
 // Scrolls
-let scrollsComponent: ScrollsComponent;
+export let scrollsComponent: ScrollsComponent;
 
 function init() {
     const startup = new Startup();

@@ -1,4 +1,8 @@
-class CanvasBtnService {
+import { NavigatorService } from "../navigation/navigator-service";
+import { Page } from "../navigation/page";
+import { GlobalStaticConstants } from "./global-static-constants";
+
+export class CanvasBtnService {
     constructor(
         public canvas: HTMLCanvasElement,
         private readonly _navigator: NavigatorService) { }

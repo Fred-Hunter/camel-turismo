@@ -1,4 +1,9 @@
-interface GameStateObject {
+import { globalServices } from "../main";
+import { Camel } from "../management/camel-creation/camel";
+import { CamelCreator } from "../management/camel-creation/camel-creator";
+import { Scroll } from "../scrolls/scroll";
+
+export interface GameStateObject {
     camel: Camel | undefined,
     camels: Camel[],
     secondsPassed: number,
@@ -10,7 +15,7 @@ interface GameStateObject {
     stableSeed: string
 }
 
-class GameState {
+export class GameState {
     // Update this whenever a new gamestate version is created
     private static _version: number = 4;
 

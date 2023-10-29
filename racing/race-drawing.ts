@@ -1,4 +1,12 @@
-class RaceDrawing {
+import { CanvasCamelService } from "../global/canvas-camel-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CubeService } from "../global/cube-service";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { Race } from "./models/race";
+import { RacingCamel } from "./models/racing-camel";
+
+export class RaceDrawing {
     constructor(
     ) {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);

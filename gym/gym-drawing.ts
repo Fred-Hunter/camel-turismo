@@ -1,4 +1,17 @@
-class GymDrawing {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CubeService } from "../global/cube-service";
+import { GameState } from "../global/game-state";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { MapOverview } from "../map/map-overview";
+import { NavigatorService } from "../navigation/navigator-service";
+import { Race } from "../racing/models/race";
+import { RacingCamel } from "../racing/models/racing-camel";
+import { Gym } from "./gym";
+import { TrainSession } from "./gym-session";
+
+export class GymDrawing {
     constructor(
         private readonly _navigatorService: NavigatorService
     ) {

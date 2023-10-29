@@ -1,4 +1,15 @@
-class MapOverview {
+import { CalendarOverviewDrawing } from "../calendar/calendar-overview-drawing";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { CashMoneyService } from "../global/cash-money-service";
+import { GameState } from "../global/game-state";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { PopupService } from "../global/popup-service";
+import { GymDrawing } from "../gym/gym-drawing";
+import { globalServices } from "../main";
+import { Page } from "../navigation/page";
+
+export class MapOverview {
     private static _canvasXOffset = 0;
     private static _canvasYOffset = 0;
     private static _mapEventListeners: any[] = [];

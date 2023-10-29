@@ -1,4 +1,9 @@
-class ScrollsComponent {
+import { GameState } from "../global/game-state";
+import { NavigatorService } from "../navigation/navigator-service";
+import { Page } from "../navigation/page";
+import { Scroll } from "./scroll";
+
+export class ScrollsComponent {
     constructor(private readonly _navigator: NavigatorService) { }
 
     public load(): void {

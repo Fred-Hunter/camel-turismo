@@ -1,4 +1,23 @@
-class Startup {
+import { CamelCreator } from "../management/camel-creation/camel-creator";
+import { CamelPropertyGenerator } from "../management/camel-creation/camel-property-generator";
+import { CamelStable } from "../global/camel-stable";
+import { GlobalServices } from "./global-services";
+import { globalServices, recruitmentService, loadingScreen, isometricEditorComponent } from "../main";
+import { RecruitmentService } from "../recruitment/recruitment-service";
+import { LoadingScreen } from "../loading/loading-screen";
+import { CamelSkillCreator } from "../management/camel-creation/camel-skill-creator";
+import { ManagementStartup } from "../management/management-startup";
+import { LevelCurveFactory } from "../management/skills/level-curve-factory";
+import { NavigatorService } from "../navigation/navigator-service";
+import { RacingStartup } from "../racing/racing-startup";
+import { ScrollsStartup } from "../scrolls/scrolls-startup";
+import { CanvasBtnService } from "./canvas-btn-service";
+import { CanvasNames } from "./canvas-names";
+import { CanvasService } from "./canvas-service";
+import { CubeService } from "./cube-service";
+import { GlobalComponents } from "./global-components";
+
+export class Startup {
     constructor() { }
 
     public registerComponents() {
@@ -11,8 +30,8 @@ class Startup {
         const scrollsStartup = new ScrollsStartup(globalServices);
         scrollsStartup.registerComponents();
 
-        recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
-        loadingScreen = new LoadingScreen(globalServices.navigatorService);
+        GlobalComponents.recruitmentService = new RecruitmentService(globalServices.navigatorService, globalServices.camelCreator);
+        GlobalComponents.loadingScreen = new LoadingScreen(globalServices.navigatorService);
 
         this.registerDebugComponents();
     }
@@ -62,6 +81,6 @@ class Startup {
         const cubeService = new CubeService(canvas.getContext("2d")!);
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
         
-        isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
+        GlobalComponents.isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
     }
 }

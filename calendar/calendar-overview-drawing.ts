@@ -1,4 +1,10 @@
-class CalendarOverviewDrawing {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { globalServices } from "../main";
+import { Page } from "../navigation/page";
+import { CalendarService } from "./calendar-service";
+
+export class CalendarOverviewDrawing {
     static drawCalendarOverview(canvas: HTMLCanvasElement) {
         const btnService = new CanvasBtnService(canvas, globalServices.navigatorService);
 

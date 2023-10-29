@@ -1,4 +1,4 @@
-class RaceTrackCreator {
+export class RaceTrackCreator {
     public createTrack(length: number): number[][] {
 
         if (length <= 0) {

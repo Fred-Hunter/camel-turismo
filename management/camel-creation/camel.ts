@@ -1,4 +1,8 @@
-enum InitCamelQuality {
+import { CamelSkill } from "../skills/camel-skill";
+import { CamelInitProperties } from "./camel-init-properties";
+import { CamelTemperament } from "./camel-temperament";
+
+export enum InitCamelQuality {
     None = 0,
     Low,
     Medium,
@@ -10,7 +14,7 @@ enum InitCamelQuality {
     Cpu5
 }
 
-class Camel {
+export class Camel {
     constructor(
         public id: number,
         camelInitProperties: CamelInitProperties

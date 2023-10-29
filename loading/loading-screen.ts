@@ -1,4 +1,14 @@
-class LoadingScreen {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GameState } from "../global/game-state";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { PopupService } from "../global/popup-service";
+import { NavigatorService } from "../navigation/navigator-service";
+import { Page } from "../navigation/page";
+import { EmmaDaleScrolls } from "../scrolls/library/emma-dale";
+
+export class LoadingScreen {
     constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
         this._btnService = new CanvasBtnService(this._canvas, this._navigator);

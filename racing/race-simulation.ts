@@ -1,4 +1,9 @@
-class RaceSimulation {
+import { GameState } from "../global/game-state";
+import { CamelTemperament } from "../management/camel-creation/camel-temperament";
+import { Race } from "./models/race";
+import { RaceState } from "./models/race-state";
+
+export class RaceSimulation {
 	constructor() {}
 	private _nextPosition: number = 1;
 

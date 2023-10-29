@@ -1,4 +1,12 @@
-class NavigatorService {
+import { CalendarDetailsDrawing } from "../calendar/calendar-details-drawing";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GameState } from "../global/game-state";
+import { camelSkillComponent, raceSelection, raceComponent, raceCamelSelectComponent, camelManagementSelectComponent, isometricEditorComponent, scrollsComponent, loadingScreen } from "../main";
+import { MapOverview } from "../map/map-overview";
+import { Page } from "./page";
+
+export class NavigatorService {
     private _pageLoaded = false;
     private _currentPage = Page.loading;
     private _postNavigationFunc: () => void = () => { };

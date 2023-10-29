@@ -1,4 +1,7 @@
-class MerchantIceScrolls {
+import { Camel } from "../../management/camel-creation/camel";
+import { Scroll } from "../scroll";
+
+export class MerchantIceScrolls {
     static getCamelPurchase(camel: Camel): Scroll {
         return {
             sender: 'Merchant Ice',

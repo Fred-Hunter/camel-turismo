@@ -1,4 +1,22 @@
-class RacingStartup {
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GameState } from "../global/game-state";
+import { GlobalComponents } from "../global/global-components";
+import { GlobalServices } from "../global/global-services";
+import { race, raceCamelSelectComponent, raceSelection, raceComponent } from "../main";
+import { Camel } from "../management/camel-creation/camel";
+import { CamelSelectComponent } from "../management/camel-select/camel-select-component";
+import { Page } from "../navigation/page";
+import { Countdown } from "./countdown/countdown";
+import { LeaderboardService } from "./leaderboard-service";
+import { RaceState } from "./models/race-state";
+import { RaceComponent } from "./race-component";
+import { RaceDrawing } from "./race-drawing";
+import { RaceManagement } from "./race-managment";
+import { RaceSelection } from "./race-selection";
+import { RaceSimulation } from "./race-simulation";
+
+export class RacingStartup {
     constructor(private readonly _globalServices: GlobalServices) { }
 
     public registerComponents() {
@@ -25,11 +43,11 @@ class RacingStartup {
             race.raceState = RaceState.triggered;
         };
 
-        raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
+        GlobalComponents.raceCamelSelectComponent = new CamelSelectComponent(selectRaceCamelFunc);
     }
 
     private registerRaceSelection(raceManagement: RaceManagement) {
-        raceSelection = new RaceSelection(this._globalServices.navigatorService, raceManagement);
+        GlobalComponents.raceSelection = new RaceSelection(this._globalServices.navigatorService, raceManagement);
     }
 
     private registerRaceComponent(raceManagement: RaceManagement) {
@@ -37,6 +55,6 @@ class RacingStartup {
         const raceDrawing = new RaceDrawing();
         const countdown = new Countdown();
 
-        raceComponent = new RaceComponent(raceDrawing, raceManagement, leaderboardService, countdown);
+        GlobalComponents.raceComponent = new RaceComponent(raceDrawing, raceManagement, leaderboardService, countdown);
     }
 }

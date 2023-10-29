@@ -1,4 +1,13 @@
-class RaceComponent {
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { race } from "../main";
+import { Countdown } from "./countdown/countdown";
+import { LeaderboardService } from "./leaderboard-service";
+import { RaceState } from "./models/race-state";
+import { RaceDrawing } from "./race-drawing";
+import { RaceManagement } from "./race-managment";
+
+export class RaceComponent {
     constructor(
         private readonly _raceDrawing: RaceDrawing,
         private readonly _raceManagement: RaceManagement,

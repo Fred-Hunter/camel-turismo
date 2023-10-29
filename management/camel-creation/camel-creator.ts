@@ -1,4 +1,11 @@
-class CamelCreator {
+import { GameState } from "../../global/game-state";
+import { CamelSkillType } from "../skills/camel-skill-type";
+import { InitCamelQuality, Camel } from "./camel";
+import { CamelInitProperties } from "./camel-init-properties";
+import { CamelPropertyGenerator } from "./camel-property-generator";
+import { CamelSkillCreator } from "./camel-skill-creator";
+
+export class CamelCreator {
     constructor(
         private readonly _camelPropertyGenerator: CamelPropertyGenerator,
         private readonly _camelSkillCreator: CamelSkillCreator

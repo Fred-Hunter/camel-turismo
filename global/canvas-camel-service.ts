@@ -1,4 +1,4 @@
-class CanvasCamelService {
+export class CanvasCamelService {
     constructor(public readonly ctx: CanvasRenderingContext2D) {
         this._cubeService = new CubeService(ctx);
     }

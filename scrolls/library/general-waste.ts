@@ -1,4 +1,6 @@
-class GeneralWasteScrolls {
+import { Scroll } from "../scroll";
+
+export class GeneralWasteScrolls {
     static get welcome(): Scroll {
         return {
             sender: 'General Waste',

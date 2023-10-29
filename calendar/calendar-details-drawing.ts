@@ -1,4 +1,12 @@
-class CalendarDetailsDrawing {
+import { CanvasBtnService } from "../global/canvas-btn-service";
+import { CanvasNames } from "../global/canvas-names";
+import { CanvasService } from "../global/canvas-service";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { globalServices } from "../main";
+import { Page } from "../navigation/page";
+import { CalendarService } from "./calendar-service";
+
+export class CalendarDetailsDrawing {
     static drawCalendarDetails() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.CalendarDetails);
         const ctx = canvas.getContext("2d")!;

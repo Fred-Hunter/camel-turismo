@@ -1,4 +1,8 @@
-class GymSession {
+import { GameState } from "../global/game-state";
+import { PopupService } from "../global/popup-service";
+import { CamelSkill } from "../management/skills/camel-skill";
+
+export class GymSession {
     protected _sessionActive = false;
 
     public startSession() {
@@ -13,7 +17,7 @@ class GymSession {
     }
 }
 
-class TrainSession extends GymSession {
+export class TrainSession extends GymSession {
     private _xpGained = 0;
     private _staminaRemaining = 0;
 
@@ -73,7 +77,7 @@ class TrainSession extends GymSession {
     }
 }
 
-class SpaSession extends GymSession {
+export class SpaSession extends GymSession {
     private _startTime = 0;
     private _staiminaGained = 0;
 

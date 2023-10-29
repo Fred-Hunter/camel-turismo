@@ -1,4 +1,10 @@
-class PopupService {
+import { globalServices } from "../main";
+import { Page } from "../navigation/page";
+import { CanvasNames } from "./canvas-names";
+import { CanvasService } from "./canvas-service";
+import { GlobalStaticConstants } from "./global-static-constants";
+
+export class PopupService {
     constructor() {
     }
 

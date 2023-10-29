@@ -1,4 +1,12 @@
-class LeaderboardService {
+import { CanvasCamelService } from "../global/canvas-camel-service";
+import { CubeService } from "../global/cube-service";
+import { GameState } from "../global/game-state";
+import { GlobalStaticConstants } from "../global/global-static-constants";
+import { race } from "../main";
+import { Camel } from "../management/camel-creation/camel";
+import { RacingCamel } from "./models/racing-camel";
+
+export class LeaderboardService {
 	constructor(public ctx: CanvasRenderingContext2D) {
 		this._camelCubeService = new CubeService(ctx);
 	}

@@ -1,4 +1,12 @@
-class CamelSkillComponent {
+import { CanvasNames } from "../../global/canvas-names";
+import { CanvasService } from "../../global/canvas-service";
+import { GameState } from "../../global/game-state";
+import { Camel } from "../camel-creation/camel";
+import { CamelSkill } from "./camel-skill";
+import { CamelSkillCommands } from "./camel-skill-commands";
+import { CamelSkillDrawing } from "./camel-skill-drawing";
+
+export class CamelSkillComponent {
     constructor(private readonly _camelSkillDrawing: CamelSkillDrawing,
         private readonly _camelSkillCommands: CamelSkillCommands,
     ) { }

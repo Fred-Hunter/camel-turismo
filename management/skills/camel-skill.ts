@@ -1,4 +1,7 @@
-class CamelSkill {
+import { CamelSkillType } from "./camel-skill-type";
+import { LevelCurve } from "./level-curve";
+
+export class CamelSkill {
     constructor(
         public readonly skillType: CamelSkillType,
         public readonly levelCurve: LevelCurve,

@@ -1,4 +1,13 @@
-class CamelStable {
+import { Camel } from "../management/camel-creation/camel";
+import { CamelCreator } from "../management/camel-creation/camel-creator";
+import { CamelTemperament } from "../management/camel-creation/camel-temperament";
+import { CamelSkill } from "../management/skills/camel-skill";
+import { CamelSkillType } from "../management/skills/camel-skill-type";
+import { DefaultLevelCurve } from "../management/skills/default-level-curve";
+import { GameState } from "./game-state";
+
+export class CamelStable {
+
     constructor(
         private readonly _camelCreator: CamelCreator
     ) {

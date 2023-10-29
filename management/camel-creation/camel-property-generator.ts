@@ -1,4 +1,4 @@
-class CamelPropertyGenerator {
+export class CamelPropertyGenerator {
     private nameAjectives =  [
         "Sandy", "Dusty", "Golden", "Majestic", "Spotted",
         "Whirling", "Blazing", "Silent", "Radiant", "Breezy",

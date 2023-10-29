@@ -1,4 +1,6 @@
-class CalendarService {
+import { GameState } from "../global/game-state";
+
+export class CalendarService {
     static getCalendar() {
         if (!GameState.calendar) {
             GameState.calendar = new Calendar();

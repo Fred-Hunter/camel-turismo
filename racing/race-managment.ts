@@ -1,4 +1,18 @@
-class RaceManagement {
+import { CanvasService } from "../global/canvas-service";
+import { GameState } from "../global/game-state";
+import { PopupService } from "../global/popup-service";
+import { globalServices } from "../main";
+import { Camel } from "../management/camel-creation/camel";
+import { CamelCreator } from "../management/camel-creation/camel-creator";
+import { MapOverview } from "../map/map-overview";
+import { Difficulty } from "./difficulty";
+import { Race } from "./models/race";
+import { RaceState } from "./models/race-state";
+import { RacingCamel } from "./models/racing-camel";
+import { RaceSimulation } from "./race-simulation";
+import { RaceTrackCreator } from "./race-track-creator";
+
+export class RaceManagement {
     constructor(
         private readonly _musicService: MusicService,
         private readonly _raceSimulation: RaceSimulation,

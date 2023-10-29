@@ -1,4 +1,8 @@
-class Race {
+import { Difficulty } from "../difficulty";
+import { RaceState } from "./race-state";
+import { RacingCamel } from "./racing-camel";
+
+export class Race {
     constructor(
         public length: number,
         public track: number[][],
