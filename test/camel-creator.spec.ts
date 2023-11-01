@@ -32,4 +32,12 @@ describe("Camel creation", () => {
             assert.equal(assertion.actual, assertion.expected);
         });
     })
+
+    stable.camels.forEach((camel: any) => {
+        it(`should encode '${camel.name}' to a string of length ${stable.camelInformationLength}`, () => {
+            const encodedCamel = camelCreator.createSeedFromCamel(camel);
+            console.log(encodedCamel);
+            assert.equal(encodedCamel.length, stable.camelInformationLength);
+        });
+    });
 });
