@@ -6,12 +6,14 @@ import { DefaultLevelCurve } from "../management/skills/default-level-curve.js";
 import { GameState } from "./game-state.js";
 export class CamelStable {
     _camelCreator;
-    constructor(_camelCreator) {
+    _camelPropertyGenerator;
+    constructor(_camelCreator, _camelPropertyGenerator) {
         this._camelCreator = _camelCreator;
+        this._camelPropertyGenerator = _camelPropertyGenerator;
     }
     _seedRadix = 36;
-    _camelInformationLength = 10;
     _numberOfCamels = 25;
+    camelInformationLength = 10;
     camels = [];
     populateStable() {
         let firstTimeSetUp = false;
@@ -29,16 +31,14 @@ export class CamelStable {
                 const sprintSpeed = this.generateRandomNumber(center, variation);
                 const stamina = this.generateRandomNumber(center, variation);
                 const colour = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
-                const name1 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
-                const name2 = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
+                const nameSeed = this._camelPropertyGenerator.generateNameSeed(this._seedRadix);
                 const temperament = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix; // unused
                 const camel = this._camelCreator.createSeededCamel([
                     agility,
                     sprintSpeed,
                     stamina,
                     colour,
-                    name1,
-                    name2,
+                    nameSeed,
                     temperament
                 ]);
                 this.camels.push(camel);
@@ -47,7 +47,7 @@ export class CamelStable {
             return;
         }
         const populateCamelArray = (camelArray) => {
-            const seedPart = GameState.stableSeed.slice(index * this._camelInformationLength, (1 + index) * this._camelInformationLength);
+            const seedPart = GameState.stableSeed.slice(index * this.camelInformationLength, (1 + index) * this.camelInformationLength);
             camelArray.push(this._camelCreator.createCamelFromSeed(seedPart));
             index += 1;
         };

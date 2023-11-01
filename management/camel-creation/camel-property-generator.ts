@@ -24,20 +24,28 @@ export class CamelPropertyGenerator {
     }
 
     public generateName(): string {
-        return this.generateSeededName(Math.random(), Math.random());
+        return this.generateSeededName(this.generateNameSeed());
     }
 
-    public generateSeededName(adjectiveSeed: number, nounSeed: number): string {
-        const randomAdjective = this.nameAjectives[Math.floor(adjectiveSeed * this.nameAjectives.length)];
-        const randomNoun = this.nameNouns[Math.floor(nounSeed * this.nameNouns.length)];
+    public generateNameSeed(radix: number = 36): string {
+        const adjectiveSeed = Math.floor(Math.random() * this.nameAjectives.length).toString(radix);
+        const nounSeed = Math.floor(Math.random() * this.nameNouns.length).toString(radix);
+        return adjectiveSeed + nounSeed;
+    }
+
+    public generateSeededName(nameSeed: string): string {
+        if (nameSeed.length != 2) return "Bad Camel";
+        
+        const randomAdjective = this.nameAjectives[parseInt(nameSeed[0], 36)];
+        const randomNoun = this.nameNouns[parseInt(nameSeed[1], 36)];
 
         return randomAdjective + " " + randomNoun;
     }
 
     public generateSeedFromName(name: string, radix = 36): string {
         let seed = "";
-        seed += (radix * (this.nameAjectives.indexOf(name.split(" ")[0]) / this.nameAjectives.length)).toString(radix);
-        seed += (radix * (this.nameNouns.indexOf(name.split(" ")[1]) / this.nameNouns.length)).toString(radix);
+        seed += this.nameAjectives.indexOf(name.split(" ")[0]).toString(radix);
+        seed += this.nameNouns.indexOf(name.split(" ")[1]).toString(radix);
 
         return seed;
     }

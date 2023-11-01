@@ -80,7 +80,7 @@ export class CamelCreator {
 
     
     public createSeededCamel(
-        seeds: [number, number, number, number, number, number, number]
+        seeds: [number, number, number, number, string, number]
     ): Camel {
         const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, Math.ceil(seeds[0]));
         const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, Math.ceil(seeds[1]));
@@ -88,7 +88,7 @@ export class CamelCreator {
 
         const camelInitProperties: CamelInitProperties = {
             colour: this._camelPropertyGenerator.generateSeededColour(seeds[3]),
-            name: this._camelPropertyGenerator.generateSeededName(seeds[4], seeds[5]),
+            name: this._camelPropertyGenerator.generateSeededName(seeds[4]),
             skills: {
                 agility: agility,
                 sprintSpeed: sprintSpeed,
@@ -111,8 +111,7 @@ export class CamelCreator {
             parseInt(seedPart.slice(2, 4), radix),
             parseInt(seedPart.slice(4, 6), radix),
             parseInt(seedPart.slice(6, 7), radix) / radix,
-            parseInt(seedPart.slice(7, 8), radix) / radix,
-            parseInt(seedPart.slice(8, 9), radix) / radix,
+            seedPart.slice(7, 9),
             parseInt(seedPart.slice(9, 10), radix) / radix,
         ])
     }

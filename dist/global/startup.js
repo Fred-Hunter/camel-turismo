@@ -56,7 +56,7 @@ export class Startup {
         const levelCurveFactor = new LevelCurveFactory();
         const camelSkillCreator = new CamelSkillCreator(levelCurveFactor);
         const camelCreator = new CamelCreator(camelPropertyGenerator, camelSkillCreator);
-        const camelStable = new CamelStable(camelCreator);
+        const camelStable = new CamelStable(camelCreator, camelPropertyGenerator);
         return {
             musicService,
             navigatorService,
