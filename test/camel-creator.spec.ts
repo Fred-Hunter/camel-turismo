@@ -24,7 +24,6 @@ describe("Camel creation", () => {
     // We override properties we don't care about
     camelFromSeed.id = camel.id;
     camelFromSeed.temperament = camel.temperament;
-    camelFromSeed.name = camel.name; // TODO verify name is correct
 
     assertions.push({ actual: JSON.stringify(camelFromSeed), expected: JSON.stringify(camel), name: camel.name });
   });

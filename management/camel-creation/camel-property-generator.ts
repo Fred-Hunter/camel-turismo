@@ -36,8 +36,8 @@ export class CamelPropertyGenerator {
 
     public generateSeedFromName(name: string, radix = 36): string {
         let seed = "";
-        seed += this.nameAjectives.indexOf(name.split(" ")[0]).toString(radix);
-        seed += this.nameNouns.indexOf(name.split(" ")[1]).toString(radix);
+        seed += (radix * (this.nameAjectives.indexOf(name.split(" ")[0]) / this.nameAjectives.length)).toString(radix);
+        seed += (radix * (this.nameNouns.indexOf(name.split(" ")[1]) / this.nameNouns.length)).toString(radix);
 
         return seed;
     }
