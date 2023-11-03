@@ -8,6 +8,7 @@ import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
 import { CubeService } from "../global/cube-service.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { Difficulty } from "./difficulty.js";
 import { Race } from "./models/race.js";
 import { RacingCamel } from "./models/racing-camel.js";
 
@@ -33,6 +34,10 @@ export class RaceDrawing {
 
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
+
+        if (race.difficulty = Difficulty.Normal) {
+            ctx.filter = "grayscale(90%)"
+        }
 
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
@@ -73,6 +78,8 @@ export class RaceDrawing {
                 }
             }
         }
+        
+        ctx.filter = "none"
     }
 
     private drawStaticCamel(newXCoord: number, newYCoord: number, height: number) {

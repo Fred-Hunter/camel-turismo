@@ -29,16 +29,16 @@ export class RaceSelection {
         this._btnService.removeEventListeners();
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        const ratio = GlobalStaticConstants.devicePixelRatio / 2;
         const radius = 25;
         const borderWidth = 5;
         const buttonWidth = 300;
         const buttonHeight = 65;
         const buttonListSpacing = buttonHeight + 20;
         const buttonFontSize = 20;
-        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, Difficulty.Normal);
-        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, Difficulty.Hard);
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, Difficulty.Easy);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, Difficulty.EasilyNormal);
+        const enterCityShowdown = () => this.selectRace(80, 500, 200, 8, 60, Difficulty.Normal);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, Difficulty.Hard);
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
         const raceArray = [
             {
@@ -56,6 +56,13 @@ export class RaceSelection {
                 prize: 500,
             },
             {
+                race: enterCityShowdown,
+                colours: ['#debb49', '#f5d671', '#fff'],
+                name: "City showdown",
+                entry: 250,
+                prize: 600,
+            },
+            {
                 race: enterWorldCup,
                 colours: ['#569929', '#7ac24a', '#fff'],
                 name: "World cup",
@@ -71,7 +78,7 @@ export class RaceSelection {
         });
         CashMoneyService.drawCashMoney(this._ctx);
     }
-    selectRace(raceLength, prizeMoney, entryFee, raceSize, difficulty) {
+    selectRace(raceLength, prizeMoney, entryFee, raceSize, averageCompetitorLevel, difficulty) {
         if (GameState.cashMoney < entryFee) {
             return;
         }
@@ -81,7 +88,7 @@ export class RaceSelection {
         PopupService.showLoading();
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            GlobalComponents.race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, difficulty);
+            GlobalComponents.race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, averageCompetitorLevel, difficulty);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
     }

@@ -3,7 +3,6 @@ import { GameState } from "../global/game-state.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { PopupService } from "../global/popup-service.js";
 import { MapOverview } from "../map/map-overview.js";
-import { Difficulty } from "./difficulty.js";
 import { Race } from "./models/race.js";
 import { RaceState } from "./models/race-state.js";
 import { RacingCamel } from "./models/racing-camel.js";
@@ -32,17 +31,7 @@ export class RaceManagement {
             this.addCamelToRace(sortedCamels.shift(), race);
         }
     }
-    createRace(raceLength, prizeCashMoney, raceSize, difficulty) {
-        let averageCompetitorLevel = 0;
-        if (difficulty === Difficulty.Easy) {
-            averageCompetitorLevel = 20;
-        }
-        else if (difficulty === Difficulty.Normal) {
-            averageCompetitorLevel = 50;
-        }
-        else {
-            averageCompetitorLevel = 60;
-        }
+    createRace(raceLength, prizeCashMoney, raceSize, averageCompetitorLevel, difficulty) {
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);
         const race = new Race(raceLength, track, prizeCashMoney, difficulty);

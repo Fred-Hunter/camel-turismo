@@ -44,16 +44,8 @@ export class RaceManagement {
         raceLength: number,
         prizeCashMoney: number,
         raceSize: number,
+        averageCompetitorLevel: number,
         difficulty: Difficulty): Race {
-        let averageCompetitorLevel = 0;
-
-        if (difficulty === Difficulty.Easy) {
-            averageCompetitorLevel = 20;
-        } else if (difficulty === Difficulty.Normal) {
-            averageCompetitorLevel = 50;
-        } else {
-            averageCompetitorLevel = 60;
-        }
 
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);

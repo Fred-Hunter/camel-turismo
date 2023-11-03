@@ -8,6 +8,7 @@ import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
 import { CubeService } from "../global/cube-service.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
+import { Difficulty } from "./difficulty.js";
 export class RaceDrawing {
     constructor() {
         this._backgroundCanvas = CanvasService.getCanvasByName(CanvasNames.RaceBackground);
@@ -25,6 +26,9 @@ export class RaceDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
+        if (race.difficulty = Difficulty.Normal) {
+            ctx.filter = "grayscale(90%)";
+        }
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
@@ -67,6 +71,7 @@ export class RaceDrawing {
                 }
             }
         }
+        ctx.filter = "none";
     }
     drawStaticCamel(newXCoord, newYCoord, height) {
         new CanvasCamelService(this._backgroundCanvas.getContext("2d"))
