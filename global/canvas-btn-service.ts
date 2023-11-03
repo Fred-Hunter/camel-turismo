@@ -47,7 +47,8 @@ export class CanvasBtnService {
         backgroundColour: string,
         borderColour: string,
         fontColour: string,
-        text: string[]) => {
+        text: string[],
+        fontSize: number = 30) => {
 
         context.save();
 
@@ -59,7 +60,7 @@ export class CanvasBtnService {
         context.strokeStyle = borderColour;
         context.stroke();
         context.closePath();
-        context.font = '30pt Garamond';
+        context.font = `${fontSize}pt Garamond`;
         context.fillStyle = fontColour;
         context.textAlign = "center";
         if (text.length < 2) {
@@ -95,7 +96,8 @@ export class CanvasBtnService {
         borderColour: string,
         fontColour: string,
         onclickFunction: any,
-        text: string[]) {
+        text: string[],
+        fontSize: number = 30) {
         var rect = {
             x: xStart,
             y: yStart,
@@ -123,14 +125,14 @@ export class CanvasBtnService {
             if (this.isInside(mousePos, rect)) {
                 this.displayHoverState(context, rect, radius, borderWidth, borderColour, fontColour, text);
             } else {
-                this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
+                this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text, fontSize);
             }
         };
 
         this.mouseMoveEventListeners.push(mouseMoveEventHandler);
         this.canvas.addEventListener('mousemove', mouseMoveEventHandler, false);
 
-        this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text);
+        this.drawBtn(context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text, fontSize);
     }
 
     removeEventListeners() {
