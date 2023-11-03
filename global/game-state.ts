@@ -87,7 +87,6 @@ export class GameState {
         GameState.cashMoney = gameState.cashMoney;
 
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
-        debugger;
         GameState.scrolls = gameState.scrolls;
         GameState.stableSeed = gameState.stableSeed;
     }
