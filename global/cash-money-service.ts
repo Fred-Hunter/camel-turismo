@@ -7,7 +7,7 @@ export class CashMoneyService {
         img.src = './assets/egyptian-pound.jpg';
         img.onload = function() {
             ctx.save();
-            ctx.drawImage(img, GlobalStaticConstants.innerWidth - 350, GlobalStaticConstants.innerHeight - 120, 300, 95);
+            ctx.drawImage(img, GlobalStaticConstants.innerWidth - 300, GlobalStaticConstants.innerHeight - 120, 300, 95);
 
             ctx.font = 'bold 25pt Garamond';
             ctx.fillStyle = GlobalStaticConstants.highlightColour;
@@ -15,7 +15,7 @@ export class CashMoneyService {
             ctx.lineWidth = 3;
             ctx.textAlign = "center";
 
-            const text: [string, number, number, number] = ['Cash money: ' + GameState.cashMoney, GlobalStaticConstants.innerWidth - 200, GlobalStaticConstants.innerHeight - 70, 300];
+            const text: [string, number, number, number] = ['Cash money: ' + GameState.cashMoney, GlobalStaticConstants.innerWidth - 160, GlobalStaticConstants.innerHeight - 70, 300];
 
             ctx.strokeText(...text);
             ctx.fillText(...text);
