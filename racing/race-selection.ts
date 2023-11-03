@@ -46,8 +46,16 @@ export class RaceSelection {
 
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, Difficulty.Easy);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, Difficulty.EasilyNormal);
-        const enterCityShowdown = () => this.selectRace(80, 500, 200, 8, 60, Difficulty.Normal);
-        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, Difficulty.Hard);
+        const enterCityShowdown = () => this.selectRace(80, 600, 250, 8, 60, Difficulty.Normal);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, Difficulty.HardlyNormal);
+        const enterSpookyShowdown = () => this.selectRace(
+                100,
+                this.getShowdownLevel() * 8,
+                this.getShowdownLevel() * 3,
+                1,
+                this.getShowdownLevel(),
+                Difficulty.Hard
+            );
 
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
 
@@ -80,6 +88,13 @@ export class RaceSelection {
                 entry: 300,
                 prize: 800,
              },
+            {
+                race: enterSpookyShowdown,
+                colours: ['#569929', '#7ac24a', '#fff'],
+                name: "Spooky showdown",
+                entry: this.getShowdownLevel() * 3,
+                prize: this.getShowdownLevel() * 8,
+             },
         ];
 
         this._btnService.drawBackButton(Page.mapOverview);
@@ -96,7 +111,7 @@ export class RaceSelection {
                     config.colours[1],
                     config.colours[2],
                     config.race,
-                    [`${config.name}`, `Entry $${config.entry} | Prize $${config.entry}`],
+                    [`${config.name}`, `Entry $${config.entry} | Prize $${config.prize}`],
                     buttonFontSize);
         });
 
@@ -127,5 +142,10 @@ export class RaceSelection {
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
 
+    }
+
+    private getShowdownLevel() {
+        const yourBestCamelLevel = Math.round(GameState.camels.map(c => c.levelAverage).sort((a,b) => b-a)[0]) ?? 90;
+        return yourBestCamelLevel + 20;
     }
 }

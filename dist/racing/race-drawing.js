@@ -26,8 +26,11 @@ export class RaceDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
-        if (race.difficulty = Difficulty.Normal) {
+        if (race.difficulty == Difficulty.Normal) {
             ctx.filter = "grayscale(90%)";
+        }
+        if (race.difficulty == Difficulty.Hard) {
+            ctx.filter = "hue-rotate(90deg)";
         }
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {

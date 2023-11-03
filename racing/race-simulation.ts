@@ -96,7 +96,8 @@ export class RaceSimulation {
 
 			if (racingCamel.completionPercentage >= 1) {
 				racingCamel.finalPosition = this._nextPosition++;
-				if (race.racingCamels.filter((o) => o.finalPosition).length >= 3) {
+                const finishedCamels = race.racingCamels.filter((o) => o.finalPosition).length;
+				if ( finishedCamels >= 3 || finishedCamels == race.racingCamels.length) {
 					race.raceState = RaceState.finished;
 					return;
 				}
