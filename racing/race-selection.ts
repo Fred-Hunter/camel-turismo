@@ -41,9 +41,9 @@ export class RaceSelection {
 
         const radius = 25;
         const borderWidth = 5;
-        const buttonWidth = 300 / ratio;
-        const buttonHeight = 65 / ratio;
-        const buttonListSpacing = buttonHeight + 20 / ratio;
+        const buttonWidth = 300;
+        const buttonHeight = 65;
+        const buttonListSpacing = buttonHeight + 20;
         const buttonFontSize = 20;
 
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, Difficulty.Easy);
