@@ -65,8 +65,10 @@ export class CamelSkillDrawing {
         this.drawSkill(camel.agility, xPadding, yPadding + height, levelUpSkillFunc);
         this.drawSkill(camel.sprintSpeed, xPadding, yPadding + 2 * height, levelUpSkillFunc);
         this.drawSkill(camel.stamina, xPadding, yPadding + 3 * height, levelUpSkillFunc);
+        this.drawSkill(camel.intimidation, xPadding, yPadding + 4 * height, levelUpSkillFunc);
+        this.drawSkill(camel.confidence, xPadding, yPadding + 5 * height, levelUpSkillFunc);
         
-        this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina], maxX / 2, yPadding + 9 * height);  
+        this.drawSkillStar([camel.agility, camel.sprintSpeed, camel.stamina, camel.intimidation, camel.confidence], maxX / 2, yPadding + 9 * height);  
     }
 
     private drawSkill(skill: CamelSkill, x: number, y: number, levelUpSkillFunc: (camelSkill: CamelSkill) => void) {

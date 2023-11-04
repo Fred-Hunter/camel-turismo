@@ -2,7 +2,7 @@ import { GlobalComponents } from "./global-components.js";
 import { Calendar } from "../calendar/calendar.js";
 export class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 4;
+    static _version = 5;
     // Camel
     static camel;
     static camels = [];
@@ -37,10 +37,7 @@ export class GameState {
     }
     static GetExists() {
         const gameStateString = localStorage.getItem(this.getItemKey());
-        if (!gameStateString || gameStateString === undefined)
-            return;
-        const gameState = JSON.parse(gameStateString);
-        return true;
+        return (gameStateString && gameStateString !== undefined);
     }
     static LoadIfExists() {
         const gameStateString = localStorage.getItem(this.getItemKey());

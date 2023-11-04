@@ -5,11 +5,15 @@ export class RacingCamel {
         this._initialVelocity = 5 + (this.camel.agility.level / 10);
         this.stamina = this.camel.stamina.level;
         this.agility = this.camel.agility.level;
+        this.intimidation = this.camel.intimidation.level;
+        this.confidence = this.camel.confidence.level;
     }
     finalPosition;
     completionPercentage = 0;
     stamina = 0;
     agility = 0;
+    intimidation = 0;
+    confidence = 0;
     currentSpeed = 0;
     form = 0;
     _jumpHeight = 0;

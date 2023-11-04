@@ -18,7 +18,7 @@ export interface GameStateObject {
 
 export class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 4;
+    private static _version: number = 5;
 
     // Camel
     public static camel: Camel | undefined;
@@ -60,11 +60,7 @@ export class GameState {
 
     public static GetExists() {
         const gameStateString = localStorage.getItem(this.getItemKey());
-        if (!gameStateString || gameStateString === undefined) return;
-
-        const gameState = JSON.parse(gameStateString);
-
-        return true;
+        return (gameStateString && gameStateString !== undefined);
     }
 
     public static LoadIfExists() {

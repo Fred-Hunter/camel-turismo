@@ -67,7 +67,7 @@ export class RecruitmentService {
         GameState.cashMoney = GameState.cashMoney - cost;
         const quality: InitCamelQuality = cost / 100;
 
-        GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);;
+        GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);
         GameState.camels.push(GameState.camel);
         PopupService.drawAlertPopup(`Recruited ${GameState.camel.name}!`);
         this._recruitedCamel = true;

@@ -21,6 +21,8 @@ export class Camel {
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
         this.stamina = camelInitProperties.skills.stamina;
+        this.intimidation = camelInitProperties.skills.intimidation;
+        this.confidence = camelInitProperties.skills.confidence;
         this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
     }
     colour;
@@ -31,6 +33,8 @@ export class Camel {
     agility;
     sprintSpeed;
     stamina;
+    intimidation;
+    confidence;
     get level() {
         const skillLevels = [
             this.agility.level,

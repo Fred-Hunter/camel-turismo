@@ -1,5 +1,7 @@
 export enum CamelSkillType {
     agility = 0,
     sprintSpeed,
-    stamina
+    stamina,
+    intimidation,
+    confidence,
 }

@@ -102,6 +102,6 @@ export class RaceSelection {
     }
     getShowdownLevel() {
         const yourBestCamelLevel = Math.round(GameState.camels.map(c => c.levelAverage).sort((a, b) => b - a)[0]) ?? 90;
-        return yourBestCamelLevel + 20;
+        return yourBestCamelLevel + 15;
     }
 }

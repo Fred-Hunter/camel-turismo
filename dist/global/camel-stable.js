@@ -1,8 +1,3 @@
-import { Camel } from "../management/camel-creation/camel.js";
-import { CamelTemperament } from "../management/camel-creation/camel-temperament.js";
-import { CamelSkill } from "../management/skills/camel-skill.js";
-import { CamelSkillType } from "../management/skills/camel-skill-type.js";
-import { DefaultLevelCurve } from "../management/skills/default-level-curve.js";
 import { GameState } from "./game-state.js";
 export class CamelStable {
     _camelCreator;
@@ -13,7 +8,7 @@ export class CamelStable {
     }
     _seedRadix = 36;
     _numberOfCamels = 25;
-    camelInformationLength = 10;
+    camelInformationLength = 14;
     camels = [];
     populateStable() {
         let firstTimeSetUp = false;
@@ -30,6 +25,8 @@ export class CamelStable {
                 const agility = this.generateRandomNumber(center, variation);
                 const sprintSpeed = this.generateRandomNumber(center, variation);
                 const stamina = this.generateRandomNumber(center, variation);
+                const intimidation = this.generateRandomNumber(center, variation);
+                const confidence = this.generateRandomNumber(center, variation);
                 const colour = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix;
                 const nameSeed = this._camelPropertyGenerator.generateNameSeed(this._seedRadix);
                 const temperament = parseInt(this.generateSeed(1), this._seedRadix) / this._seedRadix; // unused
@@ -37,6 +34,8 @@ export class CamelStable {
                     agility,
                     sprintSpeed,
                     stamina,
+                    intimidation,
+                    confidence,
                     colour,
                     nameSeed,
                     temperament
@@ -55,21 +54,6 @@ export class CamelStable {
         new Array(this._numberOfCamels).fill(1).forEach(e => populateCamelArray(this.camels));
         return;
     }
-    static GetGeneralWaste = () => {
-        const levelCurve = new DefaultLevelCurve();
-        return new Camel(++GameState.lastUsedId, {
-            colour: "#fff",
-            name: "General Waste",
-            skills: {
-                agility: new CamelSkill(CamelSkillType.agility, levelCurve, 0, levelCurve.getXpRequiredForLevel(2)),
-                sprintSpeed: new CamelSkill(CamelSkillType.sprintSpeed, levelCurve, 0, levelCurve.getXpRequiredForLevel(50)),
-                stamina: new CamelSkill(CamelSkillType.stamina, levelCurve, 0, levelCurve.getXpRequiredForLevel(50)),
-            },
-            temperament: CamelTemperament.Calm,
-            unspentXp: 0,
-            achievementsUnlocked: 0,
-        });
-    };
     generateSeed(length = 700, radix = 36) {
         return "x".repeat(length).replace(/x/g, (char) => Math.floor(Math.random() * radix).toString(radix));
     }
