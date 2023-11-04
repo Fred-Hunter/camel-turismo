@@ -129,15 +129,15 @@ export class RaceManagement {
         const prizePool = race.prizeCashMoney;
 
         if (position === 1) {
-            return prizePool * 0.75;
+            return Math.round(prizePool * 0.75);
         }
 
         if (position === 2) {
-            return prizePool * 0.2;
+            return Math.round(prizePool * 0.2);
         }
 
         if (position === 3) {
-            return prizePool * 0.05;
+            return Math.round(prizePool * 0.05);
         }
 
         return 0;
