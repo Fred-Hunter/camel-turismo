@@ -1,4 +1,4 @@
-import { Difficulty } from "../difficulty.js";
+import { RaceType } from "../race-type.js";
 import { RaceState } from "./race-state.js";
 import { RacingCamel } from "./racing-camel.js";
 
@@ -7,7 +7,7 @@ export class Race {
         public length: number,
         public track: number[][],
         public prizeCashMoney: number,
-        public difficulty: Difficulty) { 
+        public raceType: RaceType) { 
         }
 
     racingCamels: RacingCamel[] = [];

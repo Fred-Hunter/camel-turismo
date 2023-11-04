@@ -3,12 +3,12 @@ export class Race {
     length;
     track;
     prizeCashMoney;
-    difficulty;
-    constructor(length, track, prizeCashMoney, difficulty) {
+    raceType;
+    constructor(length, track, prizeCashMoney, raceType) {
         this.length = length;
         this.track = track;
         this.prizeCashMoney = prizeCashMoney;
-        this.difficulty = difficulty;
+        this.raceType = raceType;
     }
     racingCamels = [];
     raceState = RaceState.none;

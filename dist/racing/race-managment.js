@@ -31,10 +31,10 @@ export class RaceManagement {
             this.addCamelToRace(sortedCamels.shift(), race);
         }
     }
-    createRace(raceLength, prizeCashMoney, raceSize, averageCompetitorLevel, difficulty) {
+    createRace(raceLength, prizeCashMoney, raceSize, averageCompetitorLevel, raceType) {
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);
-        const race = new Race(raceLength, track, prizeCashMoney, difficulty);
+        const race = new Race(raceLength, track, prizeCashMoney, raceType);
         this.addCpuCamelsToRace(raceSize, averageCompetitorLevel, race);
         return race;
     }
@@ -77,8 +77,8 @@ export class RaceManagement {
         GameState.cashMoney += prizeCashMoney;
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
-        if (position === 1 && GameState.camel.achievementsUnlocked < race.difficulty + 1) {
-            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.difficulty + 1);
+        if (position === 1 && GameState.camel.achievementsUnlocked < race.raceType + 1) {
+            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.raceType + 1);
         }
         race.raceState = RaceState.none;
         this._musicService.setAudio('HomeScreenAudio');

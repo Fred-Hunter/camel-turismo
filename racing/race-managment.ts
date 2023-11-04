@@ -5,7 +5,7 @@ import { PopupService } from "../global/popup-service.js";
 import { Camel } from "../management/camel-creation/camel.js";
 import { CamelCreator } from "../management/camel-creation/camel-creator.js";
 import { MapOverview } from "../map/map-overview.js";
-import { Difficulty } from "./difficulty.js";
+import { RaceType } from "./race-type.js";
 import { Race } from "./models/race.js";
 import { RaceState } from "./models/race-state.js";
 import { RacingCamel } from "./models/racing-camel.js";
@@ -45,12 +45,12 @@ export class RaceManagement {
         prizeCashMoney: number,
         raceSize: number,
         averageCompetitorLevel: number,
-        difficulty: Difficulty): Race {
+        raceType: RaceType): Race {
 
         const trackCreator = new RaceTrackCreator();
         const track = trackCreator.createTrack(raceLength);
 
-        const race = new Race(raceLength, track, prizeCashMoney, difficulty);
+        const race = new Race(raceLength, track, prizeCashMoney, raceType);
 
         this.addCpuCamelsToRace(raceSize, averageCompetitorLevel, race);
 
@@ -108,8 +108,8 @@ export class RaceManagement {
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
         
-        if (position === 1 && GameState.camel.achievementsUnlocked < race.difficulty + 1) {
-            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.difficulty + 1);
+        if (position === 1 && GameState.camel.achievementsUnlocked < race.raceType + 1) {
+            GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.raceType + 1);
         }
 
         race.raceState = RaceState.none;

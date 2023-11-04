@@ -8,7 +8,7 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
 import { NavigatorService } from "../navigation/navigator-service.js";
 import { Page } from "../navigation/page.js";
-import { Difficulty } from "./difficulty.js";
+import { RaceType } from "./race-type.js";
 import { RaceManagement } from "./race-managment.js";
 
 export class RaceSelection {
@@ -44,17 +44,17 @@ export class RaceSelection {
         const buttonListSpacing = buttonHeight + 20;
         const buttonFontSize = 20;
 
-        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, Difficulty.Easy);
-        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, Difficulty.EasilyNormal);
-        const enterCityShowdown = () => this.selectRace(80, 600, 250, 8, 60, Difficulty.Normal);
-        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, Difficulty.HardlyNormal);
+        const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, RaceType.StreetRace);
+        const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, RaceType.LocalDerby);
+        const enterCityShowdown = () => this.selectRace(80, 600, 250, 8, 60, RaceType.CityShowdown);
+        const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, RaceType.WorldCup);
         const enterSpookyShowdown = () => this.selectRace(
                 100,
                 this.getShowdownLevel() * 8,
                 this.getShowdownLevel() * 3,
                 1,
                 this.getShowdownLevel(),
-                Difficulty.Hard
+                RaceType.SpookyShowdown
             );
 
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
@@ -124,7 +124,7 @@ export class RaceSelection {
         entryFee: number,
         raceSize: number,
         averageCompetitorLevel: number,
-        difficulty: Difficulty) {
+        raceType: RaceType) {
 
         if (GameState.cashMoney < entryFee) {
             return;
@@ -138,7 +138,7 @@ export class RaceSelection {
 
         // A few frames are needed to paint the loader
         window.setTimeout(() => {
-            GlobalComponents.race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, averageCompetitorLevel, difficulty);
+            GlobalComponents.race = this._raceManagement.createRace(raceLength, prizeMoney, raceSize, averageCompetitorLevel, raceType);
             this._navigator.requestPageNavigation(Page.raceCamelSelect);
         }, 100);
 
