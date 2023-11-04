@@ -241,36 +241,41 @@ export class MapOverview {
 
         // Add tiles
         const locationsToAdd = [
-            MapLocations.Hire,
-            MapLocations.Gym,
-            MapLocations.Management,
-            MapLocations.Race,
-            MapLocations.Mystery,
+            { location: MapLocations.Hire, text: undefined },
+            { location: MapLocations.Gym, text: undefined },
+            { location: MapLocations.Management, text: undefined },
+            { location: MapLocations.Race, text: undefined },
+            { location: MapLocations.Mystery, text: undefined },
+            { 
+                location: MapLocations.Scrolls,
+                text: GameState.unreadScrollCount > 0 ? GameState.unreadScrollCount.toString() : undefined
+            },
         ];
 
         if (GameState.camels.length > 8) {
-            locationsToAdd.push(MapLocations.Deal);
+            locationsToAdd.push({ location: MapLocations.Deal, text: undefined });
         }
         else {
-            locationsToAdd.push(MapLocations.DealLocked);
+            locationsToAdd.push({ location: MapLocations.DealLocked, text: undefined });
         }
 
         // Calculate grid
         let getTilesPerRow = () => Math.min(4, Math.max(1, Math.floor((GlobalStaticConstants.innerWidth - this._outerPadding * wUnit) / ((this._tileSize + this._tileGap) * wUnit))));
         let tilesPerRow = getTilesPerRow();
+
         if (locationsToAdd.length / tilesPerRow > 3) {
-            this._tileSize = 4;
+            this._tileSize = 6;
+            tilesPerRow = getTilesPerRow();
+        }
+        if (locationsToAdd.length / tilesPerRow > 3) {
+            this._tileSize = 3;
             tilesPerRow = getTilesPerRow();
         }
 
         locationsToAdd.forEach((tile) => {
-            this.addLocationTile(tile, wUnit, hUnit, tilesPlacedCount, tilesPerRow);
+            this.addLocationTile(tile.location, wUnit, hUnit, tilesPlacedCount, tilesPerRow, tile.text);
             tilesPlacedCount++;
         });
-
-        const scrollAlertMessage = GameState.unreadScrollCount > 0 ? GameState.unreadScrollCount.toString() : undefined;
-        this.addLocationTile(MapLocations.Scrolls, wUnit, hUnit, tilesPlacedCount, tilesPerRow, scrollAlertMessage);
-        tilesPlacedCount++;
 
         // Add click zones
         this._locationTiles.forEach((tile) => {
