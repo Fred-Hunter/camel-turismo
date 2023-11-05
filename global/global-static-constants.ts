@@ -7,5 +7,5 @@ export class GlobalStaticConstants {
     public static innerHeight: number = window.innerHeight;
     public static devicePixelRatio: number = window.devicePixelRatio;
     public static baseCubeSize: number = Math.round(window.innerWidth / 30);
-    public static debugMode: boolean = true;
+    public static debugMode: boolean = false;
 }
