@@ -108,7 +108,7 @@ export class LeaderboardService {
                 90 - heightOffset * 10
             );
             this.ctx.fillText(
-                `Form:${camel.form.toPrecision(3)}`,
+                `Mot:${Math.round(100 * camel.motivation) / 100} Form:${camel.form.toPrecision(3)}`,
                 GlobalStaticConstants.innerWidth - 130,
                 100 - heightOffset * 10
             );

@@ -1,6 +1,7 @@
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
 import { GlobalComponents } from "../global/global-components.js";
+import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { RaceState } from "./models/race-state.js";
 export class RaceComponent {
     _raceDrawing;
@@ -37,8 +38,14 @@ export class RaceComponent {
             GlobalComponents.race.raceState = RaceState.initialised;
         }
         if (GlobalComponents.race.raceState === RaceState.initialised) {
-            this._countdown.displayCountdown(8000 - (timeStamp - GlobalComponents.race.triggeredTimestamp));
-            if (timeStamp - GlobalComponents.race.triggeredTimestamp >= 7500) {
+            if (!GlobalStaticConstants.debugMode) {
+                this._countdown.displayCountdown(8000 - (timeStamp - GlobalComponents.race.triggeredTimestamp));
+                if (timeStamp - GlobalComponents.race.triggeredTimestamp >= 7500) {
+                    CanvasService.hideCanvas(CanvasNames.Countdown);
+                    this._raceManagement.startRace(GlobalComponents.race);
+                }
+            }
+            else {
                 CanvasService.hideCanvas(CanvasNames.Countdown);
                 this._raceManagement.startRace(GlobalComponents.race);
             }

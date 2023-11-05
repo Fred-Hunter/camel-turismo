@@ -278,14 +278,15 @@ export class MapOverview {
         });
 
         // Add click zones
-        this._locationTiles.forEach((tile) => {
-            this._clickZones.push({
-                location: tile.name,
-                clickZone: tile.position
-            });
+        this._locationTiles.forEach((tile) =>
+            {
+                this._clickZones.push({
+                    location: tile.name,
+                    clickZone: tile.position
+                });
 
-            tilesPlacedCount++;
-        }
+                tilesPlacedCount++;
+            }
         )
     }
 

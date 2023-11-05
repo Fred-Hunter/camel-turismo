@@ -78,7 +78,7 @@ export class LeaderboardService {
             this.ctx.fillText(`S:${camel.camel.sprintSpeed.level} A:${camel.agility} St:${camel.stamina} In:${camel.intimidation} Co:${camel.confidence}`, GlobalStaticConstants.innerWidth - 130, 70 - heightOffset * 10);
             this.ctx.fillText(`In:${camel.intimidation} Co:${camel.confidence}`, GlobalStaticConstants.innerWidth - 130, 80 - heightOffset * 10);
             this.ctx.fillText(`Speed:${camel.currentSpeed.toPrecision(3)}`, GlobalStaticConstants.innerWidth - 130, 90 - heightOffset * 10);
-            this.ctx.fillText(`Form:${camel.form.toPrecision(3)}`, GlobalStaticConstants.innerWidth - 130, 100 - heightOffset * 10);
+            this.ctx.fillText(`Mot:${Math.round(100 * camel.motivation) / 100} Form:${camel.form.toPrecision(3)}`, GlobalStaticConstants.innerWidth - 130, 100 - heightOffset * 10);
             this.ctx.restore();
         }
     }
