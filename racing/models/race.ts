@@ -7,7 +7,8 @@ export class Race {
         public length: number,
         public track: number[][],
         public prizeCashMoney: number,
-        public raceType: RaceType) { 
+        public raceType: RaceType,
+        public raceSpeed: number = 1) { 
         }
 
     racingCamels: RacingCamel[] = [];

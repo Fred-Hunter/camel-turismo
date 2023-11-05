@@ -27,8 +27,9 @@ export class RaceSimulation {
 			const staminaMultiplier = 0.6;
 			const agilityMultiplier = 6;
 			const intelligenceMultiplier = 3;
+			const motivationMultiplier = 0.5;
 
-			const finalSpeedMultiplier = 0.8;
+			const finalSpeedMultiplier = 0.8 * race.raceSpeed;
 
 			// Offsets
 			const speedOffset = 10;
@@ -52,7 +53,7 @@ export class RaceSimulation {
 			let form = 0;
 
 			if (racingCamel.camel.temperament === CamelTemperament.Aggressive) {
-				// Initial sprint
+				// Aggressive does an initial sprint
 				const maxSprintSpeedReached = Math.min((1 + sprintDuration) * accelerationRate, sprintingSpeed);
 				if (completedDistance < sprintDuration) {
 					speed = Math.min((1 + completedDistance) * accelerationRate, sprintingSpeed);
@@ -61,11 +62,12 @@ export class RaceSimulation {
 					speed = Math.min(sprintingSpeed, maxSprintSpeedReached) - distanceSinceSprint * decelerationRate;
 				}
 			} else {
+                // Other temprements do a final sprint
 				speed = Math.min(
 					(1 + completedDistance) * accelerationRate, // initial acceleration
 					baseSpeed, // top speed
-					baseSpeed - completedDistance * decelerationRate
-				); // deceleration
+					baseSpeed - completedDistance * decelerationRate // deceleration
+				);
 
 				// Final sprint
 				if (remainingDistance < sprintDuration) {
@@ -74,8 +76,8 @@ export class RaceSimulation {
 						Math.min(
 							sprintDuration - remainingDistance * accelerationRate, // sprint acceleration
 							sprintingSpeed
-						)
-					); // top speed
+						) // top speed
+					);
 				}
 			}
 
@@ -87,15 +89,16 @@ export class RaceSimulation {
 
             // Apply motivation
             racingCamel.motivation = this.CalculateMotivation(racingCamel, race);
-            speed += speed * racingCamel.motivation;
-			speed = Math.max(speed, deadSpeed); // still walking
+            speed += speed * racingCamel.motivation * motivationMultiplier;
+
+            // Ensure we're still walking
+			speed = Math.max(speed, deadSpeed);
 
 			speed *= finalSpeedMultiplier;
 
+            // Update completion
 			racingCamel.currentSpeed = speed;
-
 			const newCompletedDistance = completedDistance + GameState.secondsPassed * speed;
-
 			racingCamel.completionPercentage = newCompletedDistance / race.length;
 
 			if (racingCamel.completionPercentage >= 1) {
