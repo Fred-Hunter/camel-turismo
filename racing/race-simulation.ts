@@ -123,7 +123,7 @@ export class RaceSimulation {
         });
 
         // We normalise it to roughly be in the interval (-1, 1)
-        motivation = motivation / (2 * (Math.max(1, nearbyCamels.length - 1)));
+        motivation = motivation / (2 * Math.max(1, nearbyCamels.length));
 
         return motivation;
     }
