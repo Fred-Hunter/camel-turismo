@@ -27,7 +27,7 @@ export class RaceSimulation {
 			const staminaMultiplier = 0.6;
 			const agilityMultiplier = 6;
 			const intelligenceMultiplier = 3;
-			const motivationMultiplier = 0.5;
+			const motivationMultiplier = 0.3;
 
 			const finalSpeedMultiplier = 0.8 * race.raceSpeed;
 
