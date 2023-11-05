@@ -31,15 +31,15 @@ export class CamelCreator {
         const camel = new Camel(++GameState.lastUsedId, camelInitProperties);
         return camel;
     }
-    createCamel(agilityLevel, sprintSpeedLevel, staminaLevel) {
+    createCamel(agilityLevel, sprintSpeedLevel, staminaLevel, intimidationLevel, confidenceLevel, name) {
         const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, agilityLevel);
         const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, sprintSpeedLevel);
         const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, staminaLevel);
-        const intimidation = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.intimidation, sprintSpeedLevel);
-        const confidence = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.confidence, staminaLevel);
+        const intimidation = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.intimidation, intimidationLevel);
+        const confidence = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.confidence, confidenceLevel);
         const camelInitProperties = {
             colour: this._camelPropertyGenerator.generateColour(),
-            name: this._camelPropertyGenerator.generateName(),
+            name: name,
             skills: {
                 agility: agility,
                 sprintSpeed: sprintSpeed,

@@ -20,7 +20,7 @@ export class CamelSkill {
             case CamelSkillType.agility: return 'Agility';
             case CamelSkillType.sprintSpeed: return 'Sprint speed';
             case CamelSkillType.stamina: return 'Stamina';
-            case CamelSkillType.intimidation: return 'Indimidation';
+            case CamelSkillType.intimidation: return 'Intimidation';
             case CamelSkillType.confidence: return 'Confidence';
         }
     }

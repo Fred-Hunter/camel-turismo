@@ -29,15 +29,24 @@ export class RaceManagement {
         raceSize: number,
         raceDifficulty: number,
         race: Race) {
-            GlobalComponents.globalServices.camelStable.populateStable();
-            let sortedCamels = GlobalComponents.globalServices.camelStable.camels
-                .map((c: Camel) => c) // copy array
-                .sort((c1: Camel, c2: Camel) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
+
+        if (race.raceType === RaceType.SpookyShowdown) {
+            return this.addSpookyShowdownCpuToRace(race, raceDifficulty);
+        }
+
+        GlobalComponents.globalServices.camelStable.populateStable();
+        let sortedCamels = GlobalComponents.globalServices.camelStable.camels
+            .map((c: Camel) => c) // copy array
+            .sort((c1: Camel, c2: Camel) => Math.abs(c1.levelAverage - raceDifficulty) - Math.abs(c2.levelAverage - raceDifficulty));
 
         for (let i = 0; i < raceSize; i++) {
             if (sortedCamels.length === 0) break;
             this.addCamelToRace(sortedCamels.shift() as Camel, race);
         }
+    }
+
+    private addSpookyShowdownCpuToRace(race: Race, raceDifficulty: number){
+        this.addCamelToRace(this._camelCreator.createCamel(raceDifficulty, raceDifficulty, raceDifficulty, raceDifficulty, raceDifficulty, "Major Upset"), race);
     }
 
     createRace(

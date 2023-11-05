@@ -3,6 +3,7 @@ import { GameState } from "../global/game-state.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { PopupService } from "../global/popup-service.js";
 import { MapOverview } from "../map/map-overview.js";
+import { RaceType } from "./race-type.js";
 import { Race } from "./models/race.js";
 import { RaceState } from "./models/race-state.js";
 import { RacingCamel } from "./models/racing-camel.js";
@@ -21,6 +22,9 @@ export class RaceManagement {
         race.racingCamels.push(racingCamel);
     }
     addCpuCamelsToRace(raceSize, raceDifficulty, race) {
+        if (race.raceType === RaceType.SpookyShowdown) {
+            return this.addSpookyShowdownCpuToRace(race, raceDifficulty);
+        }
         GlobalComponents.globalServices.camelStable.populateStable();
         let sortedCamels = GlobalComponents.globalServices.camelStable.camels
             .map((c) => c) // copy array
@@ -30,6 +34,9 @@ export class RaceManagement {
                 break;
             this.addCamelToRace(sortedCamels.shift(), race);
         }
+    }
+    addSpookyShowdownCpuToRace(race, raceDifficulty) {
+        this.addCamelToRace(this._camelCreator.createCamel(raceDifficulty, raceDifficulty, raceDifficulty, raceDifficulty, raceDifficulty, "Major Upset"), race);
     }
     createRace(raceLength, prizeCashMoney, raceSize, averageCompetitorLevel, raceType) {
         const trackCreator = new RaceTrackCreator();

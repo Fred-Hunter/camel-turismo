@@ -44,16 +44,19 @@ export class CamelCreator {
         agilityLevel: number,
         sprintSpeedLevel: number,
         staminaLevel: number,
+        intimidationLevel: number,
+        confidenceLevel: number,
+        name: string,
     ): Camel {
         const agility = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.agility, agilityLevel);
         const sprintSpeed = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.sprintSpeed, sprintSpeedLevel);
         const stamina = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.stamina, staminaLevel);
-        const intimidation = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.intimidation, sprintSpeedLevel);
-        const confidence = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.confidence, staminaLevel);
+        const intimidation = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.intimidation, intimidationLevel);
+        const confidence = this._camelSkillCreator.generateSkillWithLevel(CamelSkillType.confidence, confidenceLevel);
 
         const camelInitProperties: CamelInitProperties = {
             colour: this._camelPropertyGenerator.generateColour(),
-            name: this._camelPropertyGenerator.generateName(),
+            name: name,
             skills: {
                 agility: agility,
                 sprintSpeed: sprintSpeed,

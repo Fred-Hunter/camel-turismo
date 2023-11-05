@@ -35,7 +35,7 @@ export class CamelSelectComponent {
         camelName.appendChild(document.createTextNode(camel.name));
         const camelStats = document.createElement('div');
         camelStats.classList.add('camel__stats');
-        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level}`));
+        camelStats.appendChild(document.createTextNode(`Spd: ${camel.sprintSpeed.level} Sta: ${camel.stamina.level} Agl: ${camel.agility.level} Int: ${camel.intimidation.level} Con: ${camel.confidence.level}`));
         const camelSelect = document.createElement('button');
         camelSelect.classList.add('camel__select');
         camelSelect.classList.add('chevron');
