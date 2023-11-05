@@ -81,6 +81,8 @@ export class Camel {
     get levelAverage() {
         return (this.agility.level +
             this.sprintSpeed.level +
-            this.stamina.level) / 3;
+            this.stamina.level +
+            this.confidence.level +
+            this.intimidation.level) / 3;
     }
 }
