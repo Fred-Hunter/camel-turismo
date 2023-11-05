@@ -18,23 +18,25 @@ export class Camel {
         this.name = camelInitProperties.name;
         this.temperament = camelInitProperties.temperament;
         this.unspentXp = camelInitProperties.unspentXp;
+        this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
         this.stamina = camelInitProperties.skills.stamina;
         this.intimidation = camelInitProperties.skills.intimidation;
         this.confidence = camelInitProperties.skills.confidence;
-        this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
     }
     colour;
     name;
     temperament;
-    achievementsUnlocked = 0;
     unspentXp;
     agility;
     sprintSpeed;
     stamina;
     intimidation;
     confidence;
+    location = 0;
+    age = 0;
+    achievementsUnlocked = 0;
     get level() {
         const skillLevels = [
             this.agility.level,
