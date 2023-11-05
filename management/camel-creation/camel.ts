@@ -89,6 +89,6 @@ export class Camel {
             this.sprintSpeed.level +
             this.stamina.level +
             this.confidence.level +
-            this.intimidation.level) / 3;
+            this.intimidation.level) / 5;
     }
 }
