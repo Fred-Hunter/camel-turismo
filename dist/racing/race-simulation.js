@@ -64,7 +64,8 @@ export class RaceSimulation {
             racingCamel.form *= 0.999;
             speed += form;
             // Apply motivation
-            speed += speed * this.CalculateMotivation(racingCamel, race);
+            racingCamel.motivation = this.CalculateMotivation(racingCamel, race);
+            speed += speed * racingCamel.motivation;
             speed = Math.max(speed, deadSpeed); // still walking
             speed *= finalSpeedMultiplier;
             racingCamel.currentSpeed = speed;
@@ -83,16 +84,15 @@ export class RaceSimulation {
     CalculateMotivation(protagonistCamel, race) {
         const confidence = protagonistCamel.confidence;
         let motivation = 0;
-        const nearbyCamels = race.racingCamels.filter(rc => rc !== protagonistCamel && Math.abs(rc.completionPercentage - protagonistCamel.completionPercentage) <= 10);
+        const nearbyCamels = race.racingCamels.filter(rc => rc !== protagonistCamel &&
+            Math.abs(rc.completionPercentage - protagonistCamel.completionPercentage) <= 0.1 &&
+            rc.completionPercentage < 0.95);
         nearbyCamels.forEach(villianCamel => {
-            motivation += (confidence - villianCamel.intimidation);
+            const sign = Math.sign(confidence - villianCamel.intimidation);
+            motivation += sign * Math.log10(1 + Math.abs(confidence - villianCamel.intimidation));
         });
-        // We normalise it to roughtly be in the interval (-1, 1)
-        motivation = motivation / (200 * (Math.max(1, nearbyCamels.length - 1)));
-        // We weight low values a bit more
-        if (Math.abs(motivation) > 0.01) {
-            motivation = 0.3 * Math.sign(motivation) + 0.7 * motivation;
-        }
+        // We normalise it to roughly be in the interval (-1, 1)
+        motivation = motivation / (2 * (Math.max(1, nearbyCamels.length - 1)));
         return motivation;
     }
     GetVariantNumber(value, variance) {

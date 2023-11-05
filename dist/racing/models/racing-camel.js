@@ -16,6 +16,7 @@ export class RacingCamel {
     confidence = 0;
     currentSpeed = 0;
     form = 0;
+    motivation = 0;
     _jumpHeight = 0;
     get jumpHeight() {
         return this._jumpHeight;

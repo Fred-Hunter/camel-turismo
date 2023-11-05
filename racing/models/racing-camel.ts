@@ -18,6 +18,7 @@ export class RacingCamel {
     confidence: number = 0;
     currentSpeed: number = 0;
     form: number = 0;
+    motivation: number = 0;
 
     private _jumpHeight = 0;
 

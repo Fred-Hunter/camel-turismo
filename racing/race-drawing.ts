@@ -11,6 +11,7 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { RaceType } from "./race-type.js";
 import { Race } from "./models/race.js";
 import { RacingCamel } from "./models/racing-camel.js";
+import { ImportantService } from "../global/important-service.js";
 
 export class RaceDrawing {
     constructor(
@@ -81,7 +82,7 @@ export class RaceDrawing {
                 }
             }
         }
-        
+
         ctx.filter = "none"
     }
 
@@ -186,6 +187,8 @@ export class RaceDrawing {
         } else if (movingInPositiveX) {
             this.drawPositiveXCamel(newXCoord, newYCoord, camel, size);
         }
+
+        this.drawChevrons(camel, newXCoord, newYCoord, size);
     }
 
     private drawNegativeYCamel(newXCoord: number, newYCoord: number, camel: RacingCamel, size: number) {
@@ -236,6 +239,52 @@ export class RaceDrawing {
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 0 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1 + camel.jumpHeight, 1, -1.5);
         this.camelCubeService.drawCube(xCoord, yCoord, size, camel.camel.colour, 1.5 + camel.jumpHeight, 2, -1.5);
+    }
+
+    private drawChevrons(camel: RacingCamel, xCoord: number, yCoord: number, camelSize: number) {
+        const ctx = this._camelCanvas.getContext("2d")!;
+        ctx.save();
+        ctx.lineWidth = 2;
+        const chevronSize = 4;
+
+        if (camel.motivation < -0.6) {
+            ctx.strokeStyle = "red";
+            this.drawChevron(ctx, xCoord, yCoord, chevronSize, camelSize, false, 2);
+        }
+        else if (camel.motivation < -0.3) {
+            ctx.strokeStyle = "red";
+            this.drawChevron(ctx, xCoord, yCoord, chevronSize, camelSize, false, 1);
+        }
+        else if (camel.motivation > 0.6) {
+            ctx.strokeStyle = "green";
+            this.drawChevron(ctx, xCoord, yCoord, chevronSize, camelSize, true, 2);
+        }
+        else if (camel.motivation > 0.3) {
+            ctx.strokeStyle = "green";
+            this.drawChevron(ctx, xCoord, yCoord, chevronSize, camelSize, true, 1);
+        }
+        ctx.restore();
+    }
+
+    private drawChevron(
+        ctx: CanvasRenderingContext2D,
+        xCoord: number,
+        yCoord: number,
+        size: number,
+        camelSize: number,
+        isUp: boolean,
+        numberOfChevrons: number
+    ) {
+        const realCoords = ImportantService.ConvertCoordToReal(xCoord, yCoord, camelSize, 0, -3, -3);
+        const yOffset = isUp ? size : -size;
+
+        for (let i = 0; i < numberOfChevrons; i++) {
+            ctx.beginPath();
+            ctx.moveTo(realCoords.x - size, realCoords.y + yOffset * (i + 1));
+            ctx.lineTo(realCoords.x, realCoords.y + yOffset * i);
+            ctx.lineTo(realCoords.x + size, realCoords.y + yOffset * (i + 1));
+            ctx.stroke();
+        }
     }
 
     private drawCactus(x: number, y: number, height: number): void {
