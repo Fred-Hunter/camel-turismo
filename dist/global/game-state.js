@@ -1,22 +1,25 @@
 import { GlobalComponents } from "./global-components.js";
 import { Calendar } from "../calendar/calendar.js";
+import { Statistics } from "../statistics/statistics.js";
 export class GameState {
     // Update this whenever a new gamestate version is created
     static _version = 5;
     // Camel
     static camel;
     static camels = [];
-    static secondsPassed = 0; // done
-    static oldTimeStamp = 0; // done
+    static secondsPassed = 0;
+    static oldTimeStamp = 0;
     static stableSeed = "";
+    static cashMoney = 100;
     // Calendar
     static calendar;
     // Recruitment
-    static lastUsedId = 0; // done
-    static cashMoney = 100; // done
+    static lastUsedId = 0;
     // Scrolls
     static scrolls = [];
     static get unreadScrollCount() { return GameState.scrolls.filter(o => !o.read).length; }
+    // Stats
+    static statistics = new Statistics();
     static Save() {
         const gameStateObject = {
             camel: GameState.camel,
@@ -27,7 +30,8 @@ export class GameState {
             cashMoney: GameState.cashMoney,
             calendar: GameState.calendar,
             scrolls: GameState.scrolls,
-            stableSeed: GameState.stableSeed
+            stableSeed: GameState.stableSeed,
+            statistics: GameState.statistics
         };
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -54,6 +58,7 @@ export class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+        GameState.statistics = gameState.statistics ?? new Statistics();
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
         GameState.scrolls = gameState.scrolls;
         GameState.stableSeed = gameState.stableSeed;

@@ -12,6 +12,8 @@ import { RacingCamel } from "./models/racing-camel.js";
 import { RaceSimulation } from "./race-simulation.js";
 import { RaceTrackCreator } from "./race-track-creator.js";
 import { MusicService } from "../audio/music-service.js";
+import { RaceResult } from "../statistics/race-result.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 
 export class RaceManagement {
     constructor(
@@ -113,9 +115,11 @@ export class RaceManagement {
         const prizeCashMoney = this.getPrizeMoney(race, position);
 
         GameState.cashMoney += prizeCashMoney;
+        StatisticsHelper.LogCashMoneyChange(prizeCashMoney);
 
         const xpGained = (race.racingCamels.length - position + 1) * 100;
         GameState.camel.unspentXp += xpGained;
+        StatisticsHelper.LogExpChange(xpGained);
         
         if (position === 1 && GameState.camel.achievementsUnlocked < race.raceType + 1) {
             GameState.camel.achievementsUnlocked = Math.max(GameState.camel.achievementsUnlocked, race.raceType + 1);
@@ -125,6 +129,14 @@ export class RaceManagement {
 
         this._musicService.setAudio('HomeScreenAudio');
         this._musicService.startAudio();
+
+        const raceResult: RaceResult = {
+            duration: Date.now() - race.startTime,
+            position: position,
+            type: race.raceType,
+            camelId: GameState.camel.id
+        } 
+        StatisticsHelper.LogRaceResult(raceResult);
 
         this.updateCalendar();
 

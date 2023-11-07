@@ -14,6 +14,7 @@ import { NavigatorService } from "../navigation/navigator-service.js";
 import { Page } from "../navigation/page.js";
 import { GeneralWasteScrolls } from "../scrolls/library/general-waste.js";
 import { MerchantIceScrolls } from "../scrolls/library/merchant-ice.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 
 export class RecruitmentService {
     constructor(
@@ -64,7 +65,9 @@ export class RecruitmentService {
             PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
-        GameState.cashMoney = GameState.cashMoney - cost;
+        GameState.cashMoney -= cost;
+        StatisticsHelper.LogCashMoneyChange(-cost);
+        
         const quality: InitCamelQuality = cost / 100;
 
         GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);

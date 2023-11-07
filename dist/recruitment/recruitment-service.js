@@ -11,6 +11,7 @@ import { MapOverview } from "../map/map-overview.js";
 import { Page } from "../navigation/page.js";
 import { GeneralWasteScrolls } from "../scrolls/library/general-waste.js";
 import { MerchantIceScrolls } from "../scrolls/library/merchant-ice.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 export class RecruitmentService {
     _navigator;
     _camelCreator;
@@ -48,7 +49,8 @@ export class RecruitmentService {
             PopupService.drawAlertPopup('Not enough cash money!');
             return;
         }
-        GameState.cashMoney = GameState.cashMoney - cost;
+        GameState.cashMoney -= cost;
+        StatisticsHelper.LogCashMoneyChange(-cost);
         const quality = cost / 100;
         GameState.camel = this._camelCreator.createRandomCamelWithQuality(quality);
         GameState.camels.push(GameState.camel);

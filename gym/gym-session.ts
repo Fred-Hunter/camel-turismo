@@ -1,6 +1,7 @@
 import { GameState } from "../global/game-state.js";
 import { PopupService } from "../global/popup-service.js";
 import { CamelSkill } from "../management/skills/camel-skill.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 
 export class GymSession {
     protected _sessionActive = false;
@@ -74,6 +75,7 @@ export class TrainSession extends GymSession {
     public endSession() {
         super.endSession()
         GameState.camel!.unspentXp += this._xpGained;
+        StatisticsHelper.LogExpChange(this._xpGained);
     }
 }
 
@@ -97,8 +99,10 @@ export class SpaSession extends GymSession {
         this._staiminaGained = GameState.secondsPassed - this._startTime;
         if (this._staiminaGained < this._skill.level) {
             GameState.camel!.unspentXp += this._staiminaGained;
+            StatisticsHelper.LogExpChange(this._staiminaGained);
         } else {
             GameState.camel!.unspentXp += this._skill.level;
+            StatisticsHelper.LogExpChange(this._skill.level);
         }
     }
 }

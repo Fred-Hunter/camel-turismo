@@ -8,6 +8,7 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
 import { GymDrawing } from "../gym/gym-drawing.js";
 import { Page } from "../navigation/page.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 
 export class MapOverview {
     private static _canvasXOffset = 0;
@@ -132,6 +133,7 @@ export class MapOverview {
                 case MapLocations.Mystery:
                     if (!!GameState.camel && GameState.camel.agility.level > 20) {
                         GameState.cashMoney += 1000;
+                        StatisticsHelper.LogCashMoneyChange(1000);
                         CashMoneyService.drawCashMoney(ctx);
                     }
                     if (!!event.altKey) {

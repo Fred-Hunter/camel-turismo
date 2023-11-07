@@ -8,6 +8,7 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
 import { Page } from "../navigation/page.js";
 import { RaceType } from "./race-type.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 export class RaceSelection {
     _navigator;
     _raceManagement;
@@ -92,6 +93,7 @@ export class RaceSelection {
         }
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
+            StatisticsHelper.LogCashMoneyChange(-entryFee);
         }
         PopupService.showLoading();
         // A few frames are needed to paint the loader

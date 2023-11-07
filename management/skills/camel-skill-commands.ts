@@ -1,3 +1,4 @@
+import { StatisticsHelper } from "../../statistics/statistics-helper.js";
 import { Camel } from "../camel-creation/camel.js";
 import { CamelSkill } from "./camel-skill.js";
 
@@ -8,6 +9,7 @@ export class CamelSkillCommands {
         if (camel.unspentXp >= toNextLevel) {
             skill.addXp(toNextLevel);
             camel.unspentXp -= toNextLevel;
+            StatisticsHelper.LogExpChange(-toNextLevel);
         }
     }
 }

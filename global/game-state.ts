@@ -3,6 +3,7 @@ import { CamelCreator } from "../management/camel-creation/camel-creator.js";
 import { Scroll } from "../scrolls/scroll.js";
 import { GlobalComponents } from "./global-components.js";
 import { Calendar } from "../calendar/calendar.js";
+import { Statistics } from "../statistics/statistics.js";
 
 export interface GameStateObject {
     camel: Camel | undefined,
@@ -13,7 +14,8 @@ export interface GameStateObject {
     cashMoney: number,
     calendar: Calendar,
     scrolls: Scroll[],
-    stableSeed: string
+    stableSeed: string,
+    statistics: Statistics
 }
 
 export class GameState {
@@ -23,20 +25,23 @@ export class GameState {
     // Camel
     public static camel: Camel | undefined;
     public static camels: Camel[] = [];
-    public static secondsPassed: number = 0; // done
-    public static oldTimeStamp: number = 0; // done
+    public static secondsPassed: number = 0;
+    public static oldTimeStamp: number = 0;
     public static stableSeed: string = "";
+    public static cashMoney: number = 100;
 
     // Calendar
     public static calendar: Calendar;
 
     // Recruitment
-    public static lastUsedId: number = 0; // done
-    public static cashMoney: number = 100; // done
+    public static lastUsedId: number = 0;
 
     // Scrolls
     public static scrolls: Scroll[] = [];
     public static get unreadScrollCount() { return GameState.scrolls.filter(o => !o.read).length }
+
+    // Stats
+    public static statistics: Statistics = new Statistics();
 
     public static Save() {
         const gameStateObject: GameStateObject = {
@@ -48,7 +53,8 @@ export class GameState {
             cashMoney: GameState.cashMoney,
             calendar: GameState.calendar,
             scrolls: GameState.scrolls,
-            stableSeed: GameState.stableSeed
+            stableSeed: GameState.stableSeed,
+            statistics: GameState.statistics
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -81,6 +87,7 @@ export class GameState {
         GameState.oldTimeStamp = gameState.oldTimeStamp;
         GameState.lastUsedId = gameState.lastUsedId;
         GameState.cashMoney = gameState.cashMoney;
+        GameState.statistics = gameState.statistics ?? new Statistics();
 
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
         GameState.scrolls = gameState.scrolls;

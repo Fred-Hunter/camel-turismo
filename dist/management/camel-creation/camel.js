@@ -17,8 +17,9 @@ export class Camel {
         this.colour = camelInitProperties.colour;
         this.name = camelInitProperties.name;
         this.temperament = camelInitProperties.temperament;
-        this.unspentXp = camelInitProperties.unspentXp;
         this.achievementsUnlocked = camelInitProperties.achievementsUnlocked;
+        // This unspent exp should already be logged
+        this.unspentXp = camelInitProperties.unspentXp;
         this.agility = camelInitProperties.skills.agility;
         this.sprintSpeed = camelInitProperties.skills.sprintSpeed;
         this.stamina = camelInitProperties.skills.stamina;

@@ -10,6 +10,7 @@ import { NavigatorService } from "../navigation/navigator-service.js";
 import { Page } from "../navigation/page.js";
 import { RaceType } from "./race-type.js";
 import { RaceManagement } from "./race-managment.js";
+import { StatisticsHelper } from "../statistics/statistics-helper.js";
 
 export class RaceSelection {
     constructor(
@@ -132,6 +133,7 @@ export class RaceSelection {
 
         if (GameState.cashMoney >= entryFee) {
             GameState.cashMoney -= entryFee;
+            StatisticsHelper.LogCashMoneyChange(-entryFee);
         }
 
         PopupService.showLoading();

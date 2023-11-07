@@ -15,4 +15,5 @@ export class Race {
     raceState: RaceState = RaceState.none;
     winner: undefined;
     triggeredTimestamp: number = 0;
+    startTime = Date.now();
 }
