@@ -38,9 +38,11 @@ export class RaceDrawing {
 
         if (race.raceType == RaceType.CityShowdown) {
             ctx.filter = "grayscale(90%)"
+            this._backgroundCanvas.style.webkitFilter = "grayscale(90%)";
         }
         if (race.raceType == RaceType.SpookyShowdown) {
             ctx.filter = "hue-rotate(90deg)"
+            this._backgroundCanvas.style.webkitFilter = "hue-rotate(90deg)";
         }
 
         for (let i = 0; i < 15; i++) {
