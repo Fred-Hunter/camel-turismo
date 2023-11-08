@@ -36,6 +36,8 @@ export class RaceDrawing {
         const canvasColour = '#C2B280';
         const lighterColour = '#d8bd80';
 
+        this._backgroundCanvas.style.webkitFilter = "none";
+
         if (race.raceType == RaceType.CityShowdown) {
             ctx.filter = "grayscale(90%)"
             this._backgroundCanvas.style.webkitFilter = "grayscale(90%)";
