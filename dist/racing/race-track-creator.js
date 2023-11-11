@@ -30,6 +30,8 @@ export class RaceTrackCreator {
                     break;
                 }
                 trackToAddCoord = refinedPossibleMoves[Math.floor(Math.random() * refinedPossibleMoves.length)];
+                const height = Math.random() / 4;
+                trackToAddCoord.push(height);
                 track.push(trackToAddCoord);
             }
         }

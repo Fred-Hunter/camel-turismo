@@ -48,10 +48,9 @@ export class RaceDrawing {
 
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
-                if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
-                    // If is a race track
-                    const height = Math.random() / 16;
-                    this.backgroundCubeService.drawCube(Colour.lightGrey, i, j, 1, height);
+                const track = race.track.filter(o => o[0] === i && o[1] === j);
+                if (track.length > 0) {
+                    this.backgroundCubeService.drawCube(Colour.lightGrey, i, j, 1, track[0][2]);
                 } else {
                     const height = Math.random() / 4;
 
@@ -143,7 +142,7 @@ export class RaceDrawing {
             camelCoords = CamelCoords.getPositiveX(camel.camel.colour);
         }
 
-        IsometricCoordsDrawer.drawCamel(newXCoord, newYCoord, camelCoords, this.camelCubeService, camel.jumpHeight, 1, 0.2);
+        IsometricCoordsDrawer.drawCamel(newXCoord, newYCoord, camelCoords, this.camelCubeService, currentCoord[2] + camel.jumpHeight, 1, 0.2);
         this.drawChevrons(camel, newXCoord, newYCoord);
     }
 

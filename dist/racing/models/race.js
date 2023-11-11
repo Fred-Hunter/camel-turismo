@@ -17,4 +17,5 @@ export class Race {
     winner;
     triggeredTimestamp = 0;
     startTime = Date.now();
+    trackElevation = [];
 }
