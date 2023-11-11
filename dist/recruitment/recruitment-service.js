@@ -85,18 +85,19 @@ export class RecruitmentService {
         const btnWidth = 550;
         const btnHeight = 50;
         const borderWidth = 5;
+        const btnGap = 100;
         let btnX = 240;
         let btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.pink, Colour.lightPink, Colour.white, this.spendLowCashMoney, ['Recruit lowly camel - $100']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.pink));
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - btnGap, camelSize, ColourCodes.getCode(Colour.pink));
         btnX = 840;
         btnY = 250;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.yellow, Colour.lightYellow, Colour.white, this.spendMediumCashMoney, ['Recruit mediocre camel - $200']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.yellow));
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - btnGap, camelSize, ColourCodes.getCode(Colour.yellow));
         btnX = 540;
         btnY = 650;
         btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.spring, Colour.lightSpring, Colour.white, this.spendHighCashMoney, ['Recruit high camel - $300']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.spring));
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - btnGap, camelSize, ColourCodes.getCode(Colour.spring));
         CashMoneyService.drawCashMoney(this._ctx);
     }
 }
