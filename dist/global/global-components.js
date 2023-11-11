@@ -20,4 +20,6 @@ export class GlobalComponents {
     static drawingMode = false;
     // Scrolls
     static scrollsComponent;
+    // Academy
+    static academyComponent;
 }

@@ -1,3 +1,4 @@
+import { Colour } from "../assets/colours.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
@@ -11,7 +12,7 @@ import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
 export class LoadingScreen {
     constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.LoadingScreen);
-        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
+        this._btnService = new CanvasBtnService(this._canvas);
     }
 
     private _canvas: HTMLCanvasElement;
@@ -44,9 +45,9 @@ export class LoadingScreen {
         const radius = 50;
         const borderWidth = 5;
 
-        const backgroundColour = '#cc807a';
-        const borderColour = '#f2ada7';
-        const textColour = '#fff';
+        const backgroundColour = Colour.pink;
+        const borderColour = Colour.lightPink;
+        const textColour = Colour.white;
 
         if (GameState.GetExists()) {
             this._btnService.createBtn(

@@ -144,7 +144,7 @@ body {
     border-right: 1rem solid var(--scroll-unread);
 }
 
-.scroll--read .scroll__overview{
+.scroll--read .scroll__overview {
     border-right: none;
 }
 
@@ -222,4 +222,21 @@ body {
 .scroll__expanded>.scroll__body {
     height: 10rem;
     padding: 1rem 1rem;
+}
+
+/* Academy */
+#academy {
+    display: flex;
+    height: 160px;
+    width: 100%;
+    background: #ed7e39;
+    position: fixed;
+    bottom: 0;
+}
+
+.academy__button {
+    background-color: white;
+    height: 2rem;
+    padding: 1rem;
+    margin-right: 1rem;
 }

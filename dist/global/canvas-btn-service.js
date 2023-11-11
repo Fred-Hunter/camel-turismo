@@ -1,10 +1,10 @@
+import { Colour, ColourCodes } from "../assets/colours.js";
+import { GlobalComponents } from "./global-components.js";
 import { GlobalStaticConstants } from "./global-static-constants.js";
 export class CanvasBtnService {
     canvas;
-    _navigator;
-    constructor(canvas, _navigator) {
+    constructor(canvas) {
         this.canvas = canvas;
-        this._navigator = _navigator;
     }
     clickEventListeners = [];
     mouseMoveEventListeners = [];
@@ -18,23 +18,23 @@ export class CanvasBtnService {
     isInside(pos, rect) {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
     }
-    drawBackButton(targetPage, backgroundColour = '#cc807a', borderColour = '#f2ada7') {
+    drawBackButton(targetPage, backgroundColour = Colour.sand, borderColour = Colour.white) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, backgroundColour, borderColour, '#fff', () => this._navigator.requestPageNavigation(targetPage), ['Back']);
+        this.createBtn(maxX / 40, maxY - 100, 100, 50, 0, 5, backgroundColour, borderColour, Colour.white, () => GlobalComponents.globalServices.navigatorService.requestPageNavigation(targetPage), ['Back']);
     }
     drawBtn = (context, rect, radius, borderWidth, backgroundColour, borderColour, fontColour, text, fontSize = 30) => {
         context.save();
         context.beginPath();
         context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
-        context.fillStyle = backgroundColour;
+        context.fillStyle = ColourCodes.getCode(backgroundColour);
         context.fill();
         context.lineWidth = borderWidth;
-        context.strokeStyle = borderColour;
+        context.strokeStyle = ColourCodes.getCode(borderColour);
         context.stroke();
         context.closePath();
         context.font = `${fontSize}pt Garamond`;
-        context.fillStyle = fontColour;
+        context.fillStyle = ColourCodes.getCode(fontColour);
         context.textAlign = "center";
         if (text.length < 2) {
             context.fillText(text[0], rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);

@@ -1,3 +1,4 @@
+import { Colour } from "../../assets/colours.js";
 import { CanvasBtnService } from "../../global/canvas-btn-service.js";
 import { CanvasNames } from "../../global/canvas-names.js";
 import { CanvasService } from "../../global/canvas-service.js";
@@ -11,7 +12,7 @@ export class CamelSkillDrawing {
     constructor(private readonly _navigator: NavigatorService) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.CamelManagement);
         this._ctx = this._canvas.getContext('2d')!;
-        this._btnService = new CanvasBtnService(this._canvas, _navigator);
+        this._btnService = new CanvasBtnService(this._canvas);
     }
 
     private readonly _ctx: CanvasRenderingContext2D;
@@ -87,9 +88,9 @@ export class CamelSkillDrawing {
                 30,
                 0,
                 5,
-                '#cc807a',
-                '#f2ada7',
-                '#fff',
+                Colour.pink,
+                Colour.lightPink,
+                Colour.white,
                 () => levelUpSkillFunc(skill),
                 [`+`]);
         }

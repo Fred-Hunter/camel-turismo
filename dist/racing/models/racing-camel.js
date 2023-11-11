@@ -38,7 +38,7 @@ export class RacingCamel {
             // Have to start the jump
             return;
         }
-        this._jumpHeight += this._currentVelocity / this._scaleFactor;
+        this._jumpHeight += this._currentVelocity / 2;
         this._currentVelocity += -(this._gravityAcceleration) / this._scaleFactor;
         if (this._jumpHeight < 0) {
             this._jumpHeight = 0;

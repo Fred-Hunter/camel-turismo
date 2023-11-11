@@ -10,4 +10,5 @@ export var Page;
     Page[Page["calendarDetails"] = 7] = "calendarDetails";
     Page[Page["debug"] = 8] = "debug";
     Page[Page["scrolls"] = 9] = "scrolls";
+    Page[Page["academy"] = 10] = "academy";
 })(Page || (Page = {}));

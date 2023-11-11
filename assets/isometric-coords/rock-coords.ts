@@ -1,37 +1,37 @@
-import { Colours } from "../colours.js";
+import { Colour } from "../colours.js";
 
 export class RookCoords {
-    public static get smallRock1(): Array<{ x: number, y: number, colour: string }> {
+    public static get smallRock1(): Array<{ x: number, y: number, colour: Colour }> {
         return [
             {
                 "x": 1,
                 "y": 3,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 1,
                 "y": 4,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 2,
                 "y": 3,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 2,
                 "y": 4,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 2,
                 "y": 5,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 3,
                 "y": 3,
-                "colour": Colours.grey
+                "colour": Colour.grey
             }
         ];
     }
@@ -41,37 +41,37 @@ export class RookCoords {
             {
                 "x": 3,
                 "y": 1,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 4,
                 "y": 0,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 4,
                 "y": 1,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 4,
                 "y": 2,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 5,
                 "y": 2,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 4,
                 "y": 3,
-                "colour": Colours.grey
+                "colour": Colour.grey
             },
             {
                 "x": 5,
                 "y": 3,
-                "colour": Colours.grey
+                "colour": Colour.grey
             }
         ];
     }

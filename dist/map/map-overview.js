@@ -6,7 +6,6 @@ import { GameState } from "../global/game-state.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
-import { GymDrawing } from "../gym/gym-drawing.js";
 import { Page } from "../navigation/page.js";
 import { StatisticsHelper } from "../statistics/statistics-helper.js";
 export class MapOverview {
@@ -99,15 +98,8 @@ export class MapOverview {
                     CashMoneyService.drawCashMoney(CanvasService.getCanvasByName(CanvasNames.Recruitment).getContext("2d"));
                     CanvasService.bringCanvasToTop(CanvasNames.Recruitment);
                     break;
-                case MapLocations.Gym:
-                    if (!GameState.camel) {
-                        PopupService.drawAlertPopup("You cannot got to the gym without a camel, you idiot!");
-                        return;
-                    }
-                    CanvasService.showAllCanvas();
-                    CanvasService.bringCanvasToTop(CanvasNames.GymBackground);
-                    CanvasService.bringCanvasToTop(CanvasNames.GymCamel);
-                    new GymDrawing(GlobalComponents.globalServices.navigatorService).drawGym();
+                case MapLocations.Academy:
+                    GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.academy);
                     break;
                 case MapLocations.Mystery:
                     if (!!GameState.camel && GameState.camel.agility.level > 20) {
@@ -194,14 +186,14 @@ export class MapOverview {
         // Add tiles
         const locationsToAdd = [
             { location: MapLocations.Hire, text: undefined },
-            { location: MapLocations.Gym, text: undefined },
+            { location: MapLocations.Academy, text: undefined },
             { location: MapLocations.Management, text: undefined },
             { location: MapLocations.Race, text: undefined },
             { location: MapLocations.Mystery, text: undefined },
             {
                 location: MapLocations.Scrolls,
                 text: GameState.unreadScrollCount > 0 ? GameState.unreadScrollCount.toString() : undefined
-            },
+            }
         ];
         if (GameState.camels.length > 8) {
             locationsToAdd.push({ location: MapLocations.Deal, text: undefined });
@@ -280,7 +272,7 @@ export class MapOverview {
 export class MapLocations {
     static None = "";
     static Hire = "Hire";
-    static Gym = "Gym";
+    static Academy = "Academy";
     static Mystery = "Mystery";
     static Race = "Race";
     static Management = "Management";

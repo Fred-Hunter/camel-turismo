@@ -12,4 +12,5 @@ export class CanvasNames {
     static LoadingScreen = 'loading-screen';
     static CalendarDetails = 'calendar-details';
     static Debug = 'debug';
+    static Academy = 'academy';
 }

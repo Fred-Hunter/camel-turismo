@@ -1,21 +1,19 @@
 import { GlobalStaticConstants } from "./global-static-constants.js";
 export class ImportantService {
-    static ConvertCoordToReal(coordX, coordY, sideLength, height = 0, xStart = 0, yStart = 0) {
+    static ConvertCoordToReal(coordX, coordY, scale = 1, height = 0) {
         const xOffset = GlobalStaticConstants.innerWidth / 2;
-        coordX = coordX * GlobalStaticConstants.baseCubeSize / sideLength;
-        coordY = coordY * GlobalStaticConstants.baseCubeSize / sideLength;
-        const xScaleFactor = GlobalStaticConstants.baseCubeSize / 5;
-        const yScaleFactor = xScaleFactor / 2;
-        const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * xScaleFactor;
-        const y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * yScaleFactor;
+        const yOffset = GlobalStaticConstants.innerHeight / 20;
+        const size = scale * GlobalStaticConstants.baseCubeSize;
+        const x = xOffset + (coordX - coordY) * size;
+        const y = yOffset + height + (coordX + coordY) * size * (1 / 2);
         return { x, y };
     }
-    static ConvertRealToCoord(x, y, sideLength, height = 0, xStart = 0, yStart = 0) {
+    static ConvertRealToCoord(x, y, scale = 1, height = 0) {
         const xOffset = GlobalStaticConstants.innerWidth / 2;
-        const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2 * y - 200) / (2 * sideLength);
-        const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2 * y - 200) / (2 * sideLength);
-        const x2 = coordX * sideLength / GlobalStaticConstants.baseCubeSize;
-        const y2 = coordY * sideLength / GlobalStaticConstants.baseCubeSize;
+        const yOffset = GlobalStaticConstants.innerHeight / 20;
+        const size = scale * GlobalStaticConstants.baseCubeSize;
+        const x2 = (y - yOffset - height + (x - xOffset) / 2) / size;
+        const y2 = (y - yOffset - height + (xOffset - x) / 2) / size;
         return { x2, y2 };
     }
 }

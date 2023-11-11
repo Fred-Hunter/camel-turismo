@@ -1,5 +1,4 @@
 import { CanvasCamelService } from "../global/canvas-camel-service.js";
-import { CubeService } from "../global/cube-service.js";
 import { GameState } from "../global/game-state.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
@@ -7,11 +6,7 @@ import { Camel } from "../management/camel-creation/camel.js";
 import { RacingCamel } from "./models/racing-camel.js";
 
 export class LeaderboardService {
-	constructor(public ctx: CanvasRenderingContext2D) {
-		this._camelCubeService = new CubeService(ctx);
-	}
-
-	private _camelCubeService: CubeService;
+	constructor(public ctx: CanvasRenderingContext2D) { }
 
 	sortCamels(a: RacingCamel, b: RacingCamel) {
 		if (b.finalPosition && !a.finalPosition) {
@@ -61,7 +56,7 @@ export class LeaderboardService {
 		const y = -6.5;
 		const camelService = new CanvasCamelService(this.ctx);
 
-		camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+		camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 50 - heightOffset * 10, 1 / 5, camel.camel.colour);
 		this.ctx.fillStyle = "#96876e";
 		this.ctx.font = "10pt Garamond";
 
@@ -69,7 +64,7 @@ export class LeaderboardService {
 		if (this.isCamelUserOwned(camel.camel)) {
 			this.ctx.fillStyle = GlobalStaticConstants.highlightColour;
 			this.ctx.font = "bold 10pt Garamond";
-		} 
+		}
 		this.ctx.fillText(camel.camel.name, GlobalStaticConstants.innerWidth - 100, 59 - heightOffset * 10);
 		this.ctx.restore();
 
@@ -89,31 +84,31 @@ export class LeaderboardService {
 		this.ctx.fill();
 		this.ctx.closePath();
 
-        if (GlobalStaticConstants.debugMode) {
-            this.ctx.save();
-            this.ctx.fillStyle = "black";
-            this.ctx.fillText(
-                `S:${camel.camel.sprintSpeed.level} A:${camel.agility} St:${camel.stamina} In:${camel.intimidation} Co:${camel.confidence}`,
-                GlobalStaticConstants.innerWidth - 130,
-                70 - heightOffset * 10
-            );
-            this.ctx.fillText(
-                `In:${camel.intimidation} Co:${camel.confidence}`,
-                GlobalStaticConstants.innerWidth - 130,
-                80 - heightOffset * 10
-            );
-            this.ctx.fillText(
-                `Speed:${camel.currentSpeed.toPrecision(3)}`,
-                GlobalStaticConstants.innerWidth - 130,
-                90 - heightOffset * 10
-            );
-            this.ctx.fillText(
-                `Mot:${Math.round(100 * camel.motivation) / 100} Form:${camel.form.toPrecision(3)}`,
-                GlobalStaticConstants.innerWidth - 130,
-                100 - heightOffset * 10
-            );
-            this.ctx.restore();
-        }
+		if (GlobalStaticConstants.debugMode) {
+			this.ctx.save();
+			this.ctx.fillStyle = "black";
+			this.ctx.fillText(
+				`S:${camel.camel.sprintSpeed.level} A:${camel.agility} St:${camel.stamina} In:${camel.intimidation} Co:${camel.confidence}`,
+				GlobalStaticConstants.innerWidth - 130,
+				70 - heightOffset * 10
+			);
+			this.ctx.fillText(
+				`In:${camel.intimidation} Co:${camel.confidence}`,
+				GlobalStaticConstants.innerWidth - 130,
+				80 - heightOffset * 10
+			);
+			this.ctx.fillText(
+				`Speed:${camel.currentSpeed.toPrecision(3)}`,
+				GlobalStaticConstants.innerWidth - 130,
+				90 - heightOffset * 10
+			);
+			this.ctx.fillText(
+				`Mot:${Math.round(100 * camel.motivation) / 100} Form:${camel.form.toPrecision(3)}`,
+				GlobalStaticConstants.innerWidth - 130,
+				100 - heightOffset * 10
+			);
+			this.ctx.restore();
+		}
 	}
 }
 

@@ -16,6 +16,7 @@ import { CubeService } from "./cube-service.js";
 import { GlobalComponents } from "./global-components.js";
 import { IsometricEditorComponent } from "../editor/isometric-editor.js";
 import { MusicService } from "../audio/music-service.js";
+import { AcademyStartup } from "../academy/academy-startup.js";
 export class Startup {
     constructor() { }
     registerComponents() {
@@ -27,6 +28,8 @@ export class Startup {
         scrollsStartup.registerComponents();
         GlobalComponents.recruitmentService = new RecruitmentService(GlobalComponents.globalServices.navigatorService, GlobalComponents.globalServices.camelCreator);
         GlobalComponents.loadingScreen = new LoadingScreen(GlobalComponents.globalServices.navigatorService);
+        const academyStartup = new AcademyStartup(GlobalComponents.globalServices);
+        academyStartup.registerComponents();
         this.registerDebugComponents();
     }
     registerAudio() {
@@ -48,6 +51,7 @@ export class Startup {
         CanvasService.createCanvas('8', CanvasNames.LoadingScreen);
         CanvasService.createCanvas('0', CanvasNames.CalendarDetails);
         CanvasService.createCanvas('9', CanvasNames.Debug);
+        CanvasService.createCanvas('0', CanvasNames.Academy);
     }
     createGlobalServices() {
         const navigatorService = new NavigatorService();
@@ -67,7 +71,7 @@ export class Startup {
     registerDebugComponents() {
         const canvas = CanvasService.getCanvasByName(CanvasNames.Debug);
         const cubeService = new CubeService(canvas.getContext("2d"));
-        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas);
         GlobalComponents.isometricEditorComponent = new IsometricEditorComponent(canvas, cubeService, btnService);
     }
 }

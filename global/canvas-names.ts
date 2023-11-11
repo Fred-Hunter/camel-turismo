@@ -12,4 +12,5 @@ export class CanvasNames {
     public static LoadingScreen: string = 'loading-screen';
     public static CalendarDetails: string = 'calendar-details';
     public static Debug: string = 'debug';
+    public static Academy: string = 'academy';
 }

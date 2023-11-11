@@ -1,3 +1,4 @@
+import { Colour } from "../assets/colours.js";
 import { GameState } from "../global/game-state.js";
 import { Calendar, Season } from "./calendar.js";
 export class CalendarService {
@@ -24,25 +25,25 @@ export class CalendarService {
     static getSeasonDarkerColour(season) {
         switch (season) {
             case Season.Spring:
-                return '#61ab4b';
+                return Colour.spring;
             case Season.Summer:
-                return '#e3c036';
+                return Colour.summer;
             case Season.Autumn:
-                return '#ed7e39';
+                return Colour.autumn;
             default:
-                return '#246';
+                return Colour.winter;
         }
     }
     static getSeasonLighterColour(season) {
         switch (season) {
             case Season.Spring:
-                return '#91d97c';
+                return Colour.lightSpring;
             case Season.Summer:
-                return '#fce37c';
+                return Colour.lightSummer;
             case Season.Autumn:
-                return '#ffaa75';
+                return Colour.lightAutumn;
             default:
-                return '#4b7bab';
+                return Colour.lightWinter;
         }
     }
 }

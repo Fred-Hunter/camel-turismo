@@ -1,3 +1,4 @@
+import { Colour } from "../assets/colours.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
@@ -6,7 +7,7 @@ import { CalendarService } from "./calendar-service.js";
 
 export class CalendarOverviewDrawing {
     static drawCalendarOverview(canvas: HTMLCanvasElement) {
-        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas);
 
         const calendar = CalendarService.getCalendar();
         const widthUnit = GlobalStaticConstants.innerWidth / 20;
@@ -21,7 +22,7 @@ export class CalendarOverviewDrawing {
             10,
             CalendarService.getSeasonDarkerColour(calendar.Season),
             CalendarService.getSeasonLighterColour(calendar.Season),
-            '#fff',
+            Colour.white,
             () => GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.calendarDetails),
             ['Day ' + calendar.Day.toString(), CalendarService.getSeasonAsString(calendar.Season)]);
     }

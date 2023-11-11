@@ -1,7 +1,7 @@
+import { ColourCodes } from "../assets/colours.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
-import { GlobalComponents } from "../global/global-components.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { Page } from "../navigation/page.js";
 import { CalendarService } from "./calendar-service.js";
@@ -21,7 +21,7 @@ export class CalendarDetailsDrawing {
         ctx.fillRect(calendarXStart - 2, calendarYStart - 2, calendarWidth + 4, calendarHeight + 4);
         const calendar = CalendarService.getCalendar();
         const standardTileFillColour = this.getStandardTileColour(calendar.Season);
-        ctx.fillStyle = standardTileFillColour;
+        ctx.fillStyle = ColourCodes.getCode(standardTileFillColour);
         ctx.font = '40pt Garamond';
         ctx.textAlign = 'center';
         ctx.fillText(CalendarService.getSeasonAsString(calendar.Season), GlobalStaticConstants.innerWidth / 2, calendarYStart / 2, GlobalStaticConstants.innerWidth);
@@ -36,15 +36,15 @@ export class CalendarDetailsDrawing {
                 const height = (calendarHeight / numberOfRows) - 4;
                 const day = column + 1 + row * numberOfColumns;
                 if (day === currentDay) {
-                    ctx.fillStyle = currentDayTileColour;
+                    ctx.fillStyle = ColourCodes.getCode(currentDayTileColour);
                 }
                 ctx.fillRect(x, y, width, height);
                 ctx.fillStyle = '#fff';
                 ctx.fillText(day.toString(), x + width / 10, y + height / 5);
-                ctx.fillStyle = standardTileFillColour;
+                ctx.fillStyle = ColourCodes.getCode(standardTileFillColour);
             }
         }
-        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas);
         btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }
     static getStandardTileColour(season) {

@@ -15,6 +15,7 @@ import { Page } from "../navigation/page.js";
 import { GeneralWasteScrolls } from "../scrolls/library/general-waste.js";
 import { MerchantIceScrolls } from "../scrolls/library/merchant-ice.js";
 import { StatisticsHelper } from "../statistics/statistics-helper.js";
+import { Colour, ColourCodes } from "../assets/colours.js";
 
 export class RecruitmentService {
     constructor(
@@ -102,14 +103,14 @@ export class RecruitmentService {
         this._ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         this._ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
-        const btnService = new CanvasBtnService(this._canvas, this._navigator);
+        const btnService = new CanvasBtnService(this._canvas);
         const camelService = new CanvasCamelService(this._ctx);
 
         const radius = 25;
 
         btnService.drawBackButton(Page.mapOverview);
 
-        const camelSize = Math.round(GlobalStaticConstants.baseCubeSize * 4 / 5);
+        const camelSize = 4 / 5;
 
         const btnWidth = 550;
         const btnHeight = 50;
@@ -118,18 +119,18 @@ export class RecruitmentService {
 
         let btnX = 240;
         let btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#cc807a', '#f2ada7', '#fff', this.spendLowCashMoney, ['Recruit lowly camel - $100']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#cc807a');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.pink, Colour.lightPink, Colour.white, this.spendLowCashMoney, ['Recruit lowly camel - $100']);
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.pink));
 
         btnX = 840;
         btnY = 250;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#debb49', '#f5d671', '#fff', this.spendMediumCashMoney, ['Recruit mediocre camel - $200']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#debb49');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.yellow, Colour.lightYellow, Colour.white, this.spendMediumCashMoney, ['Recruit mediocre camel - $200']);
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.yellow));
 
         btnX = 540;
         btnY = 650;
-        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, '#569929', '#7ac24a', '#fff', this.spendHighCashMoney, ['Recruit high camel - $300']);
-        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, '#509124');
+        btnService.createBtn(btnX, btnY, btnWidth, btnHeight, radius, borderWidth, Colour.spring, Colour.lightSpring, Colour.white, this.spendHighCashMoney, ['Recruit high camel - $300']);
+        camelService.drawCamelScreenCoords(btnX + btnWidth / 2, btnY - btnHeight - 60, camelSize, ColourCodes.getCode(Colour.spring));
 
         CashMoneyService.drawCashMoney(this._ctx);
     }

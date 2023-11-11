@@ -4,21 +4,16 @@ export class ImportantService {
     static ConvertCoordToReal(
         coordX: number,
         coordY: number,
-        sideLength: number,
-        height: number = 0,
-        xStart: number = 0,
-        yStart: number = 0) {
+        scale: number = 1,
+        height: number = 0) {
 
         const xOffset = GlobalStaticConstants.innerWidth / 2;
+        const yOffset = GlobalStaticConstants.innerHeight / 20;
 
-        coordX = coordX * GlobalStaticConstants.baseCubeSize / sideLength;
-        coordY = coordY * GlobalStaticConstants.baseCubeSize / sideLength;
+        const size = scale * GlobalStaticConstants.baseCubeSize;
 
-        const xScaleFactor = GlobalStaticConstants.baseCubeSize / 5;
-        const yScaleFactor = xScaleFactor / 2;
-
-        const x = xOffset + (coordX - coordY) * sideLength + (xStart - yStart) * xScaleFactor;
-        const y = (coordX + coordY) * 0.5 * sideLength + 100 - height * sideLength + (xStart + yStart) * yScaleFactor;
+        const x = xOffset + (coordX - coordY) * size;
+        const y = yOffset + height + (coordX + coordY) * size * (1 / 2);
 
         return { x, y };
     }
@@ -26,18 +21,16 @@ export class ImportantService {
     static ConvertRealToCoord(
         x: number,
         y: number,
-        sideLength: number,
-        height: number = 0,
-        xStart: number = 0,
-        yStart: number = 0) {
+        scale: number = 1,
+        height: number = 0) {
 
         const xOffset = GlobalStaticConstants.innerWidth / 2;
+        const yOffset = GlobalStaticConstants.innerHeight / 20;
 
-        const coordX = (2 * height * sideLength - 20 * xStart + x - xOffset + 2 * y - 200) / (2 * sideLength);
-        const coordY = (2 * height * sideLength - 20 * yStart - x + xOffset + 2 * y - 200) / (2 * sideLength);
+        const size = scale * GlobalStaticConstants.baseCubeSize;
 
-        const x2 = coordX * sideLength / GlobalStaticConstants.baseCubeSize;
-        const y2 = coordY * sideLength / GlobalStaticConstants.baseCubeSize;
+        const x2 = (y - yOffset - height + (x - xOffset) / 2) / size;
+        const y2 = (y - yOffset - height + (xOffset - x) / 2) / size;
 
         return { x2, y2 };
     }

@@ -1,4 +1,4 @@
-import { Colours } from "../assets/colours.js";
+import { Colour } from "../assets/colours.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
@@ -14,17 +14,20 @@ export class IsometricEditorComponent {
     }
     _cubeCoords = [];
     _cubeCoordHistory = [[]];
-    _colour = Colours.grey;
+    _colour = Colour.grey;
+    _size = 15;
+    _scale = 0.75;
     load() {
         CanvasService.showCanvas(CanvasNames.Debug);
         this.drawGround();
         this.drawButtons();
+        this.redraw();
         this._canvas.addEventListener('click', (event) => {
             const rect = this._canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
-            if (coords.y2 > 10) {
+            const coords = ImportantService.ConvertRealToCoord(x, y, this._scale);
+            if (coords.y2 > this._size) {
                 return;
             }
             this.addCube({ x: Math.floor(coords.x2) - 1, y: Math.floor(coords.y2) - 1, colour: this._colour });
@@ -50,24 +53,23 @@ export class IsometricEditorComponent {
     }
     drawCubes() {
         this._cubeCoords.forEach((cube) => {
-            this._cubeService.drawCube(cube.x, cube.y, GlobalStaticConstants.baseCubeSize, cube.colour, 0);
+            this._cubeService.drawCube(cube.colour, cube.x, cube.y, this._scale);
         });
     }
     drawGround() {
-        const canvasColour = '#C2B280';
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                this._cubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, canvasColour, 0);
+        for (let i = 0; i < this._size; i++) {
+            for (let j = 0; j < this._size; j++) {
+                this._cubeService.drawCube(Colour.sand, i, j, this._scale);
             }
         }
     }
     drawPaletteButton(maxX, maxY, position, colour) {
-        this._btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, '#fff', () => this._colour = colour, ['']);
+        this._btnService.createBtn((position + 2) * maxX / 40 + (position + 1) * 20, maxY - 100, maxX / 40, 50, 0, 5, colour, colour, Colour.white, () => this._colour = colour, ['']);
     }
     drawButtons() {
         const maxX = this._canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this._canvas.height / GlobalStaticConstants.devicePixelRatio;
-        this._btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, '#cc807a', '#f2ada7', '#fff', () => {
+        this._btnService.createBtn(maxX / 40, maxY - 100, maxX / 40, 50, 0, 5, Colour.sand, Colour.sand, Colour.white, () => {
             if (this._cubeCoordHistory.length === 1) {
                 return;
             }
@@ -75,10 +77,16 @@ export class IsometricEditorComponent {
             this._cubeCoords = [...this._cubeCoordHistory.at(-1)];
             this.redraw();
         }, ['<-']);
-        this.drawPaletteButton(maxX, maxY, 0, Colours.green);
-        this.drawPaletteButton(maxX, maxY, 1, Colours.grey);
-        this.drawPaletteButton(maxX, maxY, 2, Colours.sand);
-        this.drawPaletteButton(maxX, maxY, 3, Colours.blue);
-        this.drawPaletteButton(maxX, maxY, 4, Colours.brown);
+        this.drawPaletteButton(maxX, maxY, 0, Colour.green);
+        this.drawPaletteButton(maxX, maxY, 1, Colour.lightGreen);
+        this.drawPaletteButton(maxX, maxY, 2, Colour.grey);
+        this.drawPaletteButton(maxX, maxY, 3, Colour.lightGrey);
+        this.drawPaletteButton(maxX, maxY, 4, Colour.sand);
+        this.drawPaletteButton(maxX, maxY, 5, Colour.lightSand);
+        this.drawPaletteButton(maxX, maxY, 6, Colour.darkSand);
+        this.drawPaletteButton(maxX, maxY, 7, Colour.blue);
+        this.drawPaletteButton(maxX, maxY, 8, Colour.brown);
+        this.drawPaletteButton(maxX, maxY, 9, Colour.lightBrown);
+        this.drawPaletteButton(maxX, maxY, 10, Colour.white);
     }
 }

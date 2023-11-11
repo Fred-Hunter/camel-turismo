@@ -1,3 +1,4 @@
+import { ColourCodes } from "../assets/colours.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
@@ -31,7 +32,7 @@ export class CalendarDetailsDrawing {
         const calendar = CalendarService.getCalendar();
 
         const standardTileFillColour = this.getStandardTileColour(calendar.Season);
-        ctx.fillStyle = standardTileFillColour;
+        ctx.fillStyle = ColourCodes.getCode(standardTileFillColour);
 
         ctx.font = '40pt Garamond';
         ctx.textAlign = 'center';
@@ -57,7 +58,7 @@ export class CalendarDetailsDrawing {
                 const day = column + 1 + row * numberOfColumns;
 
                 if (day === currentDay) {
-                    ctx.fillStyle = currentDayTileColour;
+                    ctx.fillStyle = ColourCodes.getCode(currentDayTileColour);
                 }
 
                 ctx.fillRect(
@@ -69,11 +70,11 @@ export class CalendarDetailsDrawing {
                 ctx.fillStyle = '#fff';
 
                 ctx.fillText(day.toString(), x + width/10, y + height/5);
-                ctx.fillStyle = standardTileFillColour;
+                ctx.fillStyle = ColourCodes.getCode(standardTileFillColour);
             }
         }
 
-        const btnService = new CanvasBtnService(canvas, GlobalComponents.globalServices.navigatorService);
+        const btnService = new CanvasBtnService(canvas);
 
         btnService.drawBackButton(Page.mapOverview, standardTileFillColour, currentDayTileColour);
     }

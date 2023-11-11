@@ -1,11 +1,11 @@
-import { NavigatorService } from "../navigation/navigator-service.js";
+import { Colour, ColourCodes } from "../assets/colours.js";
 import { Page } from "../navigation/page.js";
+import { GlobalComponents } from "./global-components.js";
 import { GlobalStaticConstants } from "./global-static-constants.js";
 
 export class CanvasBtnService {
     constructor(
-        public canvas: HTMLCanvasElement,
-        private readonly _navigator: NavigatorService) { }
+        public canvas: HTMLCanvasElement) { }
 
     clickEventListeners: Array<(event: MouseEvent) => void> = [];
     mouseMoveEventListeners: Array<(event: MouseEvent) => void> = [];
@@ -22,7 +22,7 @@ export class CanvasBtnService {
         return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
     }
 
-    drawBackButton(targetPage: Page, backgroundColour: string = '#cc807a', borderColour: string = '#f2ada7') {
+    drawBackButton(targetPage: Page, backgroundColour: Colour = Colour.sand, borderColour: Colour = Colour.white) {
         const maxX = this.canvas.width / GlobalStaticConstants.devicePixelRatio;
         const maxY = this.canvas.height / GlobalStaticConstants.devicePixelRatio;
 
@@ -35,8 +35,8 @@ export class CanvasBtnService {
             5,
             backgroundColour,
             borderColour,
-            '#fff',
-            () => this._navigator.requestPageNavigation(targetPage),
+            Colour.white,
+            () => GlobalComponents.globalServices.navigatorService.requestPageNavigation(targetPage),
             ['Back']);
     }
 
@@ -44,9 +44,9 @@ export class CanvasBtnService {
         rect: any,
         radius: number,
         borderWidth: number,
-        backgroundColour: string,
-        borderColour: string,
-        fontColour: string,
+        backgroundColour: Colour,
+        borderColour: Colour,
+        fontColour: Colour,
         text: string[],
         fontSize: number = 30) => {
 
@@ -54,14 +54,14 @@ export class CanvasBtnService {
 
         context.beginPath();
         context.roundRect(rect.x, rect.y, rect.width, rect.height, radius);
-        context.fillStyle = backgroundColour;
+        context.fillStyle = ColourCodes.getCode(backgroundColour);
         context.fill();
         context.lineWidth = borderWidth;
-        context.strokeStyle = borderColour;
+        context.strokeStyle = ColourCodes.getCode(borderColour);
         context.stroke();
         context.closePath();
         context.font = `${fontSize}pt Garamond`;
-        context.fillStyle = fontColour;
+        context.fillStyle = ColourCodes.getCode(fontColour);
         context.textAlign = "center";
         if (text.length < 2) {
             context.fillText(text[0], rect.x + rect.width / 2, rect.y + 3 * rect.height / 4, rect.width - 10);
@@ -79,8 +79,8 @@ export class CanvasBtnService {
         rect: any,
         radius: number,
         borderWidth: number,
-        borderColour: string,
-        fontColour: string,
+        borderColour: Colour,
+        fontColour: Colour,
         text: string[]) => {
         this.drawBtn(context, rect, radius, borderWidth, borderColour, borderColour, fontColour, text);
     }
@@ -92,9 +92,9 @@ export class CanvasBtnService {
         height: number,
         radius: number,
         borderWidth: number,
-        backgroundColour: string,
-        borderColour: string,
-        fontColour: string,
+        backgroundColour: Colour,
+        borderColour: Colour,
+        fontColour: Colour,
         onclickFunction: any,
         text: string[],
         fontSize: number = 30) {

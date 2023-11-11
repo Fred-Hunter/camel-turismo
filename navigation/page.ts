@@ -8,5 +8,6 @@ export enum Page {
     raceSelection,
     calendarDetails,
     debug,
-    scrolls
+    scrolls,
+    academy
 }

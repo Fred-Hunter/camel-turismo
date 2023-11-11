@@ -1,3 +1,4 @@
+import { AcademyComponent } from "../academy/academy-component.js";
 import { IsometricEditorComponent } from "../editor/isometric-editor.js";
 import { LoadingScreen } from "../loading/loading-screen.js";
 import { CamelSelectComponent } from "../management/camel-select/camel-select-component.js";
@@ -38,4 +39,7 @@ export class GlobalComponents {
 
     // Scrolls
     public static scrollsComponent: ScrollsComponent;
+
+    // Academy
+    public static academyComponent: AcademyComponent;
 }

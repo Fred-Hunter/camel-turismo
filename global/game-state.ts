@@ -4,6 +4,7 @@ import { Scroll } from "../scrolls/scroll.js";
 import { GlobalComponents } from "./global-components.js";
 import { Calendar } from "../calendar/calendar.js";
 import { Statistics } from "../statistics/statistics.js";
+import { Academy } from "../academy/academy.js";
 
 export interface GameStateObject {
     camel: Camel | undefined,
@@ -16,6 +17,7 @@ export interface GameStateObject {
     scrolls: Scroll[],
     stableSeed: string,
     statistics: Statistics
+    academy: Academy
 }
 
 export class GameState {
@@ -42,6 +44,8 @@ export class GameState {
 
     // Stats
     public static statistics: Statistics = new Statistics();
+    // Academy
+    public static academy: Academy = { buildings: []};
 
     public static Save() {
         const gameStateObject: GameStateObject = {
@@ -54,7 +58,8 @@ export class GameState {
             calendar: GameState.calendar,
             scrolls: GameState.scrolls,
             stableSeed: GameState.stableSeed,
-            statistics: GameState.statistics
+            statistics: GameState.statistics,
+            academy: GameState.academy
         }
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -92,6 +97,7 @@ export class GameState {
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
         GameState.scrolls = gameState.scrolls;
         GameState.stableSeed = gameState.stableSeed;
+        GameState.academy = gameState.academy;
     }
 
     private static loadCamel(camelCreator: CamelCreator, serialisedCamel: Camel) {

@@ -20,6 +20,8 @@ export class GameState {
     static get unreadScrollCount() { return GameState.scrolls.filter(o => !o.read).length; }
     // Stats
     static statistics = new Statistics();
+    // Academy
+    static academy = { buildings: [] };
     static Save() {
         const gameStateObject = {
             camel: GameState.camel,
@@ -31,7 +33,8 @@ export class GameState {
             calendar: GameState.calendar,
             scrolls: GameState.scrolls,
             stableSeed: GameState.stableSeed,
-            statistics: GameState.statistics
+            statistics: GameState.statistics,
+            academy: GameState.academy
         };
         const gameStateString = JSON.stringify(gameStateObject);
         localStorage.setItem(this.getItemKey(), gameStateString);
@@ -62,6 +65,7 @@ export class GameState {
         GameState.calendar = new Calendar(gameState.calendar.Day, gameState.calendar.Season);
         GameState.scrolls = gameState.scrolls;
         GameState.stableSeed = gameState.stableSeed;
+        GameState.academy = gameState.academy;
     }
     static loadCamel(camelCreator, serialisedCamel) {
         const camel = camelCreator.createCamelFromSerialisedCamel(serialisedCamel);

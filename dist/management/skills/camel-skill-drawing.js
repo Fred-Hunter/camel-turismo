@@ -1,3 +1,4 @@
+import { Colour } from "../../assets/colours.js";
 import { CanvasBtnService } from "../../global/canvas-btn-service.js";
 import { CanvasNames } from "../../global/canvas-names.js";
 import { CanvasService } from "../../global/canvas-service.js";
@@ -9,7 +10,7 @@ export class CamelSkillDrawing {
         this._navigator = _navigator;
         this._canvas = CanvasService.getCanvasByName(CanvasNames.CamelManagement);
         this._ctx = this._canvas.getContext('2d');
-        this._btnService = new CanvasBtnService(this._canvas, _navigator);
+        this._btnService = new CanvasBtnService(this._canvas);
     }
     _ctx;
     _canvas;
@@ -57,7 +58,7 @@ export class CamelSkillDrawing {
         this._ctx.fillText(`${skill.name}: ${level}`, x, y);
         if (xpToNextLevel > 0) {
             this._ctx.fillText(`XP to next: ${xpToNextLevel}`, x + 150, y);
-            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, 5, '#cc807a', '#f2ada7', '#fff', () => levelUpSkillFunc(skill), [`+`]);
+            this._btnService.createBtn(x + 270, y - 20, 30, 30, 0, 5, Colour.pink, Colour.lightPink, Colour.white, () => levelUpSkillFunc(skill), [`+`]);
         }
     }
     drawSkillStar(skills, x, y) {

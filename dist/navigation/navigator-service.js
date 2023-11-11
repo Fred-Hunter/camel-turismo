@@ -61,6 +61,8 @@ export class NavigatorService {
                 case Page.scrolls:
                     GlobalComponents.scrollsComponent.load();
                     break;
+                case Page.academy:
+                    GlobalComponents.academyComponent.load();
             }
             this._postNavigationFunc();
             this._pageLoaded = true;

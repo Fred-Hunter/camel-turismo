@@ -1,5 +1,4 @@
 import { CanvasCamelService } from "../global/canvas-camel-service.js";
-import { CubeService } from "../global/cube-service.js";
 import { GameState } from "../global/game-state.js";
 import { GlobalComponents } from "../global/global-components.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
@@ -7,9 +6,7 @@ export class LeaderboardService {
     ctx;
     constructor(ctx) {
         this.ctx = ctx;
-        this._camelCubeService = new CubeService(ctx);
     }
-    _camelCubeService;
     sortCamels(a, b) {
         if (b.finalPosition && !a.finalPosition) {
             return 1;
@@ -49,7 +46,7 @@ export class LeaderboardService {
         const x = 5.5;
         const y = -6.5;
         const camelService = new CanvasCamelService(this.ctx);
-        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 70 - heightOffset * 10, 10, camel.camel.colour);
+        camelService.drawCamelScreenCoords(GlobalStaticConstants.innerWidth - 150, 50 - heightOffset * 10, 1 / 5, camel.camel.colour);
         this.ctx.fillStyle = "#96876e";
         this.ctx.font = "10pt Garamond";
         this.ctx.save();

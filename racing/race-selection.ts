@@ -11,6 +11,7 @@ import { Page } from "../navigation/page.js";
 import { RaceType } from "./race-type.js";
 import { RaceManagement } from "./race-managment.js";
 import { StatisticsHelper } from "../statistics/statistics-helper.js";
+import { Colour } from "../assets/colours.js";
 
 export class RaceSelection {
     constructor(
@@ -19,7 +20,7 @@ export class RaceSelection {
     ) {
         this._canvas = CanvasService.getCanvasByName(CanvasNames.RaceSelection);
         this._ctx = this._canvas.getContext('2d')!;
-        this._btnService = new CanvasBtnService(this._canvas, this._navigator);
+        this._btnService = new CanvasBtnService(this._canvas);
     }
 
     private readonly _ctx: CanvasRenderingContext2D;
@@ -60,38 +61,38 @@ export class RaceSelection {
 
         const middleX = this._canvas.width / GlobalStaticConstants.devicePixelRatio / 2;
 
-        const raceArray: { race: () => void; colours: [string, string, string]; name: string; entry: number; prize: number }[] = [
+        const raceArray: { race: () => void; colours: [Colour, Colour, Colour]; name: string; entry: number; prize: number }[] = [
             {
                 race: enterStreetRace,
-                colours: ['#cc807a', '#f2ada7', '#fff'],
+                colours: [Colour.pink, Colour.lightPink, Colour.white],
                 name: "Street race",
                 entry: 0,
                 prize: 100,
              },
             {
                 race: enterLocalDerby,
-                colours: ['#debb49', '#f5d671', '#fff'],
+                colours: [Colour.yellow, Colour.lightYellow, Colour.white],
                 name: "Local derby",
                 entry: 200,
                 prize: 500,
              },
             {
                 race: enterCityShowdown,
-                colours: ['#debb49', '#f5d671', '#fff'],
+                colours: [Colour.yellow, Colour.lightYellow, Colour.white],
                 name: "City showdown",
                 entry: 250,
                 prize: 600,
              },
             {
                 race: enterWorldCup,
-                colours: ['#569929', '#7ac24a', '#fff'],
+                colours: [Colour.green, Colour.lightGreen, Colour.white],
                 name: "World cup",
                 entry: 300,
                 prize: 800,
              },
             {
                 race: enterSpookyShowdown,
-                colours: ['#569929', '#7ac24a', '#fff'],
+                colours: [Colour.green, Colour.lightGreen, Colour.white],
                 name: "Spooky showdown",
                 entry: this.getShowdownLevel() * 3,
                 prize: this.getShowdownLevel() * 8,

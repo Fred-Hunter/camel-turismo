@@ -1,4 +1,5 @@
-import { Colours } from "../assets/colours.js";
+import { Colour } from "../assets/colours.js";
+import { StablesCoords } from "../assets/isometric-coords/stables-coords.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
@@ -13,9 +14,11 @@ export class IsometricEditorComponent {
         private readonly _btnService: CanvasBtnService
     ) { }
 
-    private _cubeCoords: Array<{ x: number, y: number, colour: string }> = [];
-    private _cubeCoordHistory: Array<Array<{ x: number, y: number, colour: string }>> = [[]];
-    private _colour: string = Colours.grey;
+    private _cubeCoords: Array<{ x: number, y: number, colour: Colour }> = [];
+    private _cubeCoordHistory: Array<Array<{ x: number, y: number, colour: Colour }>> = [[]];
+    private _colour: Colour = Colour.grey;
+    private _size = 15;
+    private _scale = 0.75;
 
     load() {
         CanvasService.showCanvas(CanvasNames.Debug);
@@ -23,14 +26,16 @@ export class IsometricEditorComponent {
         this.drawGround();
         this.drawButtons();
 
+        this.redraw();
+
         this._canvas.addEventListener('click', (event) => {
             const rect = this._canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
-            const coords = ImportantService.ConvertRealToCoord(x, y, GlobalStaticConstants.baseCubeSize);
+            const coords = ImportantService.ConvertRealToCoord(x, y, this._scale);
 
-            if (coords.y2 > 10) {
+            if (coords.y2 > this._size) {
                 return;
             }
 
@@ -41,7 +46,7 @@ export class IsometricEditorComponent {
         });
     }
 
-    private addCube(newCube: { x: number, y: number, colour: string }) {
+    private addCube(newCube: { x: number, y: number, colour: Colour }) {
         const existingCube = this._cubeCoords
             .filter(o => o.x === newCube.x && o.y === newCube.y);
 
@@ -63,16 +68,14 @@ export class IsometricEditorComponent {
 
     private drawCubes() {
         this._cubeCoords.forEach((cube) => {
-            this._cubeService.drawCube(cube.x, cube.y, GlobalStaticConstants.baseCubeSize, cube.colour, 0);
+            this._cubeService.drawCube(cube.colour, cube.x, cube.y, this._scale);
         })
     }
 
     private drawGround() {
-        const canvasColour = '#C2B280';
-
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                this._cubeService.drawCube(i, j, GlobalStaticConstants.baseCubeSize, canvasColour, 0);
+        for (let i = 0; i < this._size; i++) {
+            for (let j = 0; j < this._size; j++) {
+                this._cubeService.drawCube(Colour.sand, i, j, this._scale);
             }
         }
     }
@@ -81,7 +84,7 @@ export class IsometricEditorComponent {
         maxX: number,
         maxY: number,
         position: number,
-        colour: string
+        colour: Colour
     ) {
         this._btnService.createBtn(
             (position + 2) * maxX / 40 + (position + 1) * 20,
@@ -92,7 +95,7 @@ export class IsometricEditorComponent {
             5,
             colour,
             colour,
-            '#fff',
+            Colour.white,
             () => this._colour = colour,
             ['']);
     }
@@ -108,9 +111,9 @@ export class IsometricEditorComponent {
             50,
             0,
             5,
-            '#cc807a',
-            '#f2ada7',
-            '#fff',
+            Colour.sand,
+            Colour.sand,
+            Colour.white,
             () => {
                 if (this._cubeCoordHistory.length === 1) {
                     return;
@@ -122,10 +125,16 @@ export class IsometricEditorComponent {
             },
             ['<-']);
 
-        this.drawPaletteButton(maxX, maxY, 0, Colours.green);
-        this.drawPaletteButton(maxX, maxY, 1, Colours.grey);
-        this.drawPaletteButton(maxX, maxY, 2, Colours.sand);
-        this.drawPaletteButton(maxX, maxY, 3, Colours.blue);
-        this.drawPaletteButton(maxX, maxY, 4, Colours.brown);
+        this.drawPaletteButton(maxX, maxY, 0, Colour.green);
+        this.drawPaletteButton(maxX, maxY, 1, Colour.lightGreen);
+        this.drawPaletteButton(maxX, maxY, 2, Colour.grey);
+        this.drawPaletteButton(maxX, maxY, 3, Colour.lightGrey);
+        this.drawPaletteButton(maxX, maxY, 4, Colour.sand);
+        this.drawPaletteButton(maxX, maxY, 5, Colour.lightSand);
+        this.drawPaletteButton(maxX, maxY, 6, Colour.darkSand);
+        this.drawPaletteButton(maxX, maxY, 7, Colour.blue);
+        this.drawPaletteButton(maxX, maxY, 8, Colour.brown);
+        this.drawPaletteButton(maxX, maxY, 9, Colour.lightBrown);
+        this.drawPaletteButton(maxX, maxY, 10, Colour.white);
     }
 }
