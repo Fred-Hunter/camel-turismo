@@ -51,7 +51,7 @@ export class RaceDrawing {
                 if (race.track.filter(o => o[0] === i && o[1] === j).length > 0) {
                     // If is a race track
                     const height = Math.random() * 4;
-                    this.backgroundCubeService.drawCube(Colour.grey, i, j, 1, height);
+                    this.backgroundCubeService.drawCube(Colour.lightGrey, i, j, 1, height);
                 } else {
                     const height = -Math.random() * 16;
 
