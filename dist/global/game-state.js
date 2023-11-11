@@ -3,7 +3,7 @@ import { Calendar } from "../calendar/calendar.js";
 import { Statistics } from "../statistics/statistics.js";
 export class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 5;
+    static _version = 6;
     // Camel
     static camel;
     static camels = [];
