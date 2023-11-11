@@ -44,8 +44,8 @@ export class RaceDrawing {
                     this.backgroundCubeService.drawCube(Colour.lightGrey, i, j, 1, height);
                 }
                 else {
-                    const height = -Math.random() * 16;
-                    const colour = height > -8 ? Colour.sand : Colour.lightSand;
+                    const height = Math.random() / 4;
+                    const colour = height < 1 / 8 ? Colour.sand : Colour.lightSand;
                     this.backgroundCubeService.drawCube(colour, i, j, 1, height);
                     const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
                     if (shouldIncludeObject) {
@@ -124,7 +124,7 @@ export class RaceDrawing {
         else if (movingInPositiveX) {
             camelCoords = CamelCoords.getPositiveX(camel.camel.colour);
         }
-        IsometricCoordsDrawer.drawCamel(newXCoord, newYCoord, camelCoords, this.camelCubeService, -camel.jumpHeight, 1, 0.2);
+        IsometricCoordsDrawer.drawCamel(newXCoord, newYCoord, camelCoords, this.camelCubeService, camel.jumpHeight, 1, 0.2);
         this.drawChevrons(camel, newXCoord, newYCoord);
     }
     drawChevrons(camel, xCoord, yCoord) {

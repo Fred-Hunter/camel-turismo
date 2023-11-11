@@ -23,7 +23,7 @@ export class AcademyDrawing {
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         for (let i = 0; i < 5; i++) {
             for (let j = 0; j < 5; j++) {
-                const height = -Math.random() * 2;
+                const height = Math.random() / 100;
                 this._academyCubeService.drawCube(Colour.sand, i, j, 2, height);
             }
         }

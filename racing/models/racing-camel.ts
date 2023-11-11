@@ -2,13 +2,14 @@ import { Camel } from "../../management/camel-creation/camel.js";
 
 export class RacingCamel {
     constructor(
-        public camel: Camel) { 
-            this._initialVelocity = 5 + (this.camel.agility.level / 10);
-            this.stamina = this.camel.stamina.level;
-            this.agility = this.camel.agility.level;
-            this.intimidation = this.camel.intimidation.level;
-            this.confidence = this.camel.confidence.level;
-        }
+        public camel: Camel) {
+        this._initialVelocity = this._defaultCamelJumpVelocity + this.camel.agility.level / 2;
+        this._maxHeight = Math.pow(this._initialVelocity, 2) / this._gravityAcceleration - this._initialVelocity - this._gravityAcceleration;
+        this.stamina = this.camel.stamina.level;
+        this.agility = this.camel.agility.level;
+        this.intimidation = this.camel.intimidation.level;
+        this.confidence = this.camel.confidence.level;
+    }
 
     finalPosition: number | undefined;
     completionPercentage: number = 0;
@@ -23,12 +24,13 @@ export class RacingCamel {
     private _jumpHeight = 0;
 
     public get jumpHeight() {
-        return this._jumpHeight;
+        return this._jumpHeight / this._maxHeight;
     }
 
+    private readonly _defaultCamelJumpVelocity = 100;
     private readonly _gravityAcceleration = 9.81;
-    private readonly _scaleFactor = 20;
-    private readonly _initialVelocity: number = 0;
+    private readonly _initialVelocity: number;
+    private readonly _maxHeight: number;
     private _currentVelocity = 0;
 
     public startJump() {
@@ -47,8 +49,9 @@ export class RacingCamel {
             return;
         }
 
-        this._jumpHeight += this._currentVelocity / 2;
-        this._currentVelocity += - (this._gravityAcceleration) / this._scaleFactor;
+        this._jumpHeight += this._currentVelocity;
+        this._currentVelocity -= this._gravityAcceleration;
+
         if (this._jumpHeight < 0) {
             this._jumpHeight = 0;
             this._currentVelocity = 0;
