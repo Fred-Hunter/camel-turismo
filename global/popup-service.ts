@@ -42,11 +42,13 @@ export class PopupService {
         ctx.fill();
         ctx.stroke();
 
+        const closeButtonWidth = 60;
+
         // Draw the popup content
-        const textLines = this.getLines(ctx, text, width / 2 - 20);
         let textOffset = 0;
         ctx.fillStyle = textColour;
         ctx.font = 'bold 20px Arial';
+        const textLines = this.getLines(ctx, text, width - 20 - closeButtonWidth);
 
         textLines.forEach((t) => {
             ctx.fillText(t, x + 20, y + backgroundRect[3] / 3 + textOffset);
@@ -55,7 +57,7 @@ export class PopupService {
 
         // Draw the close button
         ctx.fillStyle = highlightColour;
-        ctx.fillRect(x + backgroundRect[2] - 60, y, 60, 30);
+        ctx.fillRect(x + backgroundRect[2] - 60, y, closeButtonWidth, 30);
         ctx.fillStyle = "#fff";
         ctx.font = '14px Arial';
         ctx.fillText('Close', x + backgroundRect[2] - 55, y + 20, backgroundRect[3]);
