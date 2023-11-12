@@ -1,9 +1,9 @@
 {
-  "shortSHA": "7bf3b37",
-  "SHA": "7bf3b37c97b459f1ec0e68f620c45e20d1672c3f",
+  "shortSHA": "7a97f95",
+  "SHA": "7a97f952372c541e02a4a1d41f8d77c6e5e36629",
   "branch": "main",
-  "lastCommitAuthor": "'Oliver Bastow'",
-  "lastCommitTime": "'Sat Nov 11 12:21:36 2023 +0000'",
-  "lastCommitMessage": "Track height added to camel height",
-  "lastCommitNumber": "341"
+  "lastCommitAuthor": "'Fred-Hunter'",
+  "lastCommitTime": "'2023-11-12'",
+  "lastCommitMessage": "Don't look at this commit",
+  "lastCommitNumber": "343"
 }

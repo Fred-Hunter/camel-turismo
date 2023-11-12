@@ -46,7 +46,7 @@ export class LoadingScreen {
         }
     }
     drawVersionNumber(ctx) {
-        const version = `v0.${data.lastCommitNumber}`;
+        const version = `v0.${data.lastCommitNumber} ${data.lastCommitTime.split("'")[1]}`;
         ctx.save();
         const versionHeight = 25;
         ctx.font = `${versionHeight}px Garamond`;

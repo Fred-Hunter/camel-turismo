@@ -96,7 +96,7 @@ export class LoadingScreen {
     }
 
     private drawVersionNumber(ctx: CanvasRenderingContext2D) {
-        const version = `v0.${data.lastCommitNumber}`;
+        const version = `v0.${data.lastCommitNumber} ${data.lastCommitTime.split("'")[1]}`;
 
         ctx.save();
         const versionHeight = 25;

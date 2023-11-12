@@ -5,7 +5,7 @@ const longSHA = execSync("git rev-parse HEAD").toString().trim();
 const shortSHA = execSync("git rev-parse --short HEAD").toString().trim();
 const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
 const authorName = execSync("git log -1 --pretty=format:'%an'").toString().trim();
-const commitTime = execSync("git log -1 --pretty=format:'%cd'").toString().trim();
+const commitTime = execSync("git log -1 --pretty=format:'%cs'").toString().trim();
 const commitMsg = execSync("git log -1 --pretty=%B").toString().trim();
 const totalCommitCount = execSync("git rev-list --count HEAD").toString().trim();
 
