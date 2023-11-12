@@ -3,7 +3,7 @@ import { Calendar } from "../calendar/calendar.js";
 import { Statistics } from "../statistics/statistics.js";
 export class GameState {
     // Update this whenever a new gamestate version is created
-    static _version = 6;
+    static version = 6;
     // Camel
     static camel;
     static camels = [];
@@ -72,6 +72,6 @@ export class GameState {
         GameState.camels.push(camel);
     }
     static getItemKey() {
-        return GameState.name + this._version;
+        return GameState.name + this.version;
     }
 }

@@ -22,7 +22,7 @@ export interface GameStateObject {
 
 export class GameState {
     // Update this whenever a new gamestate version is created
-    private static _version: number = 6;
+    public static version: number = 6;
 
     // Camel
     public static camel: Camel | undefined;
@@ -107,6 +107,6 @@ export class GameState {
     }
 
     private static getItemKey() {
-        return GameState.name + this._version;
+        return GameState.name + this.version;
     }
 }
