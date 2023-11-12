@@ -1,4 +1,4 @@
-import { Colour } from "../assets/colours.js";
+import { Colour, ColourCodes } from "../assets/colours.js";
 import { CanvasBtnService } from "../global/canvas-btn-service.js";
 import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
@@ -8,6 +8,8 @@ import { PopupService } from "../global/popup-service.js";
 import { NavigatorService } from "../navigation/navigator-service.js";
 import { Page } from "../navigation/page.js";
 import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
+import data from "../git-version.json" assert { type: "json" };
+import { version } from "chai";
 
 export class LoadingScreen {
     constructor(private readonly _navigator: NavigatorService) {
@@ -24,14 +26,14 @@ export class LoadingScreen {
         GameState.scrolls.push(EmmaDaleScrolls.welcome);
 
         this._navigator.requestPageNavigation(
-            Page.mapOverview, 
+            Page.mapOverview,
             () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
     }
 
     private loadSavedGame = () => {
         GameState.LoadIfExists();
         this._navigator.requestPageNavigation(
-            Page.mapOverview, 
+            Page.mapOverview,
             () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
     }
 
@@ -42,6 +44,8 @@ export class LoadingScreen {
         img.src = './graphics/camel-oasis.jpg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
+        this.drawVersionNumber(ctx);
+
         const radius = 50;
         const borderWidth = 5;
 
@@ -51,10 +55,10 @@ export class LoadingScreen {
 
         if (GameState.GetExists()) {
             this._btnService.createBtn(
-                GlobalStaticConstants.innerWidth/6,
-                8*GlobalStaticConstants.innerHeight/10,
-                GlobalStaticConstants.innerWidth/4,
-                GlobalStaticConstants.innerHeight/10,
+                GlobalStaticConstants.innerWidth / 6,
+                8 * GlobalStaticConstants.innerHeight / 10,
+                GlobalStaticConstants.innerWidth / 4,
+                GlobalStaticConstants.innerHeight / 10,
                 radius,
                 borderWidth,
                 backgroundColour,
@@ -62,12 +66,12 @@ export class LoadingScreen {
                 textColour,
                 this.startFreshGame,
                 ['New game']);
-            
+
             this._btnService.createBtn(
-                7*GlobalStaticConstants.innerWidth/12,
-                8*GlobalStaticConstants.innerHeight/10,
-                GlobalStaticConstants.innerWidth/4,
-                GlobalStaticConstants.innerHeight/10,
+                7 * GlobalStaticConstants.innerWidth / 12,
+                8 * GlobalStaticConstants.innerHeight / 10,
+                GlobalStaticConstants.innerWidth / 4,
+                GlobalStaticConstants.innerHeight / 10,
                 radius,
                 borderWidth,
                 backgroundColour,
@@ -77,10 +81,10 @@ export class LoadingScreen {
                 ['Load saved game']);
         } else {
             this._btnService.createBtn(
-                GlobalStaticConstants.innerWidth/3,
-                8*GlobalStaticConstants.innerHeight/10,
-                GlobalStaticConstants.innerWidth/3,
-                GlobalStaticConstants.innerHeight/10,
+                GlobalStaticConstants.innerWidth / 3,
+                8 * GlobalStaticConstants.innerHeight / 10,
+                GlobalStaticConstants.innerWidth / 3,
+                GlobalStaticConstants.innerHeight / 10,
                 radius,
                 borderWidth,
                 backgroundColour,
@@ -89,5 +93,17 @@ export class LoadingScreen {
                 this.startFreshGame,
                 ['New game']);
         }
+    }
+
+    private drawVersionNumber(ctx: CanvasRenderingContext2D) {
+        const version = `v0.${data.lastCommitNumber}`;
+
+        ctx.save();
+        const versionHeight = 25;
+        ctx.font = `${versionHeight}px Garamond`;
+        ctx.fillStyle = GlobalStaticConstants.highlightColour;
+        const versionWidth = ctx.measureText(version).width;
+        ctx.fillText(version, this._canvas.width - versionWidth, this._canvas.height);
+        ctx.restore();
     }
 }

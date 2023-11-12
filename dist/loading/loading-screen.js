@@ -7,6 +7,7 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
 import { Page } from "../navigation/page.js";
 import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
+import data from "../git-version.json" assert { type: "json" };
 export class LoadingScreen {
     _navigator;
     constructor(_navigator) {
@@ -30,6 +31,7 @@ export class LoadingScreen {
         const img = new Image();
         img.src = './graphics/camel-oasis.jpg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
+        this.drawVersionNumber(ctx);
         const radius = 50;
         const borderWidth = 5;
         const backgroundColour = Colour.pink;
@@ -42,5 +44,15 @@ export class LoadingScreen {
         else {
             this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
         }
+    }
+    drawVersionNumber(ctx) {
+        const version = `v0.${data.lastCommitNumber}`;
+        ctx.save();
+        const versionHeight = 25;
+        ctx.font = `${versionHeight}px Garamond`;
+        ctx.fillStyle = GlobalStaticConstants.highlightColour;
+        const versionWidth = ctx.measureText(version).width;
+        ctx.fillText(version, this._canvas.width - versionWidth, this._canvas.height);
+        ctx.restore();
     }
 }
