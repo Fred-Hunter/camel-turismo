@@ -9,6 +9,8 @@ import { RaceState } from "./models/race-state.js";
 import { RacingCamel } from "./models/racing-camel.js";
 import { RaceTrackCreator } from "./race-track-creator.js";
 import { StatisticsHelper } from "../statistics/statistics-helper.js";
+import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
+import { GeneralWasteScrolls } from "../scrolls/library/general-waste.js";
 export class RaceManagement {
     _musicService;
     _raceSimulation;
@@ -73,6 +75,14 @@ export class RaceManagement {
     }
     updateCalendar() {
         GameState.calendar.moveToNextDay();
+        if (Math.random() < 0.05) {
+            GameState.cashMoney += 100;
+            GameState.scrolls.push(EmmaDaleScrolls.bonus100CashMoney);
+        }
+        if (Math.random() < 0.05 && GameState.cashMoney > 100) {
+            GameState.cashMoney -= Math.max(Math.round(GameState.cashMoney * 0.01) * 10, 10);
+            GameState.scrolls.push(GeneralWasteScrolls.corruptionTax);
+        }
     }
     handleFinishedRace(race) {
         if (!GameState.camel)

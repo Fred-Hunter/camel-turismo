@@ -10,4 +10,14 @@ export class EmmaDaleScrolls {
             read: false
         };
     }
+    static get bonus100CashMoney() {
+        return {
+            sender: 'Emma Dale',
+            subject: 'Thank you for supporting the Camel Racing Adventures!',
+            body: `Felicitations, Manager! 🐪 Thank you for your support of the desert tracks!
+            As your esteemed racing connoisseur, I stand ready to bestow upon you the rewards of your valor.
+            Within the venerable confines of your Cash Money holdings, you shall find an extra bonus of 100 Cash Money awaiting your enjoyment. 💸 - Emma Dale`,
+            read: false
+        };
+    }
 }
