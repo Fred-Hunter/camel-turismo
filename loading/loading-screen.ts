@@ -26,14 +26,14 @@ export class LoadingScreen {
 
         this._navigator.requestPageNavigation(
             Page.mapOverview,
-            () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2024!"));
+            () => PopupService.drawAlertPopup("Welcome to Private Bates' Camel Turismo Management 2025!"));
     }
 
     private loadSavedGame = () => {
         GameState.LoadIfExists();
         this._navigator.requestPageNavigation(
             Page.mapOverview,
-            () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2024!"));
+            () => PopupService.drawAlertPopup("Welcome back to Private Bates' Camel Turismo Management 2025!"));
     }
 
     drawLoadingScreen() {
