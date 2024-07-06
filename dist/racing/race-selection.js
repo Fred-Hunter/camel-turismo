@@ -38,7 +38,7 @@ export class RaceSelection {
         const buttonListSpacing = buttonHeight + 20;
         const buttonFontSize = 20;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, RaceType.StreetRace);
-        const enterWaterRace = () => this.selectRace(40, 200, 10, 5, 30, RaceType.WaterRace);
+        const enterWaterRace = () => this.selectRace(60, 200, 10, 5, 30, RaceType.WaterRace);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, RaceType.LocalDerby);
         const enterCityShowdown = () => this.selectRace(80, 600, 250, 8, 60, RaceType.CityShowdown);
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, RaceType.WorldCup);
