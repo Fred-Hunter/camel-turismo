@@ -8,7 +8,6 @@ import { PopupService } from "../global/popup-service.js";
 import { NavigatorService } from "../navigation/navigator-service.js";
 import { Page } from "../navigation/page.js";
 import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
-import data from "../git-version.json" assert { type: "json" };
 import { version } from "chai";
 
 export class LoadingScreen {
@@ -96,7 +95,8 @@ export class LoadingScreen {
     }
 
     private drawVersionNumber(ctx: CanvasRenderingContext2D) {
-        const version = `v0.${GameState.version}.${data.lastCommitNumber} ${data.lastCommitTime.replaceAll("'","")}`;
+        // const version = `v0.${GameState.version}.${data.lastCommitNumber} ${data.lastCommitTime.replaceAll("'","")}`;
+        const version = `v0.${GameState.version}`;
 
         ctx.save();
         const versionHeight = 25;

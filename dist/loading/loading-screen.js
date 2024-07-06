@@ -7,7 +7,6 @@ import { GlobalStaticConstants } from "../global/global-static-constants.js";
 import { PopupService } from "../global/popup-service.js";
 import { Page } from "../navigation/page.js";
 import { EmmaDaleScrolls } from "../scrolls/library/emma-dale.js";
-import data from "../git-version.json" assert { type: "json" };
 export class LoadingScreen {
     _navigator;
     constructor(_navigator) {
@@ -46,7 +45,8 @@ export class LoadingScreen {
         }
     }
     drawVersionNumber(ctx) {
-        const version = `v0.${GameState.version}.${data.lastCommitNumber} ${data.lastCommitTime.replaceAll("'", "")}`;
+        // const version = `v0.${GameState.version}.${data.lastCommitNumber} ${data.lastCommitTime.replaceAll("'","")}`;
+        const version = `v0.${GameState.version}`;
         ctx.save();
         const versionHeight = 25;
         ctx.font = `${versionHeight}px Garamond`;
