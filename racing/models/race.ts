@@ -17,4 +17,5 @@ export class Race {
     triggeredTimestamp: number = 0;
     startTime = Date.now();
     trackElevation: Array<number> = [];
+    lastAnimatedBackgroundTimestamp: number = 0;
 }

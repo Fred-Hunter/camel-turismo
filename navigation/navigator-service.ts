@@ -71,6 +71,10 @@ export class NavigatorService {
                     break;
                 case Page.academy:
                     GlobalComponents.academyComponent.load();
+                    break;
+                case Page.raceCourseDebug:
+                    GlobalComponents.raceCourseDebugComponent.load();
+                    break;
             }
 
             this._postNavigationFunc();

@@ -4,4 +4,5 @@ export enum RaceType {
     CityShowdown = 2,
     WorldCup = 3,
     SpookyShowdown = 4,
+    WaterRace = 5,
 }

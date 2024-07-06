@@ -6,7 +6,6 @@ import { CanvasNames } from "../global/canvas-names.js";
 import { CanvasService } from "../global/canvas-service.js";
 import { CubeService } from "../global/cube-service.js";
 import { GlobalStaticConstants } from "../global/global-static-constants.js";
-import { RaceType } from "./race-type.js";
 import { ImportantService } from "../global/important-service.js";
 import { IsometricCoordsDrawer } from "../assets/isometric-coords/isometric-coords-drawer.js";
 import { PalmTreeCoords } from "../assets/isometric-coords/palm-tree-coords.js";
@@ -23,33 +22,30 @@ export class RaceDrawing {
     _camelCanvas;
     backgroundCubeService;
     camelCubeService;
-    drawRaceCourse(race) {
+    drawRaceCourse(raceParams, scale) {
         const ctx = this._backgroundCanvas.getContext("2d");
         ctx.fillStyle = GlobalStaticConstants.backgroundColour;
         ctx.fillRect(0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
-        this._backgroundCanvas.style.webkitFilter = "none";
-        if (race.raceType == RaceType.CityShowdown) {
-            ctx.filter = "grayscale(90%)";
-            this._backgroundCanvas.style.webkitFilter = "grayscale(90%)";
+        this._backgroundCanvas.style.filter = "none";
+        if (!!raceParams.worldFilter) {
+            ctx.filter = raceParams.worldFilter;
+            this._backgroundCanvas.style.filter = raceParams.worldFilter;
         }
-        if (race.raceType == RaceType.SpookyShowdown) {
-            ctx.filter = "hue-rotate(90deg)";
-            this._backgroundCanvas.style.webkitFilter = "hue-rotate(90deg)";
-        }
-        for (let i = 0; i < 15; i++) {
-            for (let j = 0; j < 15; j++) {
-                const track = race.track.filter(o => o[0] === i && o[1] === j);
+        for (let x = raceParams.worldXStart; x < raceParams.worldXSize; x++) {
+            for (let y = raceParams.worldYStart; y < raceParams.worldYSize; y++) {
+                const track = raceParams.track.filter(o => o[0] === x && o[1] === y);
                 if (track.length > 0) {
-                    this.backgroundCubeService.drawCube(Colour.lightGrey, i, j, 1, track[0][2]);
+                    this.backgroundCubeService.drawCube(Colour.lightGrey, x, y, 1, track[0][2]);
                 }
                 else {
-                    const height = Math.random() / 4;
-                    const colour = height < 1 / 8 ? Colour.sand : Colour.lightSand;
-                    this.backgroundCubeService.drawCube(colour, i, j, 1, height);
-                    const shouldIncludeObject = Math.floor(Math.random() * 10) === 4;
+                    const height = raceParams.heightVarianceMultiplier * Math.random() / 4;
+                    const shadeFactor = raceParams.colourVarianceMultiplier * (height - 0.125);
+                    const colour = raceParams.pickRandomGroundColour();
+                    this.backgroundCubeService.drawCube(colour, x, y, scale, height, shadeFactor);
+                    const shouldIncludeObject = raceParams.addObjects && Math.floor(Math.random() * 10) === 4;
                     if (shouldIncludeObject) {
                         const object = this.getObject();
-                        IsometricCoordsDrawer.draw(i, j, object, this.backgroundCubeService, height);
+                        IsometricCoordsDrawer.draw(x, y, object, this.backgroundCubeService, height, scale);
                     }
                 }
             }

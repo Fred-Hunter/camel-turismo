@@ -43,10 +43,14 @@ export class CubeService {
         coordY: number,
         scale: number = 1,
         height: number = 0,
+        shadeFactor: number = 0
     ) {
         const { x, y } = ImportantService.ConvertCoordToReal(coordX, coordY, scale, height);
 
-        this.drawCubeFromReal(ColourCodes.getCode(colour), x, y, scale);
+        const colourCode = ColourCodes.getCode(colour);
+        const shadedColour =  ColourCodes.shadeColour2(colourCode, shadeFactor);
+
+        this.drawCubeFromReal(shadedColour, x, y, scale);
     }
 
     private drawCubeFromReal(colour: string, x: number, y: number, scale: number) {
@@ -59,7 +63,7 @@ export class CubeService {
         this.ctx.lineTo(x - sideLength, y + sideLength * 1.5);
         this.ctx.lineTo(x, y + sideLength * 2);
         this.ctx.closePath();
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 10);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, -0.1);
         this.ctx.fill();
 
         // right
@@ -69,7 +73,7 @@ export class CubeService {
         this.ctx.lineTo(x + sideLength, y + sideLength * 1.5);
         this.ctx.lineTo(x, y + sideLength * 2);
         this.ctx.closePath();
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 0);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, -0.2);
         this.ctx.fill();
 
         // top
@@ -80,7 +84,7 @@ export class CubeService {
         this.ctx.lineTo(x + sideLength, y + sideLength * 0.5)
         this.ctx.closePath();
 
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 20);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, 0);
 
         this.ctx.fill();
 

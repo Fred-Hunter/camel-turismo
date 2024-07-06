@@ -10,6 +10,7 @@ import { Countdown } from "./countdown/countdown.js";
 import { LeaderboardService } from "./leaderboard-service.js";
 import { RaceState } from "./models/race-state.js";
 import { RaceComponent } from "./race-component.js";
+import { RaceCourseDebugComponent } from "./race-course-debug-component.js";
 import { RaceDrawing } from "./race-drawing.js";
 import { RaceManagement } from "./race-managment.js";
 import { RaceSelection } from "./race-selection.js";
@@ -28,6 +29,7 @@ export class RacingStartup {
         this.registerRaceCamelSelectComponent(raceManagement);
         this.registerRaceSelection(raceManagement);
         this.registerRaceComponent(raceManagement);
+        this.registerRaceCourseDebugComponent();
     }
 
     private registerRaceCamelSelectComponent(raceManagement: RaceManagement) {
@@ -55,5 +57,11 @@ export class RacingStartup {
         const countdown = new Countdown();
 
         GlobalComponents.raceComponent = new RaceComponent(raceDrawing, raceManagement, leaderboardService, countdown);
+    }
+
+    private registerRaceCourseDebugComponent() {
+        const raceDrawing = new RaceDrawing();
+
+        GlobalComponents.raceCourseDebugComponent = new RaceCourseDebugComponent(raceDrawing);
     }
 }

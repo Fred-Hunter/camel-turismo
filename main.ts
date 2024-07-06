@@ -15,6 +15,10 @@ function init() {
         GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
 
+    if (GlobalComponents.raceCourseDebugMode) {
+        GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.raceCourseDebug);
+    }
+
     window.requestAnimationFrame(gameLoop);
 }
 

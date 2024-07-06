@@ -13,6 +13,8 @@ export class GlobalComponents {
     static raceSelection;
     static raceComponent;
     static raceCamelSelectComponent;
+    static raceCourseDebugComponent;
+    static raceCourseDebugMode = false;
     // Loading
     static loadingScreen;
     // Drawing

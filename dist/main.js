@@ -11,6 +11,9 @@ function init() {
     if (GlobalComponents.drawingMode) {
         GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.debug);
     }
+    if (GlobalComponents.raceCourseDebugMode) {
+        GlobalComponents.globalServices.navigatorService.requestPageNavigation(Page.raceCourseDebug);
+    }
     window.requestAnimationFrame(gameLoop);
 }
 function gameLoop(timeStamp) {

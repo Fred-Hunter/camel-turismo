@@ -15,9 +15,11 @@ export class CubeService {
         const { x, y } = ImportantService.ConvertCoordToReal(coordX, coordY, parentScale, height);
         this.drawCubeFromReal(colour, x, y, parentScale * subCubeScale);
     }
-    drawCube(colour, coordX, coordY, scale = 1, height = 0) {
+    drawCube(colour, coordX, coordY, scale = 1, height = 0, shadeFactor = 0) {
         const { x, y } = ImportantService.ConvertCoordToReal(coordX, coordY, scale, height);
-        this.drawCubeFromReal(ColourCodes.getCode(colour), x, y, scale);
+        const colourCode = ColourCodes.getCode(colour);
+        const shadedColour = ColourCodes.shadeColour2(colourCode, shadeFactor);
+        this.drawCubeFromReal(shadedColour, x, y, scale);
     }
     drawCubeFromReal(colour, x, y, scale) {
         const sideLength = scale * GlobalStaticConstants.baseCubeSize;
@@ -28,7 +30,7 @@ export class CubeService {
         this.ctx.lineTo(x - sideLength, y + sideLength * 1.5);
         this.ctx.lineTo(x, y + sideLength * 2);
         this.ctx.closePath();
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 10);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, -0.1);
         this.ctx.fill();
         // right
         this.ctx.beginPath();
@@ -37,7 +39,7 @@ export class CubeService {
         this.ctx.lineTo(x + sideLength, y + sideLength * 1.5);
         this.ctx.lineTo(x, y + sideLength * 2);
         this.ctx.closePath();
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 0);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, -0.2);
         this.ctx.fill();
         // top
         this.ctx.beginPath();
@@ -46,7 +48,7 @@ export class CubeService {
         this.ctx.lineTo(x, y + sideLength);
         this.ctx.lineTo(x + sideLength, y + sideLength * 0.5);
         this.ctx.closePath();
-        this.ctx.fillStyle = ColourCodes.shadeColor(colour, 20);
+        this.ctx.fillStyle = ColourCodes.shadeColour2(colour, 0);
         this.ctx.fill();
         this.ctx.fillStyle = '#000000';
         // this.ctx.fillText(coordX + ',' + coordY, x, y);

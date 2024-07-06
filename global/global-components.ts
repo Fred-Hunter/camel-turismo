@@ -5,6 +5,7 @@ import { CamelSelectComponent } from "../management/camel-select/camel-select-co
 import { CamelSkillComponent } from "../management/skills/camel-skill-component.js";
 import { Race } from "../racing/models/race.js";
 import { RaceComponent } from "../racing/race-component.js";
+import { RaceCourseDebugComponent } from "../racing/race-course-debug-component.js";
 import { RaceSelection } from "../racing/race-selection.js";
 import { RecruitmentService } from "../recruitment/recruitment-service.js";
 import { ScrollsComponent } from "../scrolls/scrolls-component.js";
@@ -29,6 +30,8 @@ export class GlobalComponents {
     public static raceSelection: RaceSelection;
     public static raceComponent: RaceComponent;
     public static raceCamelSelectComponent: CamelSelectComponent;
+    public static raceCourseDebugComponent: RaceCourseDebugComponent
+    public static raceCourseDebugMode = false;
 
     // Loading
     public static loadingScreen: LoadingScreen;

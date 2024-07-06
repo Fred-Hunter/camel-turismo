@@ -38,6 +38,7 @@ export class RaceSelection {
         const buttonListSpacing = buttonHeight + 20;
         const buttonFontSize = 20;
         const enterStreetRace = () => this.selectRace(40, 100, 0, 5, 20, RaceType.StreetRace);
+        const enterWaterRace = () => this.selectRace(40, 200, 10, 5, 30, RaceType.WaterRace);
         const enterLocalDerby = () => this.selectRace(80, 500, 200, 8, 50, RaceType.LocalDerby);
         const enterCityShowdown = () => this.selectRace(80, 600, 250, 8, 60, RaceType.CityShowdown);
         const enterWorldCup = () => this.selectRace(100, 10000, 300, 15, 60, RaceType.WorldCup);
@@ -50,6 +51,13 @@ export class RaceSelection {
                 name: "Street race",
                 entry: 0,
                 prize: 100,
+            },
+            {
+                race: enterWaterRace,
+                colours: [Colour.winter, Colour.lightWinter, Colour.white],
+                name: "Water race",
+                entry: 10,
+                prize: 200,
             },
             {
                 race: enterLocalDerby,

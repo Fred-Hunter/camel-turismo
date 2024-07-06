@@ -9,5 +9,6 @@ export enum Page {
     calendarDetails,
     debug,
     scrolls,
-    academy
+    academy,
+    raceCourseDebug
 }
