@@ -40,7 +40,7 @@ export class LoadingScreen {
         const ctx = this._canvas.getContext("2d")!;
 
         const img = new Image();
-        img.src = './graphics/camel-oasis.jpg';
+        img.src = './graphics/camel-oasis-new.jpeg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
 
         this.drawVersionNumber(ctx);
@@ -55,7 +55,7 @@ export class LoadingScreen {
         if (GameState.GetExists()) {
             this._btnService.createBtn(
                 GlobalStaticConstants.innerWidth / 6,
-                8 * GlobalStaticConstants.innerHeight / 10,
+                8.5 * GlobalStaticConstants.innerHeight / 10,
                 GlobalStaticConstants.innerWidth / 4,
                 GlobalStaticConstants.innerHeight / 10,
                 radius,
@@ -68,7 +68,7 @@ export class LoadingScreen {
 
             this._btnService.createBtn(
                 7 * GlobalStaticConstants.innerWidth / 12,
-                8 * GlobalStaticConstants.innerHeight / 10,
+                8.5 * GlobalStaticConstants.innerHeight / 10,
                 GlobalStaticConstants.innerWidth / 4,
                 GlobalStaticConstants.innerHeight / 10,
                 radius,
@@ -81,7 +81,7 @@ export class LoadingScreen {
         } else {
             this._btnService.createBtn(
                 GlobalStaticConstants.innerWidth / 3,
-                8 * GlobalStaticConstants.innerHeight / 10,
+                8.5 * GlobalStaticConstants.innerHeight / 10,
                 GlobalStaticConstants.innerWidth / 3,
                 GlobalStaticConstants.innerHeight / 10,
                 radius,

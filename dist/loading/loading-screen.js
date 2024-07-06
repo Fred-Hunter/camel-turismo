@@ -28,7 +28,7 @@ export class LoadingScreen {
     drawLoadingScreen() {
         const ctx = this._canvas.getContext("2d");
         const img = new Image();
-        img.src = './graphics/camel-oasis.jpg';
+        img.src = './graphics/camel-oasis-new.jpeg';
         ctx.drawImage(img, 0, 0, GlobalStaticConstants.innerWidth, GlobalStaticConstants.innerHeight);
         this.drawVersionNumber(ctx);
         const radius = 50;
@@ -37,11 +37,11 @@ export class LoadingScreen {
         const borderColour = Colour.lightPink;
         const textColour = Colour.white;
         if (GameState.GetExists()) {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
-            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.loadSavedGame, ['Load saved game']);
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 6, 8.5 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
+            this._btnService.createBtn(7 * GlobalStaticConstants.innerWidth / 12, 8.5 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 4, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.loadSavedGame, ['Load saved game']);
         }
         else {
-            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
+            this._btnService.createBtn(GlobalStaticConstants.innerWidth / 3, 8.5 * GlobalStaticConstants.innerHeight / 10, GlobalStaticConstants.innerWidth / 3, GlobalStaticConstants.innerHeight / 10, radius, borderWidth, backgroundColour, borderColour, textColour, this.startFreshGame, ['New game']);
         }
     }
     drawVersionNumber(ctx) {
